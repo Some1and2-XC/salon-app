@@ -8,6 +8,8 @@ import {
     Alert,
 } from 'react-native';
 
+import {sty} from "../styles";
+
 import {
     NAV_SIGNUP,
 } from "../consts";
@@ -77,9 +79,9 @@ export function LoginScreen({ navigation }) {
 
     return (
 
-        <View>
-            <Text>Welcome Back</Text>
-            <Text>Log in to continue</Text>
+        <View style={ sty.container }>
+            <Text style={ sty.h1 }>Welcome Back</Text>
+            {/* <Text>Log in to continue</Text> */}
 
             <TextInput
                 placeholder="Email"
@@ -96,9 +98,10 @@ export function LoginScreen({ navigation }) {
                 secureTextEntry
                 />
 
-            <TouchableOpacity onPress={onLogin}>
-                <Text>Log In</Text>
-            </TouchableOpacity>
+            <Button
+                title="Log in"
+                onPress={onLogin}
+                />
 
             <Button
                 title="Forgot Password?"

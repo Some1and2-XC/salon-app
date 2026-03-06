@@ -7,18 +7,19 @@ import { User as FBUser, onAuthStateChanged } from 'firebase/auth';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import { auth } from "./firebaseConfig.ts";
+import { auth } from "./firebaseConfig";
 
-import { User } from "./db/index.ts";
+import { User } from "./db/index";
+import { sty } from "./styles";
 
 // Screen imports
-import { ExampleHome } from "./pages/index.tsx";
-import { BookingScreen } from "./pages/booking.js";
-import { CheckinScreen } from "./pages/checkin.js";
-import { CheckinConfirmScreen } from "./pages/checkinConfirm.js";
-import { HomeScreen } from "./pages/home.js";
-import { LoginScreen } from "./pages/login.js";
-import { SignupScreen } from "./pages/signup.js";
+import { ExampleHome } from "./pages/index";
+import { BookingScreen } from "./pages/booking";
+import { CheckinScreen } from "./pages/checkin";
+import { CheckinConfirmScreen } from "./pages/checkinConfirm";
+import { HomeScreen } from "./pages/home";
+import { LoginScreen } from "./pages/login";
+import { SignupScreen } from "./pages/signup";
 
 const Stack = createStackNavigator();
 
@@ -30,8 +31,7 @@ import {
     NAV_HOME,
     NAV_LOGIN,
     NAV_SIGNUP,
-
-} from "./consts.ts";
+} from "./consts";
 
 export default function App() {
 

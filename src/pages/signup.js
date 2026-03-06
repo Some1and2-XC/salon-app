@@ -11,6 +11,8 @@ import {
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 
+import {sty} from "../styles";
+
 import {
     NAV_LOGIN,
 } from "../consts";
@@ -63,9 +65,9 @@ export function SignupScreen({ navigation }) {
     };
 
     return (
-        <View>
-            <Text>Create Account</Text>
-            <Text>Sign up to continue</Text>
+        <View style={ sty.container }>
+            <Text style={ sty.h1 } >Create Account</Text>
+            {/* <Text style={ sty.h1 } >Sign up to continue</Text> */}
 
             <TextInput
                 placeholder="Email"

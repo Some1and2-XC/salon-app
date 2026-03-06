@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 
 export function BookingScreen() {
 
@@ -28,43 +28,41 @@ export function BookingScreen() {
     const timeSlots = generateTimeSlots();
 
     return (
-        <ScrollView horizontal>
+        <View>
+
+            {/* Header Row */}
             <View>
-
-                {/* Header Row */}
                 <View>
-                    <View>
-                        <Text>Time</Text>
-                    </View>
-
-                    {staff.map((person, index) => (
-                        <View key={index}>
-                            <Text>{person}</Text>
-                        </View>
-                    ))}
+                    <Text>Time</Text>
                 </View>
 
-                {/* Time Rows */}
-                {timeSlots.map((time, rowIndex) => (
-                    <View key={rowIndex}>
-
-                        <View>
-                            <Text>{time}</Text>
-                        </View>
-
-                        {staff.map((_, colIndex) => (
-                            <TouchableOpacity
-                                key={colIndex}
-                                onPress={() => alert(`Booked ${time}`)}
-                            >
-                                <Text></Text>
-                            </TouchableOpacity>
-                        ))}
-
+                {staff.map((person, index) => (
+                    <View key={index}>
+                        <Text>{person}</Text>
                     </View>
                 ))}
-
             </View>
-        </ScrollView>
+
+            {/* Time Rows */}
+            {timeSlots.map((time, rowIndex) => (
+                <View key={rowIndex}>
+
+                    <View>
+                        <Text>{time}</Text>
+                    </View>
+
+                    {staff.map((_, colIndex) => (
+                        <TouchableOpacity
+                            key={colIndex}
+                            onPress={() => alert(`Booked ${time}`)}
+                        >
+                            <Text></Text>
+                        </TouchableOpacity>
+                    ))}
+
+                </View>
+            ))}
+
+        </View>
     );
 }

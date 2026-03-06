@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 import { signOut } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 
+import {sty} from "../styles";
+
 import {
     NAV_CHECKIN,
     NAV_BOOKING,
@@ -10,34 +12,34 @@ import {
 
 export function HomeScreen({ navigation }) {
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.log("Logout error:", error);
-    }
-  };
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+        } catch (error) {
+            console.log("Logout error:", error);
+        }
+    };
 
-  return (
-    <View>
-      <Text>Salon App Home</Text>
+    return (
+        <View style={ sty.container }>
+            <Text style={ sty.h1 }>Salon App Home</Text>
 
-      <Button
-        title="Customer Check In"
-        onPress={() => navigation.navigate(NAV_CHECKIN)}
-        />
+            <Button
+                title="Customer Check In"
+                onPress={() => navigation.navigate(NAV_CHECKIN)}
+                />
 
-      <View style={{ height: 20 }} />
+            <View style={{ height: 20 }} />
 
-      <Button
-        title="Book Appointment"
-        onPress={() => navigation.navigate(NAV_BOOKING)}
-        />
+            <Button
+                title="Book Appointment"
+                onPress={() => navigation.navigate(NAV_BOOKING)}
+                />
 
-      <View style={{ height: 20 }} />
+            <View style={{ height: 20 }} />
 
-      <Button title="Log Out" color="red" onPress={handleLogout} />
-    </View>
-  );
+            <Button title="Log Out" color="red" onPress={handleLogout} />
+        </View>
+    );
 
 }

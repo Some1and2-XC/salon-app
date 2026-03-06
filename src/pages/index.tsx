@@ -1,6 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button } from 'react-native';
 
+import { sty } from "../styles";
+
 import {
     NAV_EXAMPLE_HOME,
     NAV_BOOKING,
@@ -9,8 +11,7 @@ import {
     NAV_HOME,
     NAV_LOGIN,
     NAV_SIGNUP,
-} from "../consts.ts";
-
+} from "../consts";
 
 export function ExampleHome({ navigation }: any ): React.JSX.Element {
 
@@ -25,19 +26,19 @@ export function ExampleHome({ navigation }: any ): React.JSX.Element {
    ];
 
    return (
-      <View>
-         <h1>Home Page!</h1>
-         <p>This is an example home page made so that other pages can be built with this as a reference!</p>
+       <View style={ sty.container }>
+           <Text style={ sty.h1 }>Home Page!</Text>
+           <Text>This is an example home page made so that other pages can be built with this as a reference!</Text>
 
-         {ENDPOINTS.map((v) => (
-             <Button
-                 key={v}
-                 title={v}
-                 onPress={() => navigation.navigate(v)}
-                 />
-         ))}
+           {ENDPOINTS.map((v) => (<>
+               <Button
+                   key={v}
+                   title={v}
+                   onPress={() => navigation.navigate(v)}
+                   />
+           </>))}
 
 
-      </View>
+       </View>
    );
 }
