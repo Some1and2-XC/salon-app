@@ -3,15 +3,27 @@
 
 import { UUIDTypes } from "uuid";
 
+// A class that represents a phone number.
+// This should always be serialized as a string in the database.
+// This should only be used for validation and such.
+export class Phone {
+    constructor(
+        // This should be modified at some point for consistency + error checking here.
+        public number: string
+    ) {}
+}
+
 export class User {
     constructor(
-        public uuid: UUIDTypes<Uint8Array> | null,
-        public phone: number,
+        public uuid: string | null,
+        public phone: Phone | null,
         public email: string,
         public first_name: string,
         public last_name: string,
         public date_created: number | null,
         public last_modified: number | null
+        // There should be some "is_admin" flag here as well.
+        // Or like an associated employee id..?
     ) {}
 }
 
@@ -30,7 +42,7 @@ export class Employee {
         public id: string,
         public first_name: string,
         public last_name: string,
-        public phone: number,
+        public phone: Phone,
         public email: string,
         public date_created: number | null,
         public last_modified: number | null
@@ -61,7 +73,7 @@ export class AppointmentAvailability {
 export class Appointment {
     constructor(
         public uuid: UUIDTypes<Uint8Array> | null,
-        public user_uuid: UUIDTypes<Uint8Array>,
+        public user_uuid: string,
         public task_id: number,
         // This should be only null before the appointment is confirmed
         public employee_id: number | null,
@@ -89,16 +101,7 @@ export class Appointment {
 
 }
 
-export class Admin {
-    constructor(
-        public username: string,
-        public password: string, // hashed
-        public date_created: number | null,
-        public last_modified: number | null
-    ) {}
-}
-
-const usr: User = new User(null, 123456789, "em@ail.com", "my", "name", null, null);
+const usr: User = new User(null, new Phone("+123456789"), "em@ail.com", "my", "name", null, null);
 console.log(usr);
 
 const appointment = new Appointment(null, "helo", 0, null, 0, 0, APPOINTMENT_STATE_CONFIRMED.id, 0, 0);
