@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 
+import {
+    NAV_CHECKINCONFIRM
+} from "../consts";
+
 export function CheckinScreen({ navigation }) {
 
     const [phone, setPhone] = useState('');
@@ -21,7 +25,7 @@ export function CheckinScreen({ navigation }) {
 
     const handleDone = () => {
         if (phone.length === 9) {
-            navigation.navigate("CheckInConfirm", { phone });
+            navigation.navigate(NAV_CHECKINCONFIRM, { phone });
         }
     };
 
@@ -61,7 +65,7 @@ export function CheckinScreen({ navigation }) {
                 onPress={handleDone}
                 disabled={phone.length !== 9}
             >
-                <Text>Done</Text>
+                <Text >Done</Text>
             </TouchableOpacity>
 
         </View>

@@ -1,46 +1,119 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View,
+    TextInput,
+    Button,
+    TouchableOpacity
+} from 'react-native';
+
+import {
+    NAV_SIGNUP
+} from "../consts";
+
+function getLoginErrorMessage(code) {
+  switch (code) {
+    case "auth/invalid-credential":
+      return "Invalid email or password.";
+    case "auth/user-not-found":
+      return "No account exists with this email.";
+    case "auth/wrong-password":
+      return "Incorrect password. Please try again.";
+    case "auth/invalid-email":
+      return "Please enter a valid email address.";
+    case "auth/too-many-requests":
+      return "Too many attempts. Please try again later.";
+    default:
+      return "Login failed. Please try again.";
+  }
+}
 
 export function LoginScreen({ navigation }) {
 
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-    const handleLogin = () => {
-        if (username === "" && password === "") {
-            navigation.replace("Home");
-        } else {
-            Alert.alert("Login Failed", "Invalid username or password");
+    const onLogin = async () => {
+        const trimmedEmail = email.trim();
+
+        if (!trimmedEmail || !password) {
+            Alert.alert("Missing Fields", "Please enter your email and password.");
+            return;
         }
-    }
 
+        try {
+            await signInWithEmailAndPassword(auth, trimmedEmail, password);
+            // No navigation needed. App.js auth-gate will switch screens automatically.
+        } catch (error) {
+            Alert.alert("Login Failed", getLoginErrorMessage(error.code));
+        }
+    };
+
+    const onForgotPassword = async () => {
+        const trimmedEmail = email.trim();
+
+        if (!trimmedEmail) {
+            Alert.alert(
+                "Enter Email",
+                "Type your email above first, then tap Forgot Password."
+            );
+            return;
+        }
+
+        try {
+            await sendPasswordResetEmail(auth, trimmedEmail);
+            Alert.alert("Email Sent", "Check your email to reset your password.");
+        } catch (error) {
+            let msg = "Could not send password reset email.";
+            if (error.code === "auth/user-not-found") {
+                msg = "No account exists with this email.";
+            } else if (error.code === "auth/invalid-email") {
+                msg = "Please enter a valid email address.";
+            }
+            Alert.alert("Password Reset", msg);
+        }
+    };
 
     return (
+
         <View>
-            <Text>Login</Text>
+            <Text>Welcome Back</Text>
+            <Text>Log in to continue</Text>
 
             <TextInput
-                placeholder="Username"
-                value={username}
-                onChangeText={setUsername}
+                placeholder="Email"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
             />
 
             <TextInput
                 placeholder="Password"
-                secureTextEntry
                 value={password}
                 onChangeText={setPassword}
-            />
+                secureTextEntry
+                />
 
-            <Button
-                title="Sign In"
-                onPress={handleLogin}
-            />
+            <TouchableOpacity onPress={onLogin}>
+                <Text>Log In</Text>
+            </TouchableOpacity>
 
-            <Button
-                title="Go to Sign Up"
-                onPress={() => navigation.navigate("Sign Up")}
-            />
+            <TouchableOpacity onPress={onForgotPassword}>
+                <Text>Forgot Password?</Text>
+            </TouchableOpacity>
+
+            <View />
+
+            <Text>Don’t have an account?</Text>
+            <TouchableOpacity
+                onPress={() => navigation.navigate(NAV_SIGNUP)}
+            >
+                <Text>Create Account</Text>
+            </TouchableOpacity>
         </View>
+
     );
+
 }
