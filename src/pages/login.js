@@ -5,8 +5,7 @@ import {
     View,
     TextInput,
     Button,
-    Alert,
-    TouchableOpacity
+    Alert
 } from 'react-native';
 
 import {
@@ -101,18 +100,20 @@ export function LoginScreen({ navigation }) {
                 <Text>Log In</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={onForgotPassword}>
-                <Text>Forgot Password?</Text>
-            </TouchableOpacity>
+            <Button
+                title="Forgot Password?"
+                onPress={onForgotPassword}
+                />
 
             <View />
 
             <Text>Don’t have an account?</Text>
-            <TouchableOpacity
+
+            <Button
+                title="Create Account"
                 onPress={() => navigation.navigate(NAV_SIGNUP)}
-            >
-                <Text>Create Account</Text>
-            </TouchableOpacity>
+                />
+
         </View>
 
     );

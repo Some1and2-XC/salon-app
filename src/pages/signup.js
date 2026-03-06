@@ -5,8 +5,7 @@ import {
     View,
     TextInput,
     Alert,
-    Button,
-    TouchableOpacity
+    Button
 } from 'react-native';
 
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -90,18 +89,20 @@ export function SignupScreen({ navigation }) {
                 secureTextEntry
             />
 
-            <TouchableOpacity onPress={onSignUp}>
-                <Text>Sign Up</Text>
-            </TouchableOpacity>
+            <Button
+                title="Sign Up"
+                onPress={onSignUp}
+                />
 
             <View />
 
             <Text>Already have an account?</Text>
-            <TouchableOpacity
+
+            <Button
+                title="Back to Login"
                 onPress={() => navigation.navigate(NAV_LOGIN)}
-            >
-                <Text>Back to Login</Text>
-            </TouchableOpacity>
+                />
+
         </View>
     );
 
