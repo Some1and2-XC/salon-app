@@ -5,7 +5,7 @@ This project is a react native project.
 ## Testing & Execution
 ```sh
 # Runs development server (web version)
-npx run web
+npx expo start --web
 # Checks typescript files
 npx tsc --noEmit
 ```
