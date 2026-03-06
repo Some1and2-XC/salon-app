@@ -8,7 +8,7 @@ import {
     NAV_CHECKINCONFIRM,
     NAV_HOME,
     NAV_LOGIN,
-    NAV_SIGNUP
+    NAV_SIGNUP,
 } from "../consts.ts";
 
 
@@ -21,7 +21,7 @@ export function ExampleHome({ navigation }: any ): React.JSX.Element {
       NAV_CHECKINCONFIRM,
       NAV_HOME,
       NAV_LOGIN,
-      NAV_SIGNUP
+      NAV_SIGNUP,
    ];
 
    return (

@@ -5,7 +5,7 @@ import { auth } from "../firebaseConfig";
 
 import {
     NAV_CHECKIN,
-    NAV_BOOKING
+    NAV_BOOKING,
 } from "../consts";
 
 export function HomeScreen({ navigation }) {

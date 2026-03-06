@@ -29,7 +29,7 @@ import {
     NAV_CHECKINCONFIRM,
     NAV_HOME,
     NAV_LOGIN,
-    NAV_SIGNUP
+    NAV_SIGNUP,
 
 } from "./consts.ts";
 

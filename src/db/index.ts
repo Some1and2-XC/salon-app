@@ -21,7 +21,8 @@ export class User {
         public first_name: string,
         public last_name: string,
         public date_created: number | null,
-        public last_modified: number | null
+        public last_modified: number | null,
+        public readonly admin: boolean = false,
         // There should be some "is_admin" flag here as well.
         // Or like an associated employee id..?
     ) {}
@@ -33,7 +34,7 @@ export class Task {
         public name: string,
         public time_for_booking: number,
         public date_created: number | null,
-        public last_modified: number | null
+        public last_modified: number | null,
     ) {}
 }
 
@@ -45,14 +46,14 @@ export class Employee {
         public phone: Phone,
         public email: string,
         public date_created: number | null,
-        public last_modified: number | null
+        public last_modified: number | null,
     ) {}
 }
 
 export class AppointmentState {
     constructor(
         public id: number,
-        public name: string
+        public name: string,
     ) {}
 }
 
@@ -66,7 +67,7 @@ export class AppointmentAvailability {
     constructor(
         public id: number,
         public start_time: number,
-        public end_time: number
+        public end_time: number,
     ) {}
 }
 
@@ -81,7 +82,7 @@ export class Appointment {
         public length: number,
         public appointment_state_id: number,
         public date_created: number | null,
-        public last_modified: number | null
+        public last_modified: number | null,
     ) {}
 
     validate(): boolean {

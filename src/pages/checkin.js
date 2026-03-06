@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 
 import {
-    NAV_CHECKINCONFIRM
+    NAV_CHECKINCONFIRM,
 } from "../consts";
 
 export function CheckinScreen({ navigation }) {

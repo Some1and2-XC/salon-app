@@ -12,7 +12,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 
 import {
-    NAV_LOGIN
+    NAV_LOGIN,
 } from "../consts";
 
 function getSignUpErrorMessage(code) {

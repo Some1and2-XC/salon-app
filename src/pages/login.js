@@ -5,11 +5,11 @@ import {
     View,
     TextInput,
     Button,
-    Alert
+    Alert,
 } from 'react-native';
 
 import {
-    NAV_SIGNUP
+    NAV_SIGNUP,
 } from "../consts";
 
 function getLoginErrorMessage(code) {
