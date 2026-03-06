@@ -23,8 +23,6 @@ export class User {
         public date_created: number | null,
         public last_modified: number | null,
         public readonly admin: boolean = false,
-        // There should be some "is_admin" flag here as well.
-        // Or like an associated employee id..?
     ) {}
 }
 
