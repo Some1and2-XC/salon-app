@@ -3,7 +3,7 @@
 
 import { UUIDTypes } from "uuid";
 
-class User {
+export class User {
     constructor(
         public uuid: UUIDTypes<Uint8Array> | null,
         public phone: number,
@@ -15,7 +15,7 @@ class User {
     ) {}
 }
 
-class Task {
+export class Task {
     constructor(
         public id: number,
         public name: string,
@@ -25,7 +25,7 @@ class Task {
     ) {}
 }
 
-class Employee {
+export class Employee {
     constructor(
         public id: string,
         public first_name: string,
@@ -37,20 +37,20 @@ class Employee {
     ) {}
 }
 
-class AppointmentState {
+export class AppointmentState {
     constructor(
         public id: number,
         public name: string
     ) {}
 }
 
-const APPOINTMENT_STATE_UNCONFIRMED : AppointmentState = new AppointmentState(0, "Unconfirmed");
-const APPOINTMENT_STATE_ACCEPTED    : AppointmentState = new AppointmentState(1, "Accepted");
-const APPOINTMENT_STATE_CONFIRMED   : AppointmentState = new AppointmentState(2, "Confirmed");
-const APPOINTMENT_STATE_CANCELLED   : AppointmentState = new AppointmentState(3, "Cancelled");
-const APPOINTMENT_STATE_COMPLETED   : AppointmentState = new AppointmentState(4, "Completed");
+export const APPOINTMENT_STATE_UNCONFIRMED : AppointmentState = new AppointmentState(0, "Unconfirmed");
+export const APPOINTMENT_STATE_ACCEPTED    : AppointmentState = new AppointmentState(1, "Accepted");
+export const APPOINTMENT_STATE_CONFIRMED   : AppointmentState = new AppointmentState(2, "Confirmed");
+export const APPOINTMENT_STATE_CANCELLED   : AppointmentState = new AppointmentState(3, "Cancelled");
+export const APPOINTMENT_STATE_COMPLETED   : AppointmentState = new AppointmentState(4, "Completed");
 
-class AppointmentAvailability {
+export class AppointmentAvailability {
     constructor(
         public id: number,
         public start_time: number,
@@ -58,7 +58,7 @@ class AppointmentAvailability {
     ) {}
 }
 
-class Appointment {
+export class Appointment {
     constructor(
         public uuid: UUIDTypes<Uint8Array> | null,
         public user_uuid: UUIDTypes<Uint8Array>,
@@ -89,7 +89,7 @@ class Appointment {
 
 }
 
-class Admin {
+export class Admin {
     constructor(
         public username: string,
         public password: string, // hashed
