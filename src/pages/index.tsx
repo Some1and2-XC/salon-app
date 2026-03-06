@@ -12,7 +12,7 @@ import {
 } from "../consts.ts";
 
 
-export function ExampleHome({ navigation }): React.JSX.Element {
+export function ExampleHome({ navigation }: any ): React.JSX.Element {
 
   const ENDPOINTS: string[] = [
     // NAV_EXAMPLE_HOME,
