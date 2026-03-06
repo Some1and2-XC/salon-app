@@ -4,6 +4,7 @@ import {
     Text,
     View,
     TextInput,
+    Alert,
     Button,
     TouchableOpacity
 } from 'react-native';
