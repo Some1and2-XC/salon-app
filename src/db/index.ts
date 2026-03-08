@@ -64,6 +64,7 @@ export const APPOINTMENT_STATE_COMPLETED   : AppointmentState = new AppointmentS
 export class AppointmentAvailability {
     constructor(
         public id: number,
+        public employee_id: string | null,
         public start_time: number,
         public end_time: number,
     ) {}
