@@ -11,6 +11,7 @@ import {
     NAV_HOME,
     NAV_LOGIN,
     NAV_SIGNUP,
+    NAV_QR
 } from "../consts";
 
 export function ExampleHome({ navigation }: any ): React.JSX.Element {
@@ -23,6 +24,7 @@ export function ExampleHome({ navigation }: any ): React.JSX.Element {
       NAV_HOME,
       NAV_LOGIN,
       NAV_SIGNUP,
+      NAV_QR
    ];
 
    return (

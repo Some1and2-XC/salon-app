@@ -6,4 +6,5 @@ export const NAV_CHECKINCONFIRM: string = "checkinConfirm";
 export const NAV_HOME: string = "home";
 export const NAV_LOGIN: string = "login";
 export const NAV_SIGNUP: string = "signup";
+export const NAV_QR: string = "qr-generator";
 
