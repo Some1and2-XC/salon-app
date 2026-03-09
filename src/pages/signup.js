@@ -10,12 +10,9 @@ import {
 
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebaseConfig";
-
-import {sty} from "../styles";
-
-import {
-    NAV_LOGIN,
-} from "../consts";
+import { apiFetch } from "../utils";
+import { sty } from "../styles";
+import { NAV_LOGIN } from "../consts";
 
 function getSignUpErrorMessage(code) {
    switch (code) {
@@ -32,14 +29,26 @@ function getSignUpErrorMessage(code) {
 
 export function SignupScreen({ navigation }) {
     const [email, setEmail] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
     const onSignUp = async () => {
         const trimmedEmail = email.trim();
 
-        if (!trimmedEmail || !password || !confirmPassword) {
+        if (!trimmedEmail || !password || !firstName || !lastName || !confirmPassword) {
             Alert.alert("Missing Fields", "Please fill in all fields.");
+            return;
+        }
+
+        if (firstName.length < 2) {
+            Alert.alert("Invalid First Name! Must be at least 2 characters.");
+            return;
+        }
+
+        if (lastName.length < 2) {
+            Alert.alert("Invalid Last Name! Must be at least 2 characters.");
             return;
         }
 
@@ -54,12 +63,22 @@ export function SignupScreen({ navigation }) {
         }
 
         try {
+            // Creates user in firebase DB
             await createUserWithEmailAndPassword(auth, trimmedEmail, password);
+            // Creates user in our DB
+            const res = await apiFetch("/users", {
+                method: "POST",
+                body: JSON.stringify({email, first_name: firstName, last_name: lastName, phone: null}),
+            });
+
+            if (!res.ok) throw new Error("Failed to create user in backend!");
+
             Alert.alert("Success", "Account created successfully!");
             // App.js auth-gate will show Home after signup automatically.
             // If you prefer returning to login, uncomment:
             // navigation.navigate(NAV_LOGIN);
         } catch (error) {
+            console.error("Sign Up Failed", getSignUpErrorMessage(error.code));
             Alert.alert("Sign Up Failed", getSignUpErrorMessage(error.code));
         }
     };
@@ -75,6 +94,20 @@ export function SignupScreen({ navigation }) {
                 onChangeText={setEmail}
                 autoCapitalize="none"
                 keyboardType="email-address"
+            />
+
+            <TextInput
+                placeholder="John"
+                value={firstName}
+                onChangeText={setFirstName}
+                autoCapitalize="none"
+            />
+
+            <TextInput
+                placeholder="Doe"
+                value={lastName}
+                onChangeText={setLastName}
+                autoCapitalize="none"
             />
 
             <TextInput

@@ -8,11 +8,9 @@ import {
     Alert,
 } from 'react-native';
 
-import {sty} from "../styles";
-
-import {
-    NAV_SIGNUP,
-} from "../consts";
+import { apiFetch } from "../utils";
+import { sty } from "../styles";
+import { NAV_SIGNUP } from "../consts";
 
 function getLoginErrorMessage(code) {
   switch (code) {
@@ -37,6 +35,7 @@ export function LoginScreen({ navigation }) {
     const [password, setPassword] = useState("");
 
     const onLogin = async () => {
+
         const trimmedEmail = email.trim();
 
         if (!trimmedEmail || !password) {
@@ -46,8 +45,16 @@ export function LoginScreen({ navigation }) {
 
         try {
             await signInWithEmailAndPassword(auth, trimmedEmail, password);
+            // Ensures user exists in back-end.
+            const res = await apiFetch("/users/me");
+            // TODO this may be an inappropriate response to not finding a user in the back-end
+            // considering the user must exist within firebase.
+            // Different behaviour should be looked into.
+            if (!res.ok) throw new Error("User not found in backend!");
+
             // No navigation needed. App.js auth-gate will switch screens automatically.
         } catch (error) {
+            console.error("Login Failed", getLoginErrorMessage(error.code));
             Alert.alert("Login Failed", getLoginErrorMessage(error.code));
         }
     };
