@@ -97,14 +97,14 @@ export function SignupScreen({ navigation }) {
             />
 
             <TextInput
-                placeholder="John"
+                placeholder="First Name"
                 value={firstName}
                 onChangeText={setFirstName}
                 autoCapitalize="none"
             />
 
             <TextInput
-                placeholder="Doe"
+                placeholder="Last Name"
                 value={lastName}
                 onChangeText={setLastName}
                 autoCapitalize="none"
