@@ -15,6 +15,23 @@ const WEEKDAYS = [
   { label: "Saturday", value: 6 },
 ];
 
+const TASKS = [
+  { id: 1, name: "nails1" },
+  { id: 2, name: "nails2" },
+  { id: 3, name: "nails3" },
+];
+
+const EMPLOYEES = [
+  { id: 1, name: "Anna" },
+  { id: 2, name: "John" },
+  { id: 3, name: "Mike" },
+];
+
+const EMPLOYEE_OPTIONS = {
+  ANY: "ANY",
+  SPECIFIC: "SPECIFIC",
+};
+
 // examples availabilities for now (lenght in seconds)
 const AVAILABILITIES = [
   { week_day: 1, starting_hour: 9, starting_minute: 0, length: 1800 },
@@ -46,19 +63,20 @@ function getAvailableTimesForDay(day) {
   return slots;
 }
 
-// must edit once backend and appointment booking is functional
-function buildAppointment(day, time) {
+function buildAppointment(day, time, taskId, employeePreference, employeeId) {
   return {
     uuid: null,
-    appointment_state_id: APPOINTMENT_STATE_UNCONFIRMED, // edit later
-    employee_id: null,
+    appointment_state_id: APPOINTMENT_STATE_UNCONFIRMED,
+    employee_id:
+      employeePreference === EMPLOYEE_OPTIONS.ANY ? null : employeeId,
+    employee_preference: employeePreference,
     week_day: day,
     start_time: time,
     length_minutes: APPOINTMENT_LENGTH_MINUTES,
     date_created: new Date().toISOString(),
     last_modified: null,
-    task_id: null, // need to add task selection to booking flow
-    user_id: null, // get from auth context
+    task_id: taskId,
+    user_id: null,
   };
 }
 
@@ -68,8 +86,9 @@ function formatTime(totalMinutes) {
 
   return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 }
+
 async function createAppointmentRequest(appointment) {
-  console.log("savingg", appointment);
+  console.log("saving", appointment);
   return appointment;
 }
 
@@ -78,6 +97,11 @@ export function BookingScreen() {
   const [selectedTime, setSelectedTime] = useState(
     getAvailableTimesForDay(1)[0] || "",
   );
+  const [selectedTaskId, setSelectedTaskId] = useState(TASKS[0].id);
+  const [employeePreference, setEmployeePreference] = useState(
+    EMPLOYEE_OPTIONS.ANY,
+  );
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState(EMPLOYEES[0].id);
 
   const availableTimes = useMemo(() => {
     return getAvailableTimesForDay(selectedDay);
@@ -96,7 +120,27 @@ export function BookingScreen() {
       return;
     }
 
-    const appointment = buildAppointment(selectedDay, selectedTime);
+    if (!selectedTaskId) {
+      Alert.alert("No task selected", "Please select a task.");
+      return;
+    }
+
+    if (
+      employeePreference === EMPLOYEE_OPTIONS.SPECIFIC &&
+      !selectedEmployeeId
+    ) {
+      Alert.alert("No employee selected", "Please select an employee.");
+      return;
+    }
+
+    const appointment = buildAppointment(
+      selectedDay,
+      selectedTime,
+      selectedTaskId,
+      employeePreference,
+      selectedEmployeeId,
+    );
+
     await createAppointmentRequest(appointment);
 
     Alert.alert("Appointment Created", JSON.stringify(appointment, null, 2));
@@ -104,6 +148,46 @@ export function BookingScreen() {
 
   return (
     <View>
+      <Text>Select a task</Text>
+      <Picker
+        selectedValue={selectedTaskId}
+        onValueChange={(value) => setSelectedTaskId(value)}
+      >
+        {TASKS.map((task) => (
+          <Picker.Item key={task.id} label={task.name} value={task.id} />
+        ))}
+      </Picker>
+
+      <Text>Choose employee preference</Text>
+      <Picker
+        selectedValue={employeePreference}
+        onValueChange={(value) => setEmployeePreference(value)}
+      >
+        <Picker.Item label="Any employee" value={EMPLOYEE_OPTIONS.ANY} />
+        <Picker.Item
+          label="Specific employee"
+          value={EMPLOYEE_OPTIONS.SPECIFIC}
+        />
+      </Picker>
+
+      {employeePreference === EMPLOYEE_OPTIONS.SPECIFIC && (
+        <>
+          <Text>Select an employee</Text>
+          <Picker
+            selectedValue={selectedEmployeeId}
+            onValueChange={(value) => setSelectedEmployeeId(value)}
+          >
+            {EMPLOYEES.map((employee) => (
+              <Picker.Item
+                key={employee.id}
+                label={employee.name}
+                value={employee.id}
+              />
+            ))}
+          </Picker>
+        </>
+      )}
+
       <Text>Select a day</Text>
       <Picker
         selectedValue={selectedDay}
