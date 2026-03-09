@@ -1,6 +1,6 @@
 # Salon App
 
-This project is a react native project.
+This project is a react native project, this project works more-or-less as the front-end. The source for the backend can be found [here](https://github.com/Some1and2-XC/salon-app-backend/).
 
 ## Testing & Execution
 ```sh
