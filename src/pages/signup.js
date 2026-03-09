@@ -85,7 +85,7 @@ export function SignupScreen({ navigation }) {
 
     return (
         <View style={ sty.container }>
-            <Text style={ sty.h1 } >Create Account</Text>
+            <Text style={ sty.h1 }>Create Account</Text>
             {/* <Text style={ sty.h1 } >Sign up to continue</Text> */}
 
             <TextInput
