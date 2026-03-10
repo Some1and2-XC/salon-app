@@ -20,6 +20,7 @@ import { CheckinConfirmScreen } from "./pages/checkinConfirm";
 import { HomeScreen } from "./pages/home";
 import { LoginScreen } from "./pages/login";
 import { SignupScreen } from "./pages/signup";
+import { BarcodeScannerScreen } from "./pages/barcodeScanner";
 
 const Stack = createStackNavigator();
 
@@ -31,6 +32,7 @@ import {
     NAV_HOME,
     NAV_LOGIN,
     NAV_SIGNUP,
+    NAV_BARCODE_SCANNER,
 } from "./consts";
 
 export default function App() {
@@ -68,6 +70,7 @@ export default function App() {
         <Stack.Screen name={ NAV_HOME } component={ HomeScreen } />
         <Stack.Screen name={ NAV_LOGIN } component={ LoginScreen } />
         <Stack.Screen name={ NAV_SIGNUP } component={ SignupScreen } />
+        <Stack.Screen name={ NAV_BARCODE_SCANNER } component={BarcodeScannerScreen} />
 
         {/*
 
