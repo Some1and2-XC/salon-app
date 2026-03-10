@@ -8,6 +8,7 @@ import {sty} from "../styles";
 import {
     NAV_CHECKIN,
     NAV_BOOKING,
+    NAV_LOGIN,
 } from "../consts";
 
 export function HomeScreen({ navigation }) {
@@ -15,6 +16,7 @@ export function HomeScreen({ navigation }) {
     const handleLogout = async () => {
         try {
             await signOut(auth);
+            navigation.navigate(NAV_LOGIN);
         } catch (error) {
             console.log("Logout error:", error);
         }
