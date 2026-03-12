@@ -9,7 +9,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import { auth } from "./firebaseConfig";
 
-import { User } from "./db/index";
 import { sty } from "./styles";
 
 // Screen imports
@@ -54,8 +53,8 @@ export default function App() {
   // Sets the initial route.
   // Thought should be put into if the default unauthenticated screen should be the login screen
   // or signup (I think login is a sensible default).
-  const initialRoute: string = user ? NAV_HOME : NAV_LOGIN;
-  // const initialRoute: string = NAV_EXAMPLE_HOME; // for debugging and dev purposes
+  // const initialRoute: string = user ? NAV_HOME : NAV_LOGIN;
+  const initialRoute: string = NAV_EXAMPLE_HOME; // for debugging and dev purposes
 
   return (
     <NavigationContainer>
