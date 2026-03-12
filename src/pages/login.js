@@ -29,6 +29,10 @@ function getLoginErrorMessage(code) {
   }
 }
 
+import {
+    NAV_HOME,
+} from "../consts";
+
 export function LoginScreen({ navigation }) {
 
     const [email, setEmail] = useState("");
@@ -51,6 +55,7 @@ export function LoginScreen({ navigation }) {
             // considering the user must exist within firebase.
             // Different behaviour should be looked into.
             if (!res.ok) throw new Error("User not found in backend!");
+            navigation.navigate(NAV_HOME);
 
             // No navigation needed. App.js auth-gate will switch screens automatically.
         } catch (error) {

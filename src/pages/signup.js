@@ -27,6 +27,10 @@ function getSignUpErrorMessage(code) {
    }
 }
 
+import {
+    NAV_HOME,
+} from "../consts";
+
 export function SignupScreen({ navigation }) {
     const [email, setEmail] = useState("");
     const [firstName, setFirstName] = useState("");
@@ -74,9 +78,7 @@ export function SignupScreen({ navigation }) {
             if (!res.ok) throw new Error("Failed to create user in backend!");
 
             Alert.alert("Success", "Account created successfully!");
-            // App.js auth-gate will show Home after signup automatically.
-            // If you prefer returning to login, uncomment:
-            // navigation.navigate(NAV_LOGIN);
+            navigation.navigate(NAV_HOME);
         } catch (error) {
             console.error("Sign Up Failed", getSignUpErrorMessage(error.code));
             Alert.alert("Sign Up Failed", getSignUpErrorMessage(error.code));

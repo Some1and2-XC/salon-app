@@ -54,14 +54,20 @@ export default function App() {
   // Sets the initial route.
   // Thought should be put into if the default unauthenticated screen should be the login screen
   // or signup (I think login is a sensible default).
-  // const initialRoute: string = user ? NAV_EXAMPLE_HOME : NAV_LOGIN;
-  const initialRoute: string = NAV_EXAMPLE_HOME; // for debugging and dev purposes
+  const initialRoute: string = user ? NAV_HOME : NAV_LOGIN;
+  // const initialRoute: string = NAV_EXAMPLE_HOME; // for debugging and dev purposes
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={ initialRoute }>
+      <Stack.Navigator initialRouteName={ initialRoute }
+        screenOptions={{ headerShown: false }}
+      >
 
-        <Stack.Screen name={ NAV_EXAMPLE_HOME } component={ ExampleHome } />
+        <Stack.Screen
+            name={ NAV_EXAMPLE_HOME }
+            component={ ExampleHome }
+            // options={{ headerShown: false }}
+            />
         <Stack.Screen name={ NAV_BOOKING } component={ BookingScreen } />
         <Stack.Screen name={ NAV_CHECKIN } component={ CheckinScreen } />
         <Stack.Screen name={ NAV_CHECKINCONFIRM } component={ CheckinConfirmScreen } />
