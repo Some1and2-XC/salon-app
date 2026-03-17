@@ -16,6 +16,19 @@ const WEEKDAYS = [
     { label: "Saturday", value: 6 },
 ];
 
+const EMPLOYEE_OPTIONS = {
+    ANY: "ANY",
+    SPECIFIC: "SPECIFIC",
+};
+
+const showAlert = (title, message) => {
+    if (typeof window !== "undefined") {
+        showAlert(`${title}: ${message}`);
+    } else {
+        showAlert(title, message);
+    }
+};
+
 async function fetchTasks() {
     const response = await fetch("https://csci4176.t-dy.com/tasks");
 
@@ -43,37 +56,45 @@ async function fetchEmployees(user) {
     console.log("employees from backend:", data); // for testing, remove in production
     return data.employees || [];
 }
+async function fetchAvailabilities(user) {
+    const token = await user.getIdToken();
 
-const EMPLOYEE_OPTIONS = {
-    ANY: "ANY",
-    SPECIFIC: "SPECIFIC",
-};
+    const response = await fetch(`https://csci4176.t-dy.com/availability`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
 
-// examples availabilities for now (lenght in seconds) need to pull from backend in future
-const AVAILABILITIES = [
-    { week_day: 1, starting_hour: 9, starting_minute: 0, length: 1800 },
-    { week_day: 1, starting_hour: 13, starting_minute: 0, length: 3600 },
-    { week_day: 2, starting_hour: 10, starting_minute: 0, length: 7200 },
-    { week_day: 3, starting_hour: 11, starting_minute: 0, length: 1800 },
-    { week_day: 4, starting_hour: 9, starting_minute: 30, length: 3600 },
-    { week_day: 5, starting_hour: 12, starting_minute: 0, length: 3600 },
-];
+    if (!response.ok) {
+        throw new Error("failed to fetch availability");
+    }
 
-function getAvailableTimesForDay(day) {
-    const dayBlocks = AVAILABILITIES.filter((block) => block.week_day === day);
+    const data = await response.json();
+    console.log("availability from backend:", data);
+    return data || []; // returns array directly, not data.availability
+}
+
+function getAvailableTimesForDay(day, availabilities) {
     const slots = [];
 
-    for (const block of dayBlocks) {
-        const startMinutes = block.starting_hour * 60 + block.starting_minute;
-        const blockLengthMinutes = block.length / 60;
+    for (const slot of availabilities) {
+        const start = new Date(slot.start_time);
+        const end = new Date(slot.end_time);
 
-        const slotCount = Math.floor(
-            blockLengthMinutes / APPOINTMENT_LENGTH_MINUTES,
-        );
+        // check if this slot falls on the selected weekday
+        if (start.getDay() !== day) continue;
 
-        for (let i = 0; i < slotCount; i++) {
-            const slotStart = startMinutes + i * APPOINTMENT_LENGTH_MINUTES;
-            slots.push(formatTime(slotStart));
+        // generate 30-min appointment slots within this availability window
+        let current = start.getTime();
+        while (
+            current + APPOINTMENT_LENGTH_MINUTES * 60 * 1000 <=
+            end.getTime()
+        ) {
+            const d = new Date(current);
+            const hours = d.getHours();
+            const minutes = d.getMinutes();
+            slots.push(formatTime(hours * 60 + minutes));
+            current += APPOINTMENT_LENGTH_MINUTES * 60 * 1000;
         }
     }
 
@@ -128,74 +149,77 @@ async function createAppointmentRequest(appointment, user) {
 export function BookingScreen({ user }) {
     const [tasks, setTasks] = useState([]);
     const [selectedTaskId, setSelectedTaskId] = useState("");
-
     const [employees, setEmployees] = useState([]);
     const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
-
+    const [availabilities, setAvailabilities] = useState([]);
     const [selectedDay, setSelectedDay] = useState(1);
-    const [selectedTime, setSelectedTime] = useState(
-        getAvailableTimesForDay(1)[0] || "",
-    );
+    const [selectedTime, setSelectedTime] = useState("");
     const [employeePreference, setEmployeePreference] = useState(
         EMPLOYEE_OPTIONS.ANY,
     );
 
     const availableTimes = useMemo(() => {
-        return getAvailableTimesForDay(selectedDay);
-    }, [selectedDay]);
+        return getAvailableTimesForDay(selectedDay, availabilities);
+    }, [selectedDay, availabilities]);
 
-    const handleDayChange = (day) => {
-        setSelectedDay(day);
+    // update selectedTime when availableTimes changes
+    useEffect(() => {
+        setSelectedTime(availableTimes.length > 0 ? availableTimes[0] : "");
+    }, [availableTimes]);
 
-        const nextTimes = getAvailableTimesForDay(day);
-        setSelectedTime(nextTimes.length > 0 ? nextTimes[0] : "");
-    };
-    if (!user) {
-        return <Text>Loading...</Text>;
-    }
     useEffect(() => {
         fetchTasks()
             .then((data) => {
                 setTasks(data);
-                if (data.length > 0) {
-                    setSelectedTaskId(data[0].id);
-                }
+                if (data.length > 0) setSelectedTaskId(data[0].id);
             })
             .catch(console.error);
     }, []);
 
     useEffect(() => {
         if (!user) return;
-
         fetchEmployees(user)
             .then((data) => {
                 setEmployees(data);
-
-                if (data.length > 0) {
-                    setSelectedEmployeeId(data[0].id);
-                }
+                if (data.length > 0) setSelectedEmployeeId(data[0].id);
             })
-            .catch((err) => {
-                console.error("Error loading employees:", err);
-            });
+            .catch(console.error);
     }, [user]);
+
+    useEffect(() => {
+        if (!user) return;
+        fetchAvailabilities(user)
+            .then((data) => setAvailabilities(data))
+            .catch(console.error);
+    }, [user]);
+
+    if (!user) {
+        return <Text>Loading...</Text>;
+    }
+
+    const handleDayChange = (day) => {
+        setSelectedDay(day);
+        const nextTimes = getAvailableTimesForDay(day, availabilities);
+        setSelectedTime(nextTimes.length > 0 ? nextTimes[0] : "");
+    };
 
     const handleCreateAppointment = async () => {
         if (!selectedTime) {
-            Alert.alert("No time selected", "Please select an available time.");
+            showAlert("No time selected", "Please select an available time.");
             return;
         }
-
         if (!selectedTaskId) {
-            Alert.alert("No task selected", "Please select a task.");
+            showAlert("No task selected", "Please select a task.");
             return;
         }
-
         if (
             employeePreference === EMPLOYEE_OPTIONS.SPECIFIC &&
             !selectedEmployeeId
         ) {
-            Alert.alert("No employee selected", "Please select an employee.");
+            showAlert(
+                "No employee selected",
+                "Please select an employee or choose any.",
+            );
             return;
         }
 
@@ -209,24 +233,20 @@ export function BookingScreen({ user }) {
 
         try {
             await createAppointmentRequest(appointment, user);
-            Alert.alert("Success", "Your appointment has been booked.");
+            showAlert("Success", "Your appointment has been booked.");
         } catch (err) {
             console.error(err);
-
             if (err.message.includes("401") || err.message.includes("403")) {
-                Alert.alert("Session Expired", "Please log in again.");
+                showAlert("Session Expired", "Please log in again.");
             } else if (err.message.includes("409")) {
-                Alert.alert(
-                    "Time Unavailable",
-                    "That slot has already been booked. Please choose another time.",
-                );
+                showAlert("Time Unavailable", "Please choose another time.");
             } else if (err.message.includes("Network request failed")) {
-                Alert.alert(
+                showAlert(
                     "No Connection",
                     "Check your internet and try again.",
                 );
             } else {
-                Alert.alert(
+                showAlert(
                     "Error",
                     err.message || "Failed to create appointment.",
                 );
