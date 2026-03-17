@@ -4,8 +4,6 @@ import { View, Text, Button, Alert, Platform } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 
 const APPOINTMENT_STATE_UNCONFIRMED = "APPOINTMENT_STATE_UNCONFIRMED";
-const APPOINTMENT_LENGTH_MINUTES = 30;
-
 const WEEKDAYS = [
     { label: "Sunday", value: 0 },
     { label: "Monday", value: 1 },
@@ -71,10 +69,10 @@ async function fetchAvailabilities(user) {
 
     const data = await response.json();
     console.log("availability from backend:", data);
-    return data || []; // returns array directly, not data.availability
+    return data || [];
 }
 
-function getAvailableTimesForDay(day, availabilities) {
+function getAvailableTimesForDay(day, availabilities, appointmentLength) {
     const slots = [];
 
     for (const slot of availabilities) {
@@ -84,24 +82,28 @@ function getAvailableTimesForDay(day, availabilities) {
         // check if this slot falls on the selected weekday
         if (start.getDay() !== day) continue;
 
-        // generate 30-min appointment slots within this availability window
+        // generate 15 min appointment slots within this availability window
         let current = start.getTime();
-        while (
-            current + APPOINTMENT_LENGTH_MINUTES * 60 * 1000 <=
-            end.getTime()
-        ) {
+        while (current + appointmentLength * 60 * 1000 <= end.getTime()) {
             const d = new Date(current);
             const hours = d.getHours();
             const minutes = d.getMinutes();
             slots.push(formatTime(hours * 60 + minutes));
-            current += APPOINTMENT_LENGTH_MINUTES * 60 * 1000;
+            current += appointmentLength * 60 * 1000;
         }
     }
 
     return slots;
 }
 
-function buildAppointment(day, time, taskId, employeePreference, employeeId) {
+function buildAppointment(
+    day,
+    time,
+    taskId,
+    employeePreference,
+    employeeId,
+    appointmentLength,
+) {
     return {
         uuid: null, // backend will assign
         appointment_state_id: APPOINTMENT_STATE_UNCONFIRMED,
@@ -110,7 +112,7 @@ function buildAppointment(day, time, taskId, employeePreference, employeeId) {
         employee_preference: employeePreference,
         week_day: day,
         start_time: time,
-        length_minutes: APPOINTMENT_LENGTH_MINUTES,
+        length_minutes: appointmentLength,
         date_created: new Date().toISOString(),
         last_modified: null,
         task_id: taskId,
@@ -152,15 +154,22 @@ export function BookingScreen({ user }) {
     const [employees, setEmployees] = useState([]);
     const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
     const [availabilities, setAvailabilities] = useState([]);
-    const [selectedDay, setSelectedDay] = useState(1);
+    const [selectedDay, setSelectedDay] = useState("");
     const [selectedTime, setSelectedTime] = useState("");
     const [employeePreference, setEmployeePreference] = useState(
         EMPLOYEE_OPTIONS.ANY,
     );
+    const selectedTask = tasks.find((t) => t.id === selectedTaskId);
+
+    const appointmentLength = (selectedTask?.time_for_booking || 900) / 60;
 
     const availableTimes = useMemo(() => {
-        return getAvailableTimesForDay(selectedDay, availabilities);
-    }, [selectedDay, availabilities]);
+        return getAvailableTimesForDay(
+            selectedDay,
+            availabilities,
+            appointmentLength,
+        );
+    }, [selectedDay, availabilities, appointmentLength]);
 
     // update selectedTime when availableTimes changes
     useEffect(() => {
@@ -199,7 +208,11 @@ export function BookingScreen({ user }) {
 
     const handleDayChange = (day) => {
         setSelectedDay(day);
-        const nextTimes = getAvailableTimesForDay(day, availabilities);
+        const nextTimes = getAvailableTimesForDay(
+            day,
+            availabilities,
+            appointmentLength,
+        );
         setSelectedTime(nextTimes.length > 0 ? nextTimes[0] : "");
     };
 
@@ -229,6 +242,7 @@ export function BookingScreen({ user }) {
             selectedTaskId,
             employeePreference,
             selectedEmployeeId,
+            appointmentLength,
         );
 
         try {
@@ -308,8 +322,12 @@ export function BookingScreen({ user }) {
             <Text>Select a day</Text>
             <Picker
                 selectedValue={selectedDay}
-                onValueChange={(value) => handleDayChange(value)}
+                onValueChange={(value) => {
+                    if (value === "") return;
+                    handleDayChange(value);
+                }}
             >
+                <Picker.Item label="Select a day" value="" />
                 {WEEKDAYS.map((day) => (
                     <Picker.Item
                         key={day.value}
