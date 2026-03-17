@@ -38,7 +38,7 @@ async function fetchEmployees(user) {
                 Authorization: `Bearer ${token}`,
             },
         },
-    ); // replace with actual user id auth
+    );
     if (!response.ok) {
         throw new Error("failed to fetch employees");
     }
@@ -52,7 +52,7 @@ const EMPLOYEE_OPTIONS = {
     SPECIFIC: "SPECIFIC",
 };
 
-// examples availabilities for now (lenght in seconds) need to pull
+// examples availabilities for now (lenght in seconds) need to pull from backend in future
 const AVAILABILITIES = [
     { week_day: 1, starting_hour: 9, starting_minute: 0, length: 1800 },
     { week_day: 1, starting_hour: 13, starting_minute: 0, length: 3600 },
