@@ -1,16 +1,10 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { View, Text, Button, Alert } from "react-native";
+// npx expo install @react-native-picker/picker
 import { Picker } from "@react-native-picker/picker";
 
 const APPOINTMENT_STATE_UNCONFIRMED = "APPOINTMENT_STATE_UNCONFIRMED";
 const APPOINTMENT_LENGTH_MINUTES = 30;
-
-const mockUser = {
-    uid: "test-user-123",
-    email: "test@example.com",
-};
-
-const user = mockUser; // bypass Firebase auth
 
 const WEEKDAYS = [
     { label: "Sunday", value: 0 },
@@ -23,24 +17,34 @@ const WEEKDAYS = [
 ];
 
 async function fetchTasks() {
-    const response = await fetch("https://csci4176.t-dy.com/tasks"); // replace with actual endpoint
+    const response = await fetch("https://csci4176.t-dy.com/tasks");
+
     if (!response.ok) {
         throw new Error("failed to fetch tasks");
     }
+
     const data = await response.json();
-    console.log("tasks from backend:", data); // for testing, remove in production
-    return data.tasks;
+    console.log("tasks from backend:", data);
+
+    return data.tasks || [];
 }
-async function fetchEmployees() {
+async function fetchEmployees(user) {
+    const token = await user.getIdToken();
+
     const response = await fetch(
-        "https://csci4176.t-dy.com/employees" + user.uid,
+        `https://csci4176.t-dy.com/employees/${user.uid}`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        },
     ); // replace with actual user id auth
     if (!response.ok) {
         throw new Error("failed to fetch employees");
     }
     const data = await response.json();
     console.log("employees from backend:", data); // for testing, remove in production
-    return data.employees;
+    return data.employees || [];
 }
 
 const EMPLOYEE_OPTIONS = {
@@ -79,9 +83,16 @@ function getAvailableTimesForDay(day) {
     return slots;
 }
 
-function buildAppointment(day, time, taskId, employeePreference, employeeId) {
+function buildAppointment(
+    user,
+    day,
+    time,
+    taskId,
+    employeePreference,
+    employeeId,
+) {
     return {
-        uuid: null,
+        uuid: null, // backend will assign
         appointment_state_id: APPOINTMENT_STATE_UNCONFIRMED,
         employee_id:
             employeePreference === EMPLOYEE_OPTIONS.ANY ? null : employeeId,
@@ -92,7 +103,7 @@ function buildAppointment(day, time, taskId, employeePreference, employeeId) {
         date_created: new Date().toISOString(),
         last_modified: null,
         task_id: taskId,
-        user_id: null,
+        user_id: user.uid,
     };
 }
 
@@ -103,15 +114,20 @@ function formatTime(totalMinutes) {
     return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 }
 
-async function createAppointmentRequest(appointment) {
+async function createAppointmentRequest(appointment, user) {
+    const token = await user.getIdToken();
     console.log("Creating appointment with data:", appointment); // for testing, remove in production
-    const response = await fetch("https://csci4176.t-dy.com/appointments", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
+    const response = await fetch(
+        `https://csci4176.t-dy.com/appointments/${user.uid}`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(appointment),
         },
-        body: JSON.stringify(appointment),
-    });
+    );
 
     if (!response.ok) {
         throw new Error("Failed to create appointment");
@@ -120,7 +136,10 @@ async function createAppointmentRequest(appointment) {
     return appointment;
 }
 
-export function BookingScreen() {
+export function BookingScreen({ user }) {
+    if (!user) {
+        return <Text>Loading...</Text>;
+    }
     const [tasks, setTasks] = useState([]);
     const [selectedTaskId, setSelectedTaskId] = useState(null);
 
@@ -156,6 +175,22 @@ export function BookingScreen() {
             .catch(console.error);
     }, []);
 
+    useEffect(() => {
+        if (!user) return;
+
+        fetchEmployees(user)
+            .then((data) => {
+                setEmployees(data);
+
+                if (data.length > 0) {
+                    setSelectedEmployeeId(data[0].id);
+                }
+            })
+            .catch((err) => {
+                console.error("Error loading employees:", err);
+            });
+    }, [user]);
+
     const handleCreateAppointment = async () => {
         if (!selectedTime) {
             Alert.alert("No time selected", "Please select an available time.");
@@ -176,6 +211,7 @@ export function BookingScreen() {
         }
 
         const appointment = buildAppointment(
+            user,
             selectedDay,
             selectedTime,
             selectedTaskId,
@@ -183,7 +219,7 @@ export function BookingScreen() {
             selectedEmployeeId,
         );
 
-        await createAppointmentRequest(appointment);
+        await createAppointmentRequest(appointment, user);
 
         Alert.alert(
             "Appointment Created",
@@ -198,13 +234,14 @@ export function BookingScreen() {
                 selectedValue={selectedTaskId}
                 onValueChange={(value) => setSelectedTaskId(value)}
             >
-                {tasks.map((task) => (
-                    <Picker.Item
-                        key={task.id}
-                        label={task.name}
-                        value={task.id}
-                    />
-                ))}
+                {Array.isArray(tasks) &&
+                    tasks.map((task) => (
+                        <Picker.Item
+                            key={task.id}
+                            label={task.name}
+                            value={task.id}
+                        />
+                    ))}
             </Picker>
 
             <Text>Choose employee preference</Text>
@@ -229,7 +266,7 @@ export function BookingScreen() {
                         selectedValue={selectedEmployeeId}
                         onValueChange={(value) => setSelectedEmployeeId(value)}
                     >
-                        {EMPLOYEES.map((employee) => (
+                        {employees.map((employee) => (
                             <Picker.Item
                                 key={employee.id}
                                 label={employee.name}
