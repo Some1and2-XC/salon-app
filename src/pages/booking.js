@@ -20,6 +20,7 @@ async function fetchTasks() {
     const response = await fetch("https://csci4176.t-dy.com/tasks");
 
     if (!response.ok) {
+        console.log(user.uid);
         throw new Error("failed to fetch tasks");
     }
 
