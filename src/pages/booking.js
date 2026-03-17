@@ -1,3 +1,10 @@
+/*
+still to implement:
+disable create appointment button until all selections are made
+prevent multiple booking clicks 
+loading screen
+*/
+
 import React, { useMemo, useState, useEffect } from "react";
 import { View, Text, Button, Alert, Platform } from "react-native";
 // npx expo install @react-native-picker/picker
@@ -82,7 +89,6 @@ function getAvailableTimesForDay(day, availabilities, appointmentLength) {
         // check if this slot falls on the selected weekday
         if (start.getDay() !== day) continue;
 
-        // generate 15 min appointment slots within this availability window
         let current = start.getTime();
         while (current + appointmentLength * 60 * 1000 <= end.getTime()) {
             const d = new Date(current);
@@ -105,7 +111,7 @@ function buildAppointment(
     appointmentLength,
 ) {
     return {
-        uuid: null, // backend will assign
+        uuid: null,
         appointment_state_id: APPOINTMENT_STATE_UNCONFIRMED,
         employee_id:
             employeePreference === EMPLOYEE_OPTIONS.ANY ? null : employeeId,
