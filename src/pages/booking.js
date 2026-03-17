@@ -1,9 +1,16 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { View, Text, Button, Alert } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 
 const APPOINTMENT_STATE_UNCONFIRMED = "APPOINTMENT_STATE_UNCONFIRMED";
 const APPOINTMENT_LENGTH_MINUTES = 30;
+
+const mockUser = {
+    uid: "test-user-123",
+    email: "test@example.com",
+};
+
+const user = mockUser; // bypass Firebase auth
 
 const WEEKDAYS = [
     { label: "Sunday", value: 0 },
@@ -15,24 +22,33 @@ const WEEKDAYS = [
     { label: "Saturday", value: 6 },
 ];
 
-const TASKS = [
-    { id: 1, name: "nails1" },
-    { id: 2, name: "nails2" },
-    { id: 3, name: "nails3" },
-];
-
-const EMPLOYEES = [
-    { id: 1, name: "Anna" },
-    { id: 2, name: "John" },
-    { id: 3, name: "Mike" },
-];
+async function fetchTasks() {
+    const response = await fetch("https://csci4176.t-dy.com/tasks"); // replace with actual endpoint
+    if (!response.ok) {
+        throw new Error("failed to fetch tasks");
+    }
+    const data = await response.json();
+    console.log("tasks from backend:", data); // for testing, remove in production
+    return data.tasks;
+}
+async function fetchEmployees() {
+    const response = await fetch(
+        "https://csci4176.t-dy.com/employees" + user.uid,
+    ); // replace with actual user id auth
+    if (!response.ok) {
+        throw new Error("failed to fetch employees");
+    }
+    const data = await response.json();
+    console.log("employees from backend:", data); // for testing, remove in production
+    return data.employees;
+}
 
 const EMPLOYEE_OPTIONS = {
     ANY: "ANY",
     SPECIFIC: "SPECIFIC",
 };
 
-// examples availabilities for now (lenght in seconds)
+// examples availabilities for now (lenght in seconds) need to pull
 const AVAILABILITIES = [
     { week_day: 1, starting_hour: 9, starting_minute: 0, length: 1800 },
     { week_day: 1, starting_hour: 13, starting_minute: 0, length: 3600 },
@@ -88,21 +104,35 @@ function formatTime(totalMinutes) {
 }
 
 async function createAppointmentRequest(appointment) {
-    console.log("saving", appointment);
+    console.log("Creating appointment with data:", appointment); // for testing, remove in production
+    const response = await fetch("https://csci4176.t-dy.com/appointments", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(appointment),
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to create appointment");
+    }
+
     return appointment;
 }
 
 export function BookingScreen() {
+    const [tasks, setTasks] = useState([]);
+    const [selectedTaskId, setSelectedTaskId] = useState(null);
+
+    const [employees, setEmployees] = useState([]);
+    const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+
     const [selectedDay, setSelectedDay] = useState(1);
     const [selectedTime, setSelectedTime] = useState(
         getAvailableTimesForDay(1)[0] || "",
     );
-    const [selectedTaskId, setSelectedTaskId] = useState(TASKS[0].id);
     const [employeePreference, setEmployeePreference] = useState(
         EMPLOYEE_OPTIONS.ANY,
-    );
-    const [selectedEmployeeId, setSelectedEmployeeId] = useState(
-        EMPLOYEES[0].id,
     );
 
     const availableTimes = useMemo(() => {
@@ -115,6 +145,16 @@ export function BookingScreen() {
         const nextTimes = getAvailableTimesForDay(day);
         setSelectedTime(nextTimes.length > 0 ? nextTimes[0] : "");
     };
+    useEffect(() => {
+        fetchTasks()
+            .then((data) => {
+                setTasks(data);
+                if (data.length > 0) {
+                    setSelectedTaskId(data[0].id);
+                }
+            })
+            .catch(console.error);
+    }, []);
 
     const handleCreateAppointment = async () => {
         if (!selectedTime) {
@@ -158,7 +198,7 @@ export function BookingScreen() {
                 selectedValue={selectedTaskId}
                 onValueChange={(value) => setSelectedTaskId(value)}
             >
-                {TASKS.map((task) => (
+                {tasks.map((task) => (
                     <Picker.Item
                         key={task.id}
                         label={task.name}
