@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState, useEffect } from "react";
+import { StyleSheet, Text, View } from "react-native";
 
-import { StatusBar } from 'expo-status-bar';
-import { User as FBUser, onAuthStateChanged } from 'firebase/auth';
+import { StatusBar } from "expo-status-bar";
+import { User as FBUser, onAuthStateChanged } from "firebase/auth";
 
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 
 import { auth } from "./firebaseConfig";
 
@@ -33,48 +33,52 @@ import {
 } from "./consts";
 
 export default function App() {
+    const [user, setUser] = useState<FBUser | null>(null);
+    const [authReady, setAuthReady] = useState(false);
 
-  const [user, setUser] = useState<FBUser | null>(null);
-  const [authReady, setAuthReady] = useState(false);
+    useEffect(() => {
+        const unsub = onAuthStateChanged(auth, (user) => {
+            // const uid = user.uid;
+            setUser(user);
+            setAuthReady(true);
+        });
+        return unsub;
+    }, []);
 
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      // const uid = user.uid;
-      setUser(user);
-      setAuthReady(true);
-    });
-    return unsub;
-  }, []);
+    // Doesn't render until we know if the user is logged in or not.
+    // May be replaced with a spinner in the future.
+    if (!authReady) return null;
 
-  // Doesn't render until we know if the user is logged in or not.
-  // May be replaced with a spinner in the future.
-  if (!authReady) return null;
+    // Sets the initial route.
+    // Thought should be put into if the default unauthenticated screen should be the login screen
+    // or signup (I think login is a sensible default).
+    // const initialRoute: string = user ? NAV_HOME : NAV_LOGIN;
+    const initialRoute: string = NAV_EXAMPLE_HOME; // for debugging and dev purposes
 
-  // Sets the initial route.
-  // Thought should be put into if the default unauthenticated screen should be the login screen
-  // or signup (I think login is a sensible default).
-  // const initialRoute: string = user ? NAV_HOME : NAV_LOGIN;
-  const initialRoute: string = NAV_EXAMPLE_HOME; // for debugging and dev purposes
+    return (
+        <NavigationContainer>
+            <Stack.Navigator
+                initialRouteName={initialRoute}
+                screenOptions={{ headerShown: false }}
+            >
+                <Stack.Screen
+                    name={NAV_EXAMPLE_HOME}
+                    component={ExampleHome}
+                    // options={{ headerShown: false }}
+                />
+                <Stack.Screen name={NAV_BOOKING}>
+                    {(props) => <BookingScreen {...props} user={user} />}
+                </Stack.Screen>
+                <Stack.Screen name={NAV_CHECKIN} component={CheckinScreen} />
+                <Stack.Screen
+                    name={NAV_CHECKINCONFIRM}
+                    component={CheckinConfirmScreen}
+                />
+                <Stack.Screen name={NAV_HOME} component={HomeScreen} />
+                <Stack.Screen name={NAV_LOGIN} component={LoginScreen} />
+                <Stack.Screen name={NAV_SIGNUP} component={SignupScreen} />
 
-  return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName={ initialRoute }
-        screenOptions={{ headerShown: false }}
-      >
-
-        <Stack.Screen
-            name={ NAV_EXAMPLE_HOME }
-            component={ ExampleHome }
-            // options={{ headerShown: false }}
-            />
-        <Stack.Screen name={ NAV_BOOKING } component={ BookingScreen } />
-        <Stack.Screen name={ NAV_CHECKIN } component={ CheckinScreen } />
-        <Stack.Screen name={ NAV_CHECKINCONFIRM } component={ CheckinConfirmScreen } />
-        <Stack.Screen name={ NAV_HOME } component={ HomeScreen } />
-        <Stack.Screen name={ NAV_LOGIN } component={ LoginScreen } />
-        <Stack.Screen name={ NAV_SIGNUP } component={ SignupScreen } />
-
-        {/*
+                {/*
 
         // Can be used for only allowing some screens to be reached while logged in.
         // May be replaced with some "screen" class that has the
@@ -94,17 +98,16 @@ export default function App() {
         </>)}
 
         */}
-
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: "#fff",
+        alignItems: "center",
+        justifyContent: "center",
+    },
 });

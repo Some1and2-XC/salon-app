@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { View, Text, Button, Alert } from "react-native";
+import { View, Text, Button, Alert, Platform } from "react-native";
 // npx expo install @react-native-picker/picker
 import { Picker } from "@react-native-picker/picker";
 
@@ -21,13 +21,13 @@ const EMPLOYEE_OPTIONS = {
     SPECIFIC: "SPECIFIC",
 };
 
-const showAlert = (title, message) => {
-    if (typeof window !== "undefined") {
-        showAlert(`${title}: ${message}`);
+function showAlert(title, message) {
+    if (Platform.OS === "web") {
+        window.alert(`${title}\n\n${message}`);
     } else {
-        showAlert(title, message);
+        Alert.alert(title, message);
     }
-};
+}
 
 async function fetchTasks() {
     const response = await fetch("https://csci4176.t-dy.com/tasks");
@@ -204,10 +204,6 @@ export function BookingScreen({ user }) {
     };
 
     const handleCreateAppointment = async () => {
-        if (!selectedTime) {
-            showAlert("No time selected", "Please select an available time.");
-            return;
-        }
         if (!selectedTaskId) {
             showAlert("No task selected", "Please select a task.");
             return;
@@ -220,6 +216,10 @@ export function BookingScreen({ user }) {
                 "No employee selected",
                 "Please select an employee or choose any.",
             );
+            return;
+        }
+        if (!selectedTime) {
+            showAlert("No time selected", "Please select an available time.");
             return;
         }
 
