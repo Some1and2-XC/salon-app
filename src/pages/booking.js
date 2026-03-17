@@ -20,7 +20,6 @@ async function fetchTasks() {
     const response = await fetch("https://csci4176.t-dy.com/tasks");
 
     if (!response.ok) {
-        console.log(user.uid);
         throw new Error("failed to fetch tasks");
     }
 
@@ -32,14 +31,11 @@ async function fetchTasks() {
 async function fetchEmployees(user) {
     const token = await user.getIdToken();
 
-    const response = await fetch(
-        `https://csci4176.t-dy.com/employees/${user.uid}`,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+    const response = await fetch(`https://csci4176.t-dy.com/employees`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
         },
-    );
+    });
     if (!response.ok) {
         throw new Error("failed to fetch employees");
     }
@@ -84,14 +80,7 @@ function getAvailableTimesForDay(day) {
     return slots;
 }
 
-function buildAppointment(
-    user,
-    day,
-    time,
-    taskId,
-    employeePreference,
-    employeeId,
-) {
+function buildAppointment(day, time, taskId, employeePreference, employeeId) {
     return {
         uuid: null, // backend will assign
         appointment_state_id: APPOINTMENT_STATE_UNCONFIRMED,
@@ -104,7 +93,6 @@ function buildAppointment(
         date_created: new Date().toISOString(),
         last_modified: null,
         task_id: taskId,
-        user_id: user.uid,
     };
 }
 
@@ -117,35 +105,32 @@ function formatTime(totalMinutes) {
 
 async function createAppointmentRequest(appointment, user) {
     const token = await user.getIdToken();
-    console.log("Creating appointment with data:", appointment); // for testing, remove in production
-    const response = await fetch(
-        `https://csci4176.t-dy.com/appointments/${user.uid}`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(appointment),
+
+    const response = await fetch(`https://csci4176.t-dy.com/appointments`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
         },
-    );
+        body: JSON.stringify(appointment),
+    });
 
     if (!response.ok) {
-        throw new Error("Failed to create appointment");
+        const errorBody = await response.json().catch(() => null);
+        const message =
+            errorBody?.message || `Server error: ${response.status}`;
+        throw new Error(message);
     }
 
-    return appointment;
+    return await response.json();
 }
 
 export function BookingScreen({ user }) {
-    if (!user) {
-        return <Text>Loading...</Text>;
-    }
     const [tasks, setTasks] = useState([]);
-    const [selectedTaskId, setSelectedTaskId] = useState(null);
+    const [selectedTaskId, setSelectedTaskId] = useState("");
 
     const [employees, setEmployees] = useState([]);
-    const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+    const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
 
     const [selectedDay, setSelectedDay] = useState(1);
     const [selectedTime, setSelectedTime] = useState(
@@ -165,6 +150,9 @@ export function BookingScreen({ user }) {
         const nextTimes = getAvailableTimesForDay(day);
         setSelectedTime(nextTimes.length > 0 ? nextTimes[0] : "");
     };
+    if (!user) {
+        return <Text>Loading...</Text>;
+    }
     useEffect(() => {
         fetchTasks()
             .then((data) => {
@@ -212,7 +200,6 @@ export function BookingScreen({ user }) {
         }
 
         const appointment = buildAppointment(
-            user,
             selectedDay,
             selectedTime,
             selectedTaskId,
@@ -220,12 +207,31 @@ export function BookingScreen({ user }) {
             selectedEmployeeId,
         );
 
-        await createAppointmentRequest(appointment, user);
+        try {
+            await createAppointmentRequest(appointment, user);
+            Alert.alert("Success", "Your appointment has been booked.");
+        } catch (err) {
+            console.error(err);
 
-        Alert.alert(
-            "Appointment Created",
-            JSON.stringify(appointment, null, 2),
-        );
+            if (err.message.includes("401") || err.message.includes("403")) {
+                Alert.alert("Session Expired", "Please log in again.");
+            } else if (err.message.includes("409")) {
+                Alert.alert(
+                    "Time Unavailable",
+                    "That slot has already been booked. Please choose another time.",
+                );
+            } else if (err.message.includes("Network request failed")) {
+                Alert.alert(
+                    "No Connection",
+                    "Check your internet and try again.",
+                );
+            } else {
+                Alert.alert(
+                    "Error",
+                    err.message || "Failed to create appointment.",
+                );
+            }
+        }
     };
 
     return (
@@ -267,13 +273,14 @@ export function BookingScreen({ user }) {
                         selectedValue={selectedEmployeeId}
                         onValueChange={(value) => setSelectedEmployeeId(value)}
                     >
-                        {employees.map((employee) => (
-                            <Picker.Item
-                                key={employee.id}
-                                label={employee.name}
-                                value={employee.id}
-                            />
-                        ))}
+                        {Array.isArray(employees) &&
+                            employees.map((employee) => (
+                                <Picker.Item
+                                    key={employee.id}
+                                    label={employee.name}
+                                    value={employee.id}
+                                />
+                            ))}
                     </Picker>
                 </>
             )}
