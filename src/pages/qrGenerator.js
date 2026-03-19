@@ -3,14 +3,12 @@ import { StyleSheet, TextInput, View, Button, Text } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 
 export function QRScreen({route}) {
-    const { phone } = route.params;
+    const { uid } = route.params;
     const [qrValue, setQrValue] = useState('');
 
     useEffect(() => {
-      const phoneString = phone.toString();
-      setQrValue(phoneString);
-    }, [phone]);
-    const generateQR = () => setQrValue(text);
+      setQrValue(uid);
+    }, [uid]);
 
     return (
     <View styles={styles.container}>

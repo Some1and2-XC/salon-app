@@ -1,73 +1,47 @@
-import { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Touchable } from 'react-native';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 import {
     NAV_QR,
+    NAV_LOGIN
 } from "../consts";
 
 export function CheckinScreen({ navigation }) {
 
-    const [phone, setPhone] = useState('');
+    useEffect(() => {
+        const auth = getAuth();
+        
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if(!user) {
+                navigation.navigate(NAV_LOGIN);
+                return;
+            }
+        });
 
-    const handleNumberPress = (num) => {
-        if (phone.length < 9) {
-            setPhone(phone + num);
+        return unsubscribe;
+    }, []);
+
+    //const fakeUser = { uid: "test123" }; use to test qr generation without logging in
+
+    const handleGenerateQR = () => {
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        if(!user) {
+            navigation.navigate(NAV_LOGIN);
+            return;
         }
-    };
 
-    const handleDelete = () => {
-        setPhone(phone.slice(0, -1));
-    };
-
-    const handleClear = () => {
-        setPhone('');
-    };
-
-    const handleDone = () => {
-        if (phone.length === 9) {
-            navigation.navigate(NAV_QR, { phone });
-        }
-    };
+        navigation.navigate(NAV_QR, { userID: user.uid });
+    }
 
     return (
         <View>
-
-            <Text>Enter Phone Number</Text>
-
-            <Text>{phone}</Text>
-
-            <View>
-                {[1,2,3,4,5,6,7,8,9].map((num) => (
-                    <TouchableOpacity
-                        key={num}
-                        onPress={() => handleNumberPress(num.toString())}
-                    >
-                        <Text>{num}</Text>
-                    </TouchableOpacity>
-                ))}
-
-                <TouchableOpacity onPress={handleClear}>
-                    <Text>Clear</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    onPress={() => handleNumberPress("0")}
-                >
-                    <Text>0</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={handleDelete}>
-                    <Text>⌫</Text>
-                </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity
-                onPress={handleDone}
-                disabled={phone.length !== 9}
-            >
-                <Text >Done</Text>
+            <Text>Check In</Text>
+            <TouchableOpacity onPress={handleGenerateQR}>
+                <Text>Show My QR Code</Text>
             </TouchableOpacity>
-
         </View>
     );
 }
