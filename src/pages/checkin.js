@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Platform, Button } from 'react-native';
+import { useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { apiFetch } from "../utils";
 import Toast from 'react-native-toast-message';
@@ -28,8 +28,6 @@ export function CheckinScreen({ navigation }) {
 
         return unsubscribe;
     }, []);
-
-    //const fakeUser = { uid: "test123" }; use to test qr generation without logging in
 
     const handleGenerateQR = async() => {
         const auth = getAuth();

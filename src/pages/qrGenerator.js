@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, TextInput, View, Button, Text } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 
 export function QRScreen({route}) {
