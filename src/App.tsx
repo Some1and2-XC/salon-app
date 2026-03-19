@@ -19,6 +19,7 @@ import { CheckinConfirmScreen } from "./pages/checkinConfirm";
 import { HomeScreen } from "./pages/home";
 import { LoginScreen } from "./pages/login";
 import { SignupScreen } from "./pages/signup";
+import { AdminAppointmentTypesScreen } from "./pages/appTypes";
 
 const Stack = createStackNavigator();
 
@@ -30,6 +31,7 @@ import {
     NAV_HOME,
     NAV_LOGIN,
     NAV_SIGNUP,
+    NAV_APP_TYPES
 } from "./consts";
 
 export default function App() {
@@ -73,6 +75,7 @@ export default function App() {
         <Stack.Screen name={ NAV_HOME } component={ HomeScreen } />
         <Stack.Screen name={ NAV_LOGIN } component={ LoginScreen } />
         <Stack.Screen name={ NAV_SIGNUP } component={ SignupScreen } />
+        <Stack.Screen name={ NAV_APP_TYPES } component={ AdminAppointmentTypesScreen } />
 
         {/*
 
