@@ -3,13 +3,23 @@ still to implement:
 disable create appointment button until all selections are made
 prevent multiple booking clicks 
 loading screen
+
+dependencies: run if not installed 
+npx expo install @react-native-picker/picker
+npx expo install react-native-calendars
 */
 
 import React, { useMemo, useState, useEffect } from "react";
-import { View, Text, Button, Alert, Platform } from "react-native";
-// npx expo install @react-native-picker/picker
+import {
+    View,
+    Text,
+    Button,
+    Alert,
+    Platform,
+    Modal,
+    TouchableOpacity,
+} from "react-native";
 import { Picker } from "@react-native-picker/picker";
-// npx expo install react-native-calendars
 import { Calendar } from "react-native-calendars";
 
 const APPOINTMENT_STATE_UNCONFIRMED = "APPOINTMENT_STATE_UNCONFIRMED";
@@ -68,46 +78,39 @@ async function fetchAvailabilities(user) {
 
 function getAvailableTimesForDay(day, availabilities, appointmentLength) {
     const slots = [];
-
     for (const slot of availabilities) {
-        const start = new Date(slot.start_time);
-        const end = new Date(slot.end_time);
-
-        // check if this slot falls on the selected weekday
+        const start = new Date(slot.start_time * 1000);
+        const end = new Date(slot.end_time * 1000);
         if (start.getDay() !== day) continue;
-
         let current = start.getTime();
         while (current + appointmentLength * 60 * 1000 <= end.getTime()) {
             const d = new Date(current);
-            const hours = d.getHours();
-            const minutes = d.getMinutes();
-            slots.push(formatTime(hours * 60 + minutes));
+            slots.push(formatTime(d.getHours() * 60 + d.getMinutes()));
             current += appointmentLength * 60 * 1000;
         }
     }
-
     return slots;
 }
 
 function buildAppointment(
-    day,
+    date,
     time,
     taskId,
     employeePreference,
     employeeId,
     appointmentLength,
 ) {
+    const [hours, minutes] = time.split(":").map(Number);
+    const startDate = new Date(date + "T00:00:00");
+    startDate.setHours(hours, minutes, 0, 0);
+    const startTimestamp = Math.floor(startDate.getTime() / 1000);
+
     return {
-        uuid: null,
-        appointment_state_id: APPOINTMENT_STATE_UNCONFIRMED,
+        appointment_state_id: 0,
         employee_id:
             employeePreference === EMPLOYEE_OPTIONS.ANY ? null : employeeId,
-        employee_preference: employeePreference,
-        week_day: day,
-        start_time: time,
-        length_minutes: appointmentLength,
-        date_created: new Date().toISOString(),
-        last_modified: null,
+        length: appointmentLength,
+        start_time: startTimestamp,
         task_id: taskId,
     };
 }
@@ -121,7 +124,7 @@ function formatTime(totalMinutes) {
 
 async function createAppointmentRequest(appointment, user) {
     const token = await user.getIdToken();
-
+    console.log("sending appointment:", JSON.stringify(appointment));
     const response = await fetch(`https://csci4176.t-dy.com/appointments`, {
         method: "POST",
         headers: {
@@ -143,12 +146,13 @@ async function createAppointmentRequest(appointment, user) {
 
 export function BookingScreen({ user }) {
     const [tasks, setTasks] = useState([]);
-    const [selectedTaskId, setSelectedTaskId] = useState("");
+    const [selectedTaskId, setSelectedTaskId] = useState(null);
     const [employees, setEmployees] = useState([]);
     const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
     const [availabilities, setAvailabilities] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState("");
+    const [showCalendar, setShowCalendar] = useState(false);
     const [employeePreference, setEmployeePreference] = useState(
         EMPLOYEE_OPTIONS.ANY,
     );
@@ -174,11 +178,9 @@ export function BookingScreen({ user }) {
         fetchTasks()
             .then((data) => {
                 setTasks(data);
-                if (data.length > 0) setSelectedTaskId(data[0].id);
             })
             .catch(console.error);
     }, []);
-
     useEffect(() => {
         if (!user) return;
         fetchEmployees(user)
@@ -232,7 +234,7 @@ export function BookingScreen({ user }) {
         const appointment = buildAppointment(
             selectedDate,
             selectedTime,
-            selectedTaskId,
+            Number(selectedTaskId),
             employeePreference,
             selectedEmployeeId,
             appointmentLength,
@@ -268,6 +270,7 @@ export function BookingScreen({ user }) {
                 selectedValue={selectedTaskId}
                 onValueChange={(value) => setSelectedTaskId(value)}
             >
+                <Picker.Item label="Choose a task" value={null} />
                 {Array.isArray(tasks) &&
                     tasks.map((task) => (
                         <Picker.Item
@@ -313,23 +316,39 @@ export function BookingScreen({ user }) {
             )}
 
             <Text>Select a day</Text>
-            <Calendar
-                onDayPress={(day) => {
-                    setSelectedDate(day.dateString);
-                    handleDayChange(new Date(day.dateString).getDay());
-                }}
-                markedDates={{
-                    [selectedDate]: {
-                        selected: true,
-                        selectedColor: "#007AFF",
-                    },
-                }}
-                minDate={new Date().toISOString().split("T")[0]}
-                theme={{
-                    todayTextColor: "#007AFF",
-                    arrowColor: "#007AFF",
-                }}
-            />
+            <TouchableOpacity onPress={() => setShowCalendar(true)}>
+                <Text>{selectedDate || "Tap to select a date"}</Text>
+            </TouchableOpacity>
+
+            <Modal
+                visible={showCalendar}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={() => setShowCalendar(false)}
+            >
+                <TouchableOpacity onPress={() => setShowCalendar(false)}>
+                    <TouchableOpacity activeOpacity={1}>
+                        <Calendar
+                            onDayPress={(day) => {
+                                setSelectedDate(day.dateString);
+                                handleDayChange(
+                                    new Date(
+                                        day.dateString + "T12:00:00",
+                                    ).getDay(),
+                                );
+                                setShowCalendar(false);
+                            }}
+                            markedDates={{
+                                [selectedDate]: {
+                                    selected: true,
+                                    selectedColor: "#007AFF",
+                                },
+                            }}
+                            minDate={new Date().toISOString().split("T")[0]}
+                        />
+                    </TouchableOpacity>
+                </TouchableOpacity>
+            </Modal>
 
             <Text>Select time</Text>
             <Picker
