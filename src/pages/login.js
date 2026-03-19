@@ -11,6 +11,7 @@ import {
 import { apiFetch } from "../utils";
 import { sty } from "../styles";
 import { NAV_SIGNUP } from "../consts";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 
 function getLoginErrorMessage(code) {
   switch (code) {
@@ -41,6 +42,7 @@ export function LoginScreen({ navigation }) {
     const onLogin = async () => {
 
         const trimmedEmail = email.trim();
+        const auth = getAuth();
 
         if (!trimmedEmail || !password) {
             Alert.alert("Missing Fields", "Please enter your email and password.");
