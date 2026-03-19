@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Touchable } from 'react-native';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { apiFetch } from "../utils";
 
 import {
     NAV_QR,
@@ -9,31 +10,47 @@ import {
 
 export function CheckinScreen({ navigation }) {
 
-    useEffect(() => {
-        const auth = getAuth();
+    // useEffect(() => {
+    //     const auth = getAuth();
         
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if(!user) {
-                navigation.navigate(NAV_LOGIN);
-                return;
-            }
-        });
+    //     const unsubscribe = onAuthStateChanged(auth, (user) => {
+    //         if(!user) {
+    //             navigation.navigate(NAV_LOGIN);
+    //             return;
+    //         }
+    //     });
 
-        return unsubscribe;
-    }, []);
+    //     return unsubscribe;
+    // }, []);
 
     //const fakeUser = { uid: "test123" }; use to test qr generation without logging in
 
-    const handleGenerateQR = () => {
+    const handleGenerateQR = async() => {
+        console.warn("test");
         const auth = getAuth();
         const user = auth.currentUser;
 
-        if(!user) {
+        const token = await user.getIdToken();
+
+        const res = await apiFetch(`/appointments`);
+
+        if(!res.ok) {
+            console.log("Error status", res.status);
+        }
+
+        const data = await res.json();
+
+        if (!data || data == []) {
+            console.log("You must book an appointment before checking in!");
+            <Text>You must book an appointment before checking in!</Text>
+        }
+
+        if(!data) {
             navigation.navigate(NAV_LOGIN);
             return;
         }
 
-        navigation.navigate(NAV_QR, { userID: user.uid });
+        //navigation.navigate(NAV_QR, { userID: user.uid });
     }
 
     return (
