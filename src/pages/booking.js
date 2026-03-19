@@ -21,17 +21,7 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Calendar } from "react-native-calendars";
-
-const APPOINTMENT_STATE_UNCONFIRMED = "APPOINTMENT_STATE_UNCONFIRMED";
-const WEEKDAYS = [
-    { label: "Sunday", value: 0 },
-    { label: "Monday", value: 1 },
-    { label: "Tuesday", value: 2 },
-    { label: "Wednesday", value: 3 },
-    { label: "Thursday", value: 4 },
-    { label: "Friday", value: 5 },
-    { label: "Saturday", value: 6 },
-];
+import { apiFetch } from "../utils";
 
 const EMPLOYEE_OPTIONS = {
     ANY: "ANY",
@@ -47,33 +37,38 @@ function showAlert(title, message) {
 }
 
 async function fetchTasks() {
-    const response = await fetch("https://csci4176.t-dy.com/tasks");
-    if (!response.ok) {
-        throw new Error("failed to fetch tasks");
-    }
+    const response = await apiFetch("/tasks");
+    if (!response.ok) throw new Error("failed to fetch tasks");
     const data = await response.json();
-    console.log("tasks from backend:", data);
     return Array.isArray(data) ? data : data.tasks || [];
 }
-async function fetchEmployees(user) {
-    const token = await user.getIdToken();
-    const response = await fetch(`https://csci4176.t-dy.com/employees`, {
-        headers: { Authorization: `Bearer ${token}` },
-    });
+
+async function fetchEmployees() {
+    const response = await apiFetch("/employees");
     if (!response.ok) throw new Error("failed to fetch employees");
     const data = await response.json();
-    console.log("employees from backend:", data);
-    console.log(token);
     return Array.isArray(data) ? data : data.employees || [];
 }
-async function fetchAvailabilities(user) {
-    const token = await user.getIdToken();
-    const response = await fetch(`https://csci4176.t-dy.com/availability`, {
-        headers: { Authorization: `Bearer ${token}` },
-    });
+
+async function fetchAvailabilities() {
+    const response = await apiFetch("/availability");
     if (!response.ok) throw new Error("failed to fetch availability");
     const data = await response.json();
     return Array.isArray(data) ? data : data || [];
+}
+
+async function createAppointmentRequest(appointment) {
+    const response = await apiFetch("/appointments", {
+        method: "POST",
+        body: JSON.stringify(appointment),
+    });
+    if (!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        const message =
+            errorBody?.message || `Server error: ${response.status}`;
+        throw new Error(message);
+    }
+    return await response.json();
 }
 
 function getAvailableTimesForDay(day, availabilities, appointmentLength) {
@@ -91,7 +86,6 @@ function getAvailableTimesForDay(day, availabilities, appointmentLength) {
     }
     return slots;
 }
-
 function buildAppointment(
     date,
     time,
@@ -105,14 +99,18 @@ function buildAppointment(
     startDate.setHours(hours, minutes, 0, 0);
     const startTimestamp = Math.floor(startDate.getTime() / 1000);
 
-    return {
+    const appointment = {
         appointment_state_id: 0,
-        employee_id:
-            employeePreference === EMPLOYEE_OPTIONS.ANY ? null : employeeId,
         length: appointmentLength,
         start_time: startTimestamp,
         task_id: taskId,
     };
+
+    if (employeePreference === EMPLOYEE_OPTIONS.SPECIFIC && employeeId) {
+        appointment.employee_id = employeeId;
+    }
+
+    return appointment;
 }
 
 function formatTime(totalMinutes) {
@@ -122,31 +120,9 @@ function formatTime(totalMinutes) {
     return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 }
 
-async function createAppointmentRequest(appointment, user) {
-    const token = await user.getIdToken();
-    console.log("sending appointment:", JSON.stringify(appointment));
-    const response = await fetch(`https://csci4176.t-dy.com/appointments`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(appointment),
-    });
-
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => null);
-        const message =
-            errorBody?.message || `Server error: ${response.status}`;
-        throw new Error(message);
-    }
-
-    return await response.json();
-}
-
 export function BookingScreen({ user }) {
     const [tasks, setTasks] = useState([]);
-    const [selectedTaskId, setSelectedTaskId] = useState(null);
+    const [selectedTaskId, setSelectedTaskId] = useState("");
     const [employees, setEmployees] = useState([]);
     const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
     const [availabilities, setAvailabilities] = useState([]);
@@ -163,7 +139,7 @@ export function BookingScreen({ user }) {
     const availableTimes = useMemo(() => {
         if (!selectedDate) return [];
         return getAvailableTimesForDay(
-            new Date(selectedDate).getDay(),
+            new Date(selectedDate + "T12:00:00").getDay(),
             availabilities,
             appointmentLength,
         );
@@ -183,7 +159,7 @@ export function BookingScreen({ user }) {
     }, []);
     useEffect(() => {
         if (!user) return;
-        fetchEmployees(user)
+        fetchEmployees()
             .then((data) => {
                 setEmployees(data);
                 if (data.length > 0) setSelectedEmployeeId(data[0].id);
@@ -193,7 +169,7 @@ export function BookingScreen({ user }) {
 
     useEffect(() => {
         if (!user) return;
-        fetchAvailabilities(user)
+        fetchAvailabilities()
             .then((data) => setAvailabilities(data))
             .catch(console.error);
     }, [user]);
@@ -241,14 +217,12 @@ export function BookingScreen({ user }) {
         );
 
         try {
-            await createAppointmentRequest(appointment, user);
+            await createAppointmentRequest(appointment);
             showAlert("Success", "Your appointment has been booked.");
         } catch (err) {
             console.error(err);
             if (err.message.includes("401") || err.message.includes("403")) {
                 showAlert("Session Expired", "Please log in again.");
-            } else if (err.message.includes("409")) {
-                showAlert("Time Unavailable", "Please choose another time.");
             } else if (err.message.includes("Network request failed")) {
                 showAlert(
                     "No Connection",
@@ -270,7 +244,7 @@ export function BookingScreen({ user }) {
                 selectedValue={selectedTaskId}
                 onValueChange={(value) => setSelectedTaskId(value)}
             >
-                <Picker.Item label="Choose a task" value={null} />
+                <Picker.Item label="Choose a task" value="" />
                 {Array.isArray(tasks) &&
                     tasks.map((task) => (
                         <Picker.Item
