@@ -9,6 +9,8 @@ import React, { useMemo, useState, useEffect } from "react";
 import { View, Text, Button, Alert, Platform } from "react-native";
 // npx expo install @react-native-picker/picker
 import { Picker } from "@react-native-picker/picker";
+// npx expo install react-native-calendars
+import { Calendar } from "react-native-calendars";
 
 const APPOINTMENT_STATE_UNCONFIRMED = "APPOINTMENT_STATE_UNCONFIRMED";
 const WEEKDAYS = [
@@ -36,47 +38,32 @@ function showAlert(title, message) {
 
 async function fetchTasks() {
     const response = await fetch("https://csci4176.t-dy.com/tasks");
-
     if (!response.ok) {
         throw new Error("failed to fetch tasks");
     }
-
     const data = await response.json();
     console.log("tasks from backend:", data);
-
-    return data.tasks || [];
+    return Array.isArray(data) ? data : data.tasks || [];
 }
 async function fetchEmployees(user) {
     const token = await user.getIdToken();
-
     const response = await fetch(`https://csci4176.t-dy.com/employees`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
     });
-    if (!response.ok) {
-        throw new Error("failed to fetch employees");
-    }
+    if (!response.ok) throw new Error("failed to fetch employees");
     const data = await response.json();
-    console.log("employees from backend:", data); // for testing, remove in production
-    return data.employees || [];
+    console.log("employees from backend:", data);
+    console.log(token);
+    return Array.isArray(data) ? data : data.employees || [];
 }
 async function fetchAvailabilities(user) {
     const token = await user.getIdToken();
-
     const response = await fetch(`https://csci4176.t-dy.com/availability`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
     });
-
-    if (!response.ok) {
-        throw new Error("failed to fetch availability");
-    }
-
+    if (!response.ok) throw new Error("failed to fetch availability");
     const data = await response.json();
-    console.log("availability from backend:", data);
-    return data || [];
+    return Array.isArray(data) ? data : data || [];
 }
 
 function getAvailableTimesForDay(day, availabilities, appointmentLength) {
@@ -160,7 +147,7 @@ export function BookingScreen({ user }) {
     const [employees, setEmployees] = useState([]);
     const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
     const [availabilities, setAvailabilities] = useState([]);
-    const [selectedDay, setSelectedDay] = useState("");
+    const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState("");
     const [employeePreference, setEmployeePreference] = useState(
         EMPLOYEE_OPTIONS.ANY,
@@ -170,12 +157,13 @@ export function BookingScreen({ user }) {
     const appointmentLength = (selectedTask?.time_for_booking || 900) / 60;
 
     const availableTimes = useMemo(() => {
+        if (!selectedDate) return [];
         return getAvailableTimesForDay(
-            selectedDay,
+            new Date(selectedDate).getDay(),
             availabilities,
             appointmentLength,
         );
-    }, [selectedDay, availabilities, appointmentLength]);
+    }, [selectedDate, availabilities, appointmentLength]);
 
     // update selectedTime when availableTimes changes
     useEffect(() => {
@@ -212,10 +200,9 @@ export function BookingScreen({ user }) {
         return <Text>Loading...</Text>;
     }
 
-    const handleDayChange = (day) => {
-        setSelectedDay(day);
+    const handleDayChange = (weekday) => {
         const nextTimes = getAvailableTimesForDay(
-            day,
+            weekday,
             availabilities,
             appointmentLength,
         );
@@ -243,7 +230,7 @@ export function BookingScreen({ user }) {
         }
 
         const appointment = buildAppointment(
-            selectedDay,
+            selectedDate,
             selectedTime,
             selectedTaskId,
             employeePreference,
@@ -317,7 +304,7 @@ export function BookingScreen({ user }) {
                             employees.map((employee) => (
                                 <Picker.Item
                                     key={employee.id}
-                                    label={employee.name}
+                                    label={employee.first_name}
                                     value={employee.id}
                                 />
                             ))}
@@ -326,22 +313,23 @@ export function BookingScreen({ user }) {
             )}
 
             <Text>Select a day</Text>
-            <Picker
-                selectedValue={selectedDay}
-                onValueChange={(value) => {
-                    if (value === "") return;
-                    handleDayChange(value);
+            <Calendar
+                onDayPress={(day) => {
+                    setSelectedDate(day.dateString);
+                    handleDayChange(new Date(day.dateString).getDay());
                 }}
-            >
-                <Picker.Item label="Select a day" value="" />
-                {WEEKDAYS.map((day) => (
-                    <Picker.Item
-                        key={day.value}
-                        label={day.label}
-                        value={day.value}
-                    />
-                ))}
-            </Picker>
+                markedDates={{
+                    [selectedDate]: {
+                        selected: true,
+                        selectedColor: "#007AFF",
+                    },
+                }}
+                minDate={new Date().toISOString().split("T")[0]}
+                theme={{
+                    todayTextColor: "#007AFF",
+                    arrowColor: "#007AFF",
+                }}
+            />
 
             <Text>Select time</Text>
             <Picker
