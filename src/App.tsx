@@ -19,7 +19,7 @@ import { CheckinConfirmScreen } from "./pages/checkinConfirm";
 import { HomeScreen } from "./pages/home";
 import { LoginScreen } from "./pages/login";
 import { SignupScreen } from "./pages/signup";
-import { QRScreen } from "./pages/qr-generator"
+import { QRScreen } from "./pages/qrGenerator"
 const Stack = createStackNavigator();
 
 import {

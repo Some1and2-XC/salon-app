@@ -1,22 +1,20 @@
-import React, { useState } from 'react';
-import { StyleSheet, TextInput, View, Button } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, TextInput, View, Button, Text } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 
-export function QRScreen() {
-    const [text, setText] = useState('');
+export function QRScreen({route}) {
+    const { phone } = route.params;
     const [qrValue, setQrValue] = useState('');
 
+    useEffect(() => {
+      const phoneString = phone.toString();
+      setQrValue(phoneString);
+    }, [phone]);
     const generateQR = () => setQrValue(text);
 
     return (
     <View styles={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Type something"
-        value={text}
-        onChangeText={setText}
-      />
-      <Button title="Generate QR" onPress={generateQR} />
+      <Text>Checkin Confirmed! Use this to checkin for your appointment!</Text>
       {qrValue !== '' && (
         <View style={styles.qrContainer}>
           <QRCode value={qrValue} size={250} />
@@ -33,14 +31,9 @@ const styles = StyleSheet.create({
         alignItems: 'center', 
         justifyContent: 'center' 
     },
-    input: { 
-        width: '100%',
-        height: 50,
-        borderWidth: 1, 
-        borderColor: '#aaa', 
-        padding: 10, 
-        marginBottom: 20, 
-        borderRadius: 5
+    text: { 
+      fontSize: 18,
+      marginBottom: 20
     },
     qrContainer: {
         alignItems: 'center',    

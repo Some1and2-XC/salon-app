@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 
 import {
-    NAV_CHECKINCONFIRM,
+    NAV_QR,
 } from "../consts";
 
 export function CheckinScreen({ navigation }) {
@@ -25,7 +25,7 @@ export function CheckinScreen({ navigation }) {
 
     const handleDone = () => {
         if (phone.length === 9) {
-            navigation.navigate(NAV_CHECKINCONFIRM, { phone });
+            navigation.navigate(NAV_QR, { phone });
         }
     };
 
