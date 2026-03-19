@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Touchable } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Touchable, Platform } from 'react-native';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { apiFetch } from "../utils";
+import Toast from 'react-native-toast-message';
 
 import {
     NAV_QR,
@@ -10,18 +11,20 @@ import {
 
 export function CheckinScreen({ navigation }) {
 
-    // useEffect(() => {
-    //     const auth = getAuth();
-        
-    //     const unsubscribe = onAuthStateChanged(auth, (user) => {
-    //         if(!user) {
-    //             navigation.navigate(NAV_LOGIN);
-    //             return;
-    //         }
-    //     });
+    const [message, setMessage] = useState('');
 
-    //     return unsubscribe;
-    // }, []);
+    useEffect(() => {
+        const auth = getAuth();
+        
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if(!user) {
+                navigation.navigate(NAV_LOGIN);
+                return;
+            }
+        });
+
+        return unsubscribe;
+    }, []);
 
     //const fakeUser = { uid: "test123" }; use to test qr generation without logging in
 
@@ -36,21 +39,26 @@ export function CheckinScreen({ navigation }) {
 
         if(!res.ok) {
             console.log("Error status", res.status);
+            return;
         }
 
         const data = await res.json();
 
-        if (!data || data == []) {
-            console.log("You must book an appointment before checking in!");
-            <Text>You must book an appointment before checking in!</Text>
-        }
-
-        if(!data) {
-            navigation.navigate(NAV_LOGIN);
+        if (!data || data.length == 0) {
+            if(Platform.OS === 'web') {
+                alert('You must book an appointment before checking in');
+            }
+            else {
+                Toast.show({
+                    type: 'info',
+                    text1: 'No Appointment',
+                    text2: 'You must book an appointment before checking in'
+                });
+            }
             return;
         }
 
-        //navigation.navigate(NAV_QR, { userID: user.uid });
+        navigation.navigate(NAV_QR, { userID: user.uid });
     }
 
     return (
