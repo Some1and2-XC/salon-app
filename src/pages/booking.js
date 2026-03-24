@@ -22,6 +22,7 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import { Calendar } from "react-native-calendars";
 import { apiFetch } from "../utils";
+import { sty } from "../styles";
 
 const EMPLOYEE_OPTIONS = {
     ANY: "ANY",
@@ -34,27 +35,6 @@ function showAlert(title, message) {
     } else {
         Alert.alert(title, message);
     }
-}
-
-async function fetchTasks() {
-    const response = await apiFetch("/tasks");
-    if (!response.ok) throw new Error("failed to fetch tasks");
-    const data = await response.json();
-    return Array.isArray(data) ? data : data.tasks || [];
-}
-
-async function fetchEmployees() {
-    const response = await apiFetch("/employees");
-    if (!response.ok) throw new Error("failed to fetch employees");
-    const data = await response.json();
-    return Array.isArray(data) ? data : data.employees || [];
-}
-
-async function fetchAvailabilities() {
-    const response = await apiFetch("/availability");
-    if (!response.ok) throw new Error("failed to fetch availability");
-    const data = await response.json();
-    return Array.isArray(data) ? data : data || [];
 }
 
 async function createAppointmentRequest(appointment) {
@@ -86,6 +66,7 @@ function getAvailableTimesForDay(day, availabilities, appointmentLength) {
     }
     return slots;
 }
+
 function buildAppointment(
     date,
     time,
@@ -120,7 +101,7 @@ function formatTime(totalMinutes) {
     return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 }
 
-export function BookingScreen({ user }) {
+export function BookingScreen() {
     const [tasks, setTasks] = useState([]);
     const [selectedTaskId, setSelectedTaskId] = useState("");
     const [employees, setEmployees] = useState([]);
@@ -129,6 +110,7 @@ export function BookingScreen({ user }) {
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState("");
     const [showCalendar, setShowCalendar] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [employeePreference, setEmployeePreference] = useState(
         EMPLOYEE_OPTIONS.ANY,
     );
@@ -151,32 +133,27 @@ export function BookingScreen({ user }) {
     }, [availableTimes]);
 
     useEffect(() => {
-        fetchTasks()
-            .then((data) => {
-                setTasks(data);
+        Promise.all([
+            apiFetch("/tasks")
+                .then((r) => r.json())
+                .then((d) => (Array.isArray(d) ? d : d.tasks || [])),
+            apiFetch("/employees")
+                .then((r) => r.json())
+                .then((d) => (Array.isArray(d) ? d : d.employees || [])),
+            apiFetch("/availability")
+                .then((r) => r.json())
+                .then((d) => (Array.isArray(d) ? d : d || [])),
+        ])
+            .then(([taskData, employeeData, availabilityData]) => {
+                setTasks(taskData);
+                setEmployees(employeeData);
+                if (employeeData.length > 0)
+                    setSelectedEmployeeId(employeeData[0].id);
+                setAvailabilities(availabilityData);
             })
-            .catch(console.error);
+            .catch(console.error)
+            .finally(() => setIsLoading(false));
     }, []);
-    useEffect(() => {
-        if (!user) return;
-        fetchEmployees()
-            .then((data) => {
-                setEmployees(data);
-                if (data.length > 0) setSelectedEmployeeId(data[0].id);
-            })
-            .catch(console.error);
-    }, [user]);
-
-    useEffect(() => {
-        if (!user) return;
-        fetchAvailabilities()
-            .then((data) => setAvailabilities(data))
-            .catch(console.error);
-    }, [user]);
-
-    if (!user) {
-        return <Text>Loading...</Text>;
-    }
 
     const handleDayChange = (weekday) => {
         const nextTimes = getAvailableTimesForDay(
@@ -238,7 +215,7 @@ export function BookingScreen({ user }) {
     };
 
     return (
-        <View>
+        <View style={sty.container}>
             <Text>Select a task</Text>
             <Picker
                 selectedValue={selectedTaskId}
