@@ -69,9 +69,7 @@ export default function App() {
             component={ ExampleHome }
             // options={{ headerShown: false }}
             />
-        <Stack.Screen name={NAV_BOOKING}>
-            {(props) => <BookingScreen {...props} user={user} />}
-        </Stack.Screen>
+        <Stack.Screen name={ NAV_BOOKING } component={ BookingScreen } />
         <Stack.Screen name={ NAV_CHECKIN } component={ CheckinScreen } />
         <Stack.Screen name={ NAV_CHECKINCONFIRM } component={ CheckinConfirmScreen } />
         <Stack.Screen name={ NAV_HOME } component={ HomeScreen } />
