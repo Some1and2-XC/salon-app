@@ -1,83 +1,97 @@
-import React, { useMemo, useState } from "react";
-import { View, Text, Button, Alert } from "react-native";
+/*
+still to implement:
+disable create appointment button until all selections are made
+prevent multiple booking clicks 
+loading screen
+
+dependencies: run if not installed 
+npx expo install @react-native-picker/picker
+npx expo install react-native-calendars
+*/
+
+import React, { useMemo, useState, useEffect } from "react";
+import {
+    View,
+    Text,
+    Button,
+    Alert,
+    Platform,
+    Modal,
+    TouchableOpacity,
+} from "react-native";
 import { Picker } from "@react-native-picker/picker";
-
-const APPOINTMENT_STATE_UNCONFIRMED = "APPOINTMENT_STATE_UNCONFIRMED";
-const APPOINTMENT_LENGTH_MINUTES = 30;
-
-const WEEKDAYS = [
-    { label: "Sunday", value: 0 },
-    { label: "Monday", value: 1 },
-    { label: "Tuesday", value: 2 },
-    { label: "Wednesday", value: 3 },
-    { label: "Thursday", value: 4 },
-    { label: "Friday", value: 5 },
-    { label: "Saturday", value: 6 },
-];
-
-const TASKS = [
-    { id: 1, name: "nails1" },
-    { id: 2, name: "nails2" },
-    { id: 3, name: "nails3" },
-];
-
-const EMPLOYEES = [
-    { id: 1, name: "Anna" },
-    { id: 2, name: "John" },
-    { id: 3, name: "Mike" },
-];
+import { Calendar } from "react-native-calendars";
+import { apiFetch } from "../utils";
+import { sty } from "../styles";
 
 const EMPLOYEE_OPTIONS = {
     ANY: "ANY",
     SPECIFIC: "SPECIFIC",
 };
 
-// examples availabilities for now (lenght in seconds)
-const AVAILABILITIES = [
-    { week_day: 1, starting_hour: 9, starting_minute: 0, length: 1800 },
-    { week_day: 1, starting_hour: 13, starting_minute: 0, length: 3600 },
-    { week_day: 2, starting_hour: 10, starting_minute: 0, length: 7200 },
-    { week_day: 3, starting_hour: 11, starting_minute: 0, length: 1800 },
-    { week_day: 4, starting_hour: 9, starting_minute: 30, length: 3600 },
-    { week_day: 5, starting_hour: 12, starting_minute: 0, length: 3600 },
-];
+function showAlert(title, message) {
+    if (Platform.OS === "web") {
+        window.alert(`${title}\n\n${message}`);
+    } else {
+        Alert.alert(title, message);
+    }
+}
 
-function getAvailableTimesForDay(day) {
-    const dayBlocks = AVAILABILITIES.filter((block) => block.week_day === day);
+async function createAppointmentRequest(appointment) {
+    const response = await apiFetch("/appointments", {
+        method: "POST",
+        body: JSON.stringify(appointment),
+    });
+    if (!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        const message =
+            errorBody?.message || `Server error: ${response.status}`;
+        throw new Error(message);
+    }
+    return await response.json();
+}
+
+function getAvailableTimesForDay(day, availabilities, appointmentLength) {
     const slots = [];
-
-    for (const block of dayBlocks) {
-        const startMinutes = block.starting_hour * 60 + block.starting_minute;
-        const blockLengthMinutes = block.length / 60;
-
-        const slotCount = Math.floor(
-            blockLengthMinutes / APPOINTMENT_LENGTH_MINUTES,
-        );
-
-        for (let i = 0; i < slotCount; i++) {
-            const slotStart = startMinutes + i * APPOINTMENT_LENGTH_MINUTES;
-            slots.push(formatTime(slotStart));
+    for (const slot of availabilities) {
+        const start = new Date(slot.start_time * 1000);
+        const end = new Date(slot.end_time * 1000);
+        if (start.getDay() !== day) continue;
+        let current = start.getTime();
+        while (current + appointmentLength * 60 * 1000 <= end.getTime()) {
+            const d = new Date(current);
+            slots.push(formatTime(d.getHours() * 60 + d.getMinutes()));
+            current += appointmentLength * 60 * 1000;
         }
     }
-
     return slots;
 }
 
-function buildAppointment(day, time, taskId, employeePreference, employeeId) {
-    return {
-        uuid: null,
-        appointment_state_id: APPOINTMENT_STATE_UNCONFIRMED,
-        employee_id:
-            employeePreference === EMPLOYEE_OPTIONS.ANY ? null : employeeId,
-        employee_preference: employeePreference,
-        week_day: day,
-        start_time: time,
-        length_minutes: APPOINTMENT_LENGTH_MINUTES,
-        date_created: new Date().toISOString(),
-        last_modified: null,
+function buildAppointment(
+    date,
+    time,
+    taskId,
+    employeePreference,
+    employeeId,
+    appointmentLength,
+) {
+    const [hours, minutes] = time.split(":").map(Number);
+    const startDate = new Date(date + "T00:00:00");
+    startDate.setHours(hours, minutes, 0, 0);
+    const startTimestamp = Math.floor(startDate.getTime() / 1000);
+
+    const appointment = {
+        appointment_state_id: 0,
+        length: appointmentLength,
+        start_time: startTimestamp,
         task_id: taskId,
-        user_id: null,
     };
+
+    if (employeePreference === EMPLOYEE_OPTIONS.SPECIFIC && employeeId) {
+        appointment.employee_id = employeeId;
+    }
+
+    return appointment;
 }
 
 function formatTime(totalMinutes) {
@@ -87,84 +101,135 @@ function formatTime(totalMinutes) {
     return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 }
 
-async function createAppointmentRequest(appointment) {
-    console.log("saving", appointment);
-    return appointment;
-}
-
 export function BookingScreen() {
-    const [selectedDay, setSelectedDay] = useState(1);
-    const [selectedTime, setSelectedTime] = useState(
-        getAvailableTimesForDay(1)[0] || "",
-    );
-    const [selectedTaskId, setSelectedTaskId] = useState(TASKS[0].id);
+    const [tasks, setTasks] = useState([]);
+    const [selectedTaskId, setSelectedTaskId] = useState("");
+    const [employees, setEmployees] = useState([]);
+    const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
+    const [availabilities, setAvailabilities] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedTime, setSelectedTime] = useState("");
+    const [showCalendar, setShowCalendar] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [employeePreference, setEmployeePreference] = useState(
         EMPLOYEE_OPTIONS.ANY,
     );
-    const [selectedEmployeeId, setSelectedEmployeeId] = useState(
-        EMPLOYEES[0].id,
-    );
+    const selectedTask = tasks.find((t) => t.id === selectedTaskId);
+
+    const appointmentLength = (selectedTask?.time_for_booking || 900) / 60;
 
     const availableTimes = useMemo(() => {
-        return getAvailableTimesForDay(selectedDay);
-    }, [selectedDay]);
+        if (!selectedDate) return [];
+        return getAvailableTimesForDay(
+            new Date(selectedDate + "T12:00:00").getDay(),
+            availabilities,
+            appointmentLength,
+        );
+    }, [selectedDate, availabilities, appointmentLength]);
 
-    const handleDayChange = (day) => {
-        setSelectedDay(day);
+    // update selectedTime when availableTimes changes
+    useEffect(() => {
+        setSelectedTime(availableTimes.length > 0 ? availableTimes[0] : "");
+    }, [availableTimes]);
 
-        const nextTimes = getAvailableTimesForDay(day);
+    useEffect(() => {
+        Promise.all([
+            apiFetch("/tasks")
+                .then((r) => r.json())
+                .then((d) => (Array.isArray(d) ? d : d.tasks || [])),
+            apiFetch("/employees")
+                .then((r) => r.json())
+                .then((d) => (Array.isArray(d) ? d : d.employees || [])),
+            apiFetch("/availability")
+                .then((r) => r.json())
+                .then((d) => (Array.isArray(d) ? d : d || [])),
+        ])
+            .then(([taskData, employeeData, availabilityData]) => {
+                setTasks(taskData);
+                setEmployees(employeeData);
+                if (employeeData.length > 0)
+                    setSelectedEmployeeId(employeeData[0].id);
+                setAvailabilities(availabilityData);
+            })
+            .catch(console.error)
+            .finally(() => setIsLoading(false));
+    }, []);
+
+    const handleDayChange = (weekday) => {
+        const nextTimes = getAvailableTimesForDay(
+            weekday,
+            availabilities,
+            appointmentLength,
+        );
         setSelectedTime(nextTimes.length > 0 ? nextTimes[0] : "");
     };
 
     const handleCreateAppointment = async () => {
-        if (!selectedTime) {
-            Alert.alert("No time selected", "Please select an available time.");
-            return;
-        }
-
         if (!selectedTaskId) {
-            Alert.alert("No task selected", "Please select a task.");
+            showAlert("No task selected", "Please select a task.");
             return;
         }
-
         if (
             employeePreference === EMPLOYEE_OPTIONS.SPECIFIC &&
             !selectedEmployeeId
         ) {
-            Alert.alert("No employee selected", "Please select an employee.");
+            showAlert(
+                "No employee selected",
+                "Please select an employee or choose any.",
+            );
+            return;
+        }
+        if (!selectedTime) {
+            showAlert("No time selected", "Please select an available time.");
             return;
         }
 
         const appointment = buildAppointment(
-            selectedDay,
+            selectedDate,
             selectedTime,
-            selectedTaskId,
+            Number(selectedTaskId),
             employeePreference,
             selectedEmployeeId,
+            appointmentLength,
         );
 
-        await createAppointmentRequest(appointment);
-
-        Alert.alert(
-            "Appointment Created",
-            JSON.stringify(appointment, null, 2),
-        );
+        try {
+            await createAppointmentRequest(appointment);
+            showAlert("Success", "Your appointment has been booked.");
+        } catch (err) {
+            console.error(err);
+            if (err.message.includes("401") || err.message.includes("403")) {
+                showAlert("Session Expired", "Please log in again.");
+            } else if (err.message.includes("Network request failed")) {
+                showAlert(
+                    "No Connection",
+                    "Check your internet and try again.",
+                );
+            } else {
+                showAlert(
+                    "Error",
+                    err.message || "Failed to create appointment.",
+                );
+            }
+        }
     };
 
     return (
-        <View>
+        <View style={sty.container}>
             <Text>Select a task</Text>
             <Picker
                 selectedValue={selectedTaskId}
                 onValueChange={(value) => setSelectedTaskId(value)}
             >
-                {TASKS.map((task) => (
-                    <Picker.Item
-                        key={task.id}
-                        label={task.name}
-                        value={task.id}
-                    />
-                ))}
+                <Picker.Item label="Choose a task" value="" />
+                {Array.isArray(tasks) &&
+                    tasks.map((task) => (
+                        <Picker.Item
+                            key={task.id}
+                            label={task.name}
+                            value={task.id}
+                        />
+                    ))}
             </Picker>
 
             <Text>Choose employee preference</Text>
@@ -189,30 +254,52 @@ export function BookingScreen() {
                         selectedValue={selectedEmployeeId}
                         onValueChange={(value) => setSelectedEmployeeId(value)}
                     >
-                        {EMPLOYEES.map((employee) => (
-                            <Picker.Item
-                                key={employee.id}
-                                label={employee.name}
-                                value={employee.id}
-                            />
-                        ))}
+                        {Array.isArray(employees) &&
+                            employees.map((employee) => (
+                                <Picker.Item
+                                    key={employee.id}
+                                    label={employee.first_name}
+                                    value={employee.id}
+                                />
+                            ))}
                     </Picker>
                 </>
             )}
 
             <Text>Select a day</Text>
-            <Picker
-                selectedValue={selectedDay}
-                onValueChange={(value) => handleDayChange(value)}
+            <TouchableOpacity onPress={() => setShowCalendar(true)}>
+                <Text>{selectedDate || "Tap to select a date"}</Text>
+            </TouchableOpacity>
+
+            <Modal
+                visible={showCalendar}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={() => setShowCalendar(false)}
             >
-                {WEEKDAYS.map((day) => (
-                    <Picker.Item
-                        key={day.value}
-                        label={day.label}
-                        value={day.value}
-                    />
-                ))}
-            </Picker>
+                <TouchableOpacity onPress={() => setShowCalendar(false)}>
+                    <TouchableOpacity activeOpacity={1}>
+                        <Calendar
+                            onDayPress={(day) => {
+                                setSelectedDate(day.dateString);
+                                handleDayChange(
+                                    new Date(
+                                        day.dateString + "T12:00:00",
+                                    ).getDay(),
+                                );
+                                setShowCalendar(false);
+                            }}
+                            markedDates={{
+                                [selectedDate]: {
+                                    selected: true,
+                                    selectedColor: "#007AFF",
+                                },
+                            }}
+                            minDate={new Date().toISOString().split("T")[0]}
+                        />
+                    </TouchableOpacity>
+                </TouchableOpacity>
+            </Modal>
 
             <Text>Select time</Text>
             <Picker
@@ -235,66 +322,3 @@ export function BookingScreen() {
         </View>
     );
 }
-
-// export function BookingScreen() {
-//   const staff = ["Anna", "John", "Mike"];
-
-//   const generateTimeSlots = () => {
-//     const times = [];
-//     let hour = 6;
-//     let minutes = 0;
-
-//     while (hour < 12) {
-//       // change to 22 for full day
-//       const formattedHour = hour.toString().padStart(2, "0");
-//       const formattedMin = minutes.toString().padStart(2, "0");
-
-//       times.push(`${formattedHour}:${formattedMin}`);
-
-//       minutes += 15;
-//       if (minutes === 60) {
-//         minutes = 0;
-//         hour++;
-//       }
-//     }
-
-//     return times;
-//   };
-
-//   const timeSlots = generateTimeSlots();
-
-//   return (
-//     <View>
-//       {/* Header Row */}
-//       <View>
-//         <View>
-//           <Text>Time</Text>
-//         </View>
-
-//         {staff.map((person, index) => (
-//           <View key={index}>
-//             <Text>{person}</Text>
-//           </View>
-//         ))}
-//       </View>
-
-//       {/* Time Rows */}
-//       {timeSlots.map((time, rowIndex) => (
-//         <View key={rowIndex}>
-//           <View>
-//             <Text>{time}</Text>
-//           </View>
-
-//           {staff.map((_, colIndex) => (
-//             <TouchableOpacity
-//               key={colIndex}
-//               onPress={() => alert(`Booked ${time}`)}
-//             >
-//               <Text></Text>
-//             </TouchableOpacity>
-//           ))}
-//         </View>
-//       ))}
-//     </View>
-//   );
-// }
