@@ -129,7 +129,7 @@ export function AdminAppointmentTypesScreen() {
             />
 
             {/* Modal for Create / Update */}
-            <Modal visible={modalVisible} transparent animationType="slide">
+            <Modal visible={modalVisible} animationType="slide">
                 <View>
                     <View>
                         <Text>{editingTask ? "Update Task" : "Create Task"}</Text>
