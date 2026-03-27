@@ -107,134 +107,134 @@ export function HomeScreen({ navigation }) {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-        <StatusBar barStyle="dark-content" />
-        <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={[styles.scrollContent, { minHeight: height }]}
-        showsVerticalScrollIndicator={false}
-        >
-        <Animated.View
-        style={[
-            styles.pageWrap,
-            {
-                minHeight: height,
-                opacity: fadeIn,
-                transform: [{ translateY: slideUp }],
-            },
-        ]}
-        >
-        <View style={styles.screenInner}>
-        <View style={[styles.heroCard, { minHeight: heroMinHeight }]}>
-        <Animated.View
-        style={[
-            styles.blobOne,
-            { transform: [{ translateY: blob1Y }] },
-        ]}
-        />
-        <Animated.View
-        style={[
-            styles.blobTwo,
-            { transform: [{ translateY: blob2Y }] },
-        ]}
-        />
-        <Animated.View
-        style={[
-            styles.blobThree,
-            {
-                left: width * 0.56,
-                transform: [{ translateY: blob1Y }],
-            },
-        ]}
-        />
+            <StatusBar barStyle="dark-content" />
+            <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={[styles.scrollContent, { minHeight: height }]}
+                showsVerticalScrollIndicator={false}
+                >
+                <Animated.View
+                    style={[
+                        styles.pageWrap,
+                        {
+                            minHeight: height,
+                            opacity: fadeIn,
+                            transform: [{ translateY: slideUp }],
+                        },
+                    ]}
+                >
+                    <View style={styles.screenInner}>
+                        <View style={[styles.heroCard, { minHeight: heroMinHeight }]}>
+                            <Animated.View
+                                style={[
+                                    styles.blobOne,
+                                    { transform: [{ translateY: blob1Y }] },
+                                ]}
+                                />
+                            <Animated.View
+                                style={[
+                                    styles.blobTwo,
+                                    { transform: [{ translateY: blob2Y }] },
+                                ]}
+                                />
+                            <Animated.View
+                                style={[
+                                    styles.blobThree,
+                                    {
+                                        left: width * 0.56,
+                                        transform: [{ translateY: blob1Y }],
+                                    },
+                                ]}
+                                />
 
-        <View style={styles.heroTopRow}>
-        <Text style={styles.kicker}>{getGreeting()}</Text>
-        </View>
+                            <View style={styles.heroTopRow}>
+                                <Text style={styles.kicker}>{getGreeting()}</Text>
+                            </View>
 
-        <View style={styles.heroTextBlock}>
-        <Text style={styles.heroTitle}>Salon Studio</Text>
-        <Text style={styles.heroTitleAccent}>Dashboard</Text>
-        <Text style={styles.heroText}>
-        Manage check-ins and book appointments in one clean, smooth
-        workspace.
-        </Text>
-        </View>
+                            <View style={styles.heroTextBlock}>
+                                <Text style={styles.heroTitle}>Salon Studio</Text>
+                                <Text style={styles.heroTitleAccent}>Dashboard</Text>
+                                <Text style={styles.heroText}>
+                                    Manage check-ins and book appointments in one clean, smooth
+                                    workspace.
+                                </Text>
+                            </View>
 
-        <View style={styles.metaRow}>
-        <View style={styles.metaChip}>
-        <Text style={styles.metaChipText}>{getTodayLabel()}</Text>
-        </View>
-        </View>
+                            <View style={styles.metaRow}>
+                                <View style={styles.metaChip}>
+                                    <Text style={styles.metaChipText}>{getTodayLabel()}</Text>
+                                </View>
+                            </View>
 
-        <View style={styles.heroFadeWrap}>
-        <View style={styles.heroFadeMain} />
-        <View style={styles.heroFadeSmall} />
-        </View>
-        </View>
+                            <View style={styles.heroFadeWrap}>
+                                <View style={styles.heroFadeMain} />
+                                <View style={styles.heroFadeSmall} />
+                            </View>
+                        </View>
 
-        <Pressable
-        style={({ pressed }) => [
-            styles.primaryActionCard,
-            pressed && styles.cardPressed,
-        ]}
-        onPress={() => navigation.navigate(NAV_CHECKIN)}
-        >
-        <View style={styles.cardGlow} />
-        <View style={styles.cardHeaderRow}>
-        <View style={styles.iconWrapLarge}>
-        <Text style={styles.iconLarge}>✦</Text>
-        </View>
-        <View style={styles.pillDark}>
-        <Text style={styles.pillDarkText}>Front Desk</Text>
-        </View>
-        </View>
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.primaryActionCard,
+                                pressed && styles.cardPressed,
+                            ]}
+                            onPress={() => navigation.navigate(NAV_CHECKIN)}
+                            >
+                            <View style={styles.cardGlow} />
+                            <View style={styles.cardHeaderRow}>
+                                <View style={styles.iconWrapLarge}>
+                                    <Text style={styles.iconLarge}>✦</Text>
+                                </View>
+                                <View style={styles.pillDark}>
+                                    <Text style={styles.pillDarkText}>Front Desk</Text>
+                                </View>
+                            </View>
 
-        <Text style={styles.primaryTitle}>Customer Check In</Text>
-        <Text style={styles.primaryDescription}>
-        Quickly confirm a client’s arrival and keep the check-in
-        experience fast and organized.
-        </Text>
+                        <Text style={styles.primaryTitle}>Customer Check In</Text>
+                        <Text style={styles.primaryDescription}>
+                            Quickly confirm a client’s arrival and keep the check-in
+                            experience fast and organized.
+                        </Text>
 
-        <View style={styles.primaryFooter}>
-        <Text style={styles.primaryFooterText}>Open check-in</Text>
-        <Text style={styles.primaryArrow}>→</Text>
-        </View>
-        </Pressable>
+                        <View style={styles.primaryFooter}>
+                            <Text style={styles.primaryFooterText}>Open check-in</Text>
+                            <Text style={styles.primaryArrow}>→</Text>
+                        </View>
+                        </Pressable>
 
-        <Pressable
-        style={({ pressed }) => [
-            styles.secondaryActionCardFull,
-            pressed && styles.cardPressed,
-        ]}
-        onPress={() => navigation.navigate(NAV_BOOKING)}
-        >
-        <View style={styles.smallTopRow}>
-        <View style={styles.iconWrapSmall}>
-        <Text style={styles.iconSmall}>◎</Text>
-        </View>
-        <Text style={styles.cornerText}>Schedule</Text>
-        </View>
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.secondaryActionCardFull,
+                                pressed && styles.cardPressed,
+                            ]}
+                            onPress={() => navigation.navigate(NAV_BOOKING)}
+                            >
+                            <View style={styles.smallTopRow}>
+                                <View style={styles.iconWrapSmall}>
+                                    <Text style={styles.iconSmall}>◎</Text>
+                                </View>
+                                <Text style={styles.cornerText}>Schedule</Text>
+                            </View>
 
-        <Text style={styles.secondaryTitle}>Book Appointment</Text>
-        <Text style={styles.secondaryDescription}>
-        Create a new booking with a smoother scheduling flow.
-        </Text>
-        </Pressable>
+                            <Text style={styles.secondaryTitle}>Book Appointment</Text>
+                            <Text style={styles.secondaryDescription}>
+                                Create a new booking with a smoother scheduling flow.
+                            </Text>
+                        </Pressable>
 
-        <View style={styles.bottomSpacer} />
+                        <View style={styles.bottomSpacer} />
 
-        <Pressable
-        style={({ pressed }) => [
-            styles.logoutBar,
-            pressed && styles.logoutBarPressed,
-        ]}
-        onPress={handleLogout}
-        >
-        <Text style={styles.logoutBarText}>Log Out</Text>
-        </Pressable>
-        </View>
-        </Animated.View>
-        </ScrollView>
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.logoutBar,
+                                pressed && styles.logoutBarPressed,
+                            ]}
+                            onPress={handleLogout}
+                        >
+                            <Text style={styles.logoutBarText}>Log Out</Text>
+                        </Pressable>
+                    </View>
+                </Animated.View>
+            </ScrollView>
         </SafeAreaView>
     );
 }
