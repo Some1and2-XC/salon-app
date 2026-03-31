@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { apiFetch } from "../utils";
+import { NAV_HOME } from "../consts";
 
 const EMPLOYEE_OPTIONS = {
     ANY: "ANY",
@@ -245,7 +246,7 @@ function InfoSelectCard({
     );
 }
 
-export function BookingScreen() {
+export function BookingScreen({ navigation }) {
     const { width, height } = useWindowDimensions();
 
     const fadeIn = useRef(new Animated.Value(0)).current;
@@ -519,6 +520,17 @@ export function BookingScreen() {
                     ]}
                 >
                     <View style={styles.screenInner}>
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.backButton,
+                                pressed && styles.cardPressed,
+                            ]}
+                            onPress={() => navigation.navigate(NAV_HOME)}
+                        >
+                            <Text style={styles.backButtonArrow}>←</Text>
+                            <Text style={styles.backButtonText}>Back to Home</Text>
+                        </Pressable>
+
                         <View style={[styles.heroCard, { minHeight: heroMinHeight }]}>
                             <Animated.View
                                 style={[
@@ -888,6 +900,32 @@ const styles = StyleSheet.create({
     screenInner: {
         flex: 1,
         minHeight: "100%",
+    },
+
+    backButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        alignSelf: "flex-start",
+        backgroundColor: "#fff8f2",
+        borderRadius: 999,
+        paddingVertical: 10,
+        paddingHorizontal: 14,
+        borderWidth: 1,
+        borderColor: "#ead9ce",
+        marginBottom: 12,
+    },
+
+    backButtonArrow: {
+        fontSize: 18,
+        color: "#7f5d4d",
+        marginRight: 8,
+        fontWeight: "800",
+    },
+
+    backButtonText: {
+        fontSize: 14,
+        fontWeight: "700",
+        color: "#2b1b15",
     },
 
     heroCard: {

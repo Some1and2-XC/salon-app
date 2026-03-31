@@ -5,6 +5,7 @@ import {
     View,
     Pressable,
     SafeAreaView,
+    Platform,
     StatusBar,
     ScrollView,
     Animated,
@@ -106,13 +107,21 @@ export function HomeScreen({ navigation }) {
     const heroMinHeight = Math.max(240, Math.min(height * 0.33, 310));
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView
+            style={[styles.safeArea, Platform.OS === "web" && styles.safeAreaWeb]}
+        >
             <StatusBar barStyle="dark-content" />
             <ScrollView
-                style={styles.scrollView}
+                style={[
+                    styles.scrollView,
+                    Platform.OS === "web" && styles.scrollViewWeb,
+                ]}
                 contentContainerStyle={[styles.scrollContent, { minHeight: height }]}
                 showsVerticalScrollIndicator={false}
-                >
+                bounces={true}
+                nestedScrollEnabled={true}
+                keyboardShouldPersistTaps="handled"
+            >
                 <Animated.View
                     style={[
                         styles.pageWrap,
@@ -245,12 +254,23 @@ const styles = StyleSheet.create({
         backgroundColor: "#f5efe9",
     },
 
+    safeAreaWeb: {
+        height: "100vh",
+        maxHeight: "100vh",
+        overflow: "hidden",
+    },
+
     scrollView: {
         flex: 1,
     },
 
+    scrollViewWeb: {
+        minHeight: 0,
+    },
+
     scrollContent: {
         flexGrow: 1,
+        paddingBottom: 18,
     },
 
     pageWrap: {
