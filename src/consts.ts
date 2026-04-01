@@ -7,4 +7,4 @@ export const NAV_HOME: string = "home";
 export const NAV_LOGIN: string = "login";
 export const NAV_SIGNUP: string = "signup";
 export const NAV_APP_TYPES: string = "appTypes";
-
+export const NAV_BARCODE_SCANNER: string = "BarcodeScanner";

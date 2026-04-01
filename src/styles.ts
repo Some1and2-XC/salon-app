@@ -8,6 +8,12 @@ export const sty = StyleSheet.create({
         backgroundColor: '#fff'
     },
 
+    containerCentered: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+
     h1: {
         fontSize: 32,
         fontWeight: '700',
