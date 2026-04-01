@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
+import { StyleSheet, Text, View, Button, Platform } from 'react-native';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { apiFetch } from "../utils";
 import Toast from 'react-native-toast-message';
@@ -10,6 +10,8 @@ import {
     NAV_EXAMPLE_HOME
 } from "../consts";
 
+import { sty } from "../styles";
+
 export function CheckinScreen({ navigation }) {
 
     const returnToHomePage = () => {
@@ -18,7 +20,7 @@ export function CheckinScreen({ navigation }) {
 
     useEffect(() => {
         const auth = getAuth();
-        
+
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if(!user) {
                 navigation.navigate(NAV_LOGIN);
@@ -62,50 +64,10 @@ export function CheckinScreen({ navigation }) {
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.titleWrapper}>
-                <Text style={styles.title}>Check In</Text>
-            </View>
-            <View style={styles.contentWrapper}>
-                <TouchableOpacity style={styles.Button} onPress={returnToHomePage}>
-                    <Text style={styles.ButtonText}>HOME</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.Button} onPress={handleGenerateQR}>
-                    <Text style={styles.ButtonText}>SHOW MY QR CODE</Text>
-                </TouchableOpacity>
-            </View>
+        <View style={sty.container}>
+            <Text style={sty.h1}>Check In</Text>
+            <Button style={sty.button} title={"HOME"} onPress={returnToHomePage} />
+            <Button style={sty.button} title={"QR Code"} onPress={handleGenerateQR} />
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center'
-    },
-    titleWrapper: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 10,
-        height: 100,
-    },
-    title: {
-        fontSize: 35,
-        fontWeight: 600
-    },
-    contentWrapper: {
-        marginTop: 20,
-        flex: 1,
-        alignItems: 'center',
-    },
-    Button: {
-        width: '90%',
-        padding: 15,
-        backgroundColor: '#007BFF',
-        alignItems: 'center'
-    },
-    ButtonText: {
-        color: 'white',
-        fontWeight: 500
-    }
-});

@@ -12,7 +12,6 @@ import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from 'fir
 import { apiFetch } from "../utils";
 import { sty } from "../styles";
 import { NAV_SIGNUP } from "../consts";
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 
 function getLoginErrorMessage(code) {
   switch (code) {

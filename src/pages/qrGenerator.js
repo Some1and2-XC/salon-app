@@ -9,17 +9,17 @@ export function QRScreen({route}) {
     const [qrValue, setQrValue] = useState('');
 
     useEffect(() => {
-      setQrValue(uid);
+        setQrValue(uid);
     }, [uid]);
 
     return (
-    <View styles={sty.container}>
-      <Text>Checkin Confirmed! Use this to checkin for your appointment!</Text>
-      {qrValue !== '' && (
-        <View style={sty.containerCentered}>
-          <QRCode value={qrValue} size={250} />
+        <View styles={sty.container}>
+            <Text>Checkin Confirmed! Use this to checkin for your appointment!</Text>
+            {qrValue !== '' && (
+                <View style={sty.containerCentered}>
+                    <QRCode value={qrValue} size={250} />
+                </View>
+            )}
         </View>
-      )}
-    </View>
     );
 }
