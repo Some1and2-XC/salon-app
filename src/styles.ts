@@ -14,15 +14,6 @@ export const sty = StyleSheet.create({
         alignItems: "center"
     },
 
-    containerCard: {
-        borderRadius: 2.5,
-        borderWidth: 0.5,
-        borderColor: "black",
-        marginTop: 6,
-        marginBottom: 6,
-        padding: 12,
-    },
-
     h1: {
         fontSize: 32,
         fontWeight: '700',
