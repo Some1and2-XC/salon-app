@@ -60,7 +60,7 @@ export function CheckinScreen({ navigation }) {
             return;
         }
 
-        navigation.navigate(NAV_QR, { userID: user.uid });
+        navigation.navigate(NAV_QR, { data: data });
     }
 
     return (
