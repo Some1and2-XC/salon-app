@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Alert, Platform } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 
+import { sty } from "../styles";
 export function BarcodeScannerScreen() {
 
     const [hasPermission, setHasPermission] = useState(null);
@@ -20,7 +21,7 @@ export function BarcodeScannerScreen() {
     // Web fallback
     if (Platform.OS === "web") {
         return (
-            <View style={styles.container}>
+            <View style={sty.containerCentered}>
                 <Text>Barcode scanner is not supported on web.</Text>
                 <Text>Please run the app on a mobile device.</Text>
             </View>
@@ -41,7 +42,7 @@ export function BarcodeScannerScreen() {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={sty.containerCentered}>
             <BarCodeScanner
                 onBarCodeScanned={handleBarCodeScanned}
                 style={StyleSheet.absoluteFillObject}
@@ -49,7 +50,3 @@ export function BarcodeScannerScreen() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: { flex: 1, justifyContent: "center", alignItems: "center" }
-});

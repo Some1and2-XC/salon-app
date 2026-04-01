@@ -32,8 +32,8 @@ import {
     NAV_HOME,
     NAV_LOGIN,
     NAV_SIGNUP,
-    NAV_APP_TYPES
-    NAV_BARCODE_SCANNER,
+    NAV_APP_TYPES,
+    NAV_BARCODE_SCANNER
 } from "./consts";
 
 export default function App() {
