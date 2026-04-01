@@ -31,6 +31,14 @@ export function AdminAppointmentTypesScreen() {
         fetchTasks();
     }, []);
 
+    const fetchTasks = async () => {
+        await apiFetch("/tasks")
+            .then((res) => res.json())
+            .then((json) => setTasks(json))
+            .catch(console.error)
+            ;
+    };
+
     const openCreateModal = () => {
         setEditingTask(null);
         setName("");
@@ -38,14 +46,6 @@ export function AdminAppointmentTypesScreen() {
         setCategory("");
         setTime("");
         setModalVisible(true);
-    };
-
-    const fetchTasks = async () => {
-        await apiFetch("/tasks")
-            .then((res) => res.json())
-            .then((json) => setTasks(json))
-            .catch(console.error)
-            ;
     };
 
     const openEditModal = (task) => {
