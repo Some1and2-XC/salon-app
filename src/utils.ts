@@ -13,5 +13,3 @@ export async function apiFetch(path: string, options: any = {}) {
     },
   });
 }
-
-// TODO Add global info popup method.

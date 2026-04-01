@@ -15,6 +15,7 @@ import {
 import { signOut } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { NAV_CHECKIN, NAV_BOOKING, NAV_LOGIN } from "../consts";
+import { commonUi } from "../styles";
 
 function getGreeting() {
     const hour = new Date().getHours();
@@ -273,41 +274,13 @@ export function HomeScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: "#f5efe9",
-    },
-
-    safeAreaWeb: {
-        height: "100vh",
-        maxHeight: "100vh",
-        overflow: "hidden",
-    },
-
-    scrollView: {
-        flex: 1,
-    },
-
-    scrollViewWeb: {
-        minHeight: 0,
-    },
-
-    scrollContent: {
-        flexGrow: 1,
-        paddingBottom: 18,
-    },
-
-    pageWrap: {
-        flex: 1,
-        paddingHorizontal: 14,
-        paddingTop: 10,
-        paddingBottom: 10,
-    },
-
-    screenInner: {
-        flex: 1,
-        minHeight: "100%",
-    },
+    safeArea: commonUi.screen.safeArea,
+    safeAreaWeb: commonUi.screen.safeAreaWeb,
+    scrollView: commonUi.screen.scrollView,
+    scrollViewWeb: commonUi.screen.scrollViewWeb,
+    scrollContent: commonUi.screen.scrollContent,
+    pageWrap: commonUi.screen.pageWrapNarrow,
+    screenInner: commonUi.screen.screenInner,
     toastWrap: {
         alignSelf: "center",
         marginBottom: 10,
@@ -322,110 +295,18 @@ const styles = StyleSheet.create({
         fontWeight: "700",
     },
 
-    heroCard: {
-        position: "relative",
-        overflow: "hidden",
-        borderRadius: 28,
-        paddingHorizontal: 20,
-        paddingTop: 24,
-        paddingBottom: 32,
-        backgroundColor: "#ead7ca",
-        marginBottom: 14,
-        justifyContent: "space-between",
-        width: "100%",
-    },
-
-    heroTopRow: {
-        zIndex: 2,
-    },
-
-    heroTextBlock: {
-        zIndex: 2,
-        marginTop: 8,
-        marginBottom: 18,
-    },
-
-    heroFadeWrap: {
-        position: "absolute",
-        left: 0,
-        right: 0,
-        bottom: -2,
-        alignItems: "center",
-    },
-
-    heroFadeMain: {
-        width: "84%",
-        height: 26,
-        backgroundColor: "#f3e7de",
-        borderTopLeftRadius: 100,
-        borderTopRightRadius: 100,
-        opacity: 0.72,
-    },
-
-    heroFadeSmall: {
-        width: "56%",
-        height: 14,
-        backgroundColor: "#f3e7de",
-        marginTop: -4,
-        borderTopLeftRadius: 50,
-        borderTopRightRadius: 50,
-        opacity: 0.95,
-    },
-
-    blobOne: {
-        position: "absolute",
-        width: 220,
-        height: 220,
-        borderRadius: 110,
-        backgroundColor: "#d4ab93",
-        right: -55,
-        top: -45,
-        opacity: 0.35,
-    },
-
-    blobTwo: {
-        position: "absolute",
-        width: 140,
-        height: 140,
-        borderRadius: 70,
-        backgroundColor: "#f6ece4",
-        right: 48,
-        bottom: -42,
-        opacity: 0.95,
-    },
-
-    blobThree: {
-        position: "absolute",
-        width: 90,
-        height: 90,
-        borderRadius: 45,
-        backgroundColor: "#c7896b",
-        top: 102,
-        opacity: 0.12,
-    },
-
-    kicker: {
-        fontSize: 12,
-        fontWeight: "700",
-        letterSpacing: 1.7,
-        textTransform: "uppercase",
-        color: "#7f5d4d",
-    },
-
-    heroTitle: {
-        fontSize: 38,
-        fontWeight: "800",
-        lineHeight: 41,
-        color: "#231712",
-    },
-
-    heroTitleAccent: {
-        fontSize: 38,
-        fontWeight: "800",
-        lineHeight: 41,
-        color: "#9b664d",
-        marginBottom: 12,
-    },
+    heroCard: commonUi.hero.heroCard,
+    heroTopRow: commonUi.hero.heroTopRow,
+    heroTextBlock: commonUi.hero.heroTextBlock,
+    heroFadeWrap: commonUi.hero.heroFadeWrap,
+    heroFadeMain: commonUi.hero.heroFadeMain,
+    heroFadeSmall: commonUi.hero.heroFadeSmall,
+    blobOne: commonUi.hero.blobOne,
+    blobTwo: commonUi.hero.blobTwo,
+    blobThree: commonUi.hero.blobThree,
+    kicker: commonUi.hero.kicker,
+    heroTitle: commonUi.hero.heroTitle,
+    heroTitleAccent: commonUi.hero.heroTitleAccent,
 
     heroText: {
         fontSize: 15,
@@ -434,25 +315,9 @@ const styles = StyleSheet.create({
         maxWidth: "78%",
     },
 
-    metaRow: {
-        zIndex: 2,
-        flexDirection: "row",
-        flexWrap: "wrap",
-    },
-
-    metaChip: {
-        backgroundColor: "#241713",
-        paddingHorizontal: 14,
-        paddingVertical: 9,
-        borderRadius: 999,
-        alignSelf: "flex-start",
-    },
-
-    metaChipText: {
-        color: "#fffaf6",
-        fontWeight: "700",
-        fontSize: 12.5,
-    },
+    metaRow: commonUi.hero.metaRow,
+    metaChip: commonUi.hero.metaChip,
+    metaChipText: commonUi.hero.metaChipText,
 
     primaryActionCard: {
         position: "relative",
