@@ -66,11 +66,11 @@ export function AdminAppointmentTypesScreen() {
         };
 
         if (editingTask) {
-            await apiFetch(`/tasks/${editingTask.id}`, { method: "PATCH", body: payload, })
+            await apiFetch(`/tasks/${editingTask.id}`, { method: "PATCH", body: JSON.stringify(payload), })
                 .catch(console.error)
                 ;
         } else {
-            await apiFetch("/tasks", { method: "POST", body: payload, })
+            await apiFetch("/tasks", { method: "POST", body: JSON.stringify(payload), })
                 .catch(console.error)
                 ;
         }
