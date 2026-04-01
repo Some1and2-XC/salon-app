@@ -16,6 +16,8 @@ import { ExampleHome } from "./pages/index";
 import { BookingScreen } from "./pages/booking";
 import { CheckinScreen } from "./pages/checkin";
 import { CheckinConfirmScreen } from "./pages/checkinConfirm";
+import { AdminCheckinConfirm } from "./pages/adminCheckinConfirm";
+import { AdminCheckinConfirmList } from "./pages/adminCheckinConfirmList";
 import { HomeScreen } from "./pages/home";
 import { LoginScreen } from "./pages/login";
 import { SignupScreen } from "./pages/signup";
@@ -29,6 +31,8 @@ import {
     NAV_BOOKING,
     NAV_CHECKIN,
     NAV_CHECKINCONFIRM,
+    NAV_CHECKIN_CONFIRM_ADMIN,
+    NAV_CHECKIN_CONFIRM_ADMIN_LIST,
     NAV_HOME,
     NAV_LOGIN,
     NAV_SIGNUP,
@@ -74,6 +78,8 @@ export default function App() {
         <Stack.Screen name={ NAV_BOOKING } component={ BookingScreen } />
         <Stack.Screen name={ NAV_CHECKIN } component={ CheckinScreen } />
         <Stack.Screen name={ NAV_CHECKINCONFIRM } component={ CheckinConfirmScreen } />
+        <Stack.Screen name={ NAV_CHECKIN_CONFIRM_ADMIN } component={ AdminCheckinConfirm } />
+        <Stack.Screen name={ NAV_CHECKIN_CONFIRM_ADMIN_LIST } component={ AdminCheckinConfirmList } />
         <Stack.Screen name={ NAV_HOME } component={ HomeScreen } />
         <Stack.Screen name={ NAV_LOGIN } component={ LoginScreen } />
         <Stack.Screen name={ NAV_SIGNUP } component={ SignupScreen } />
