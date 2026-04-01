@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
     StyleSheet,
     Text,
@@ -32,8 +32,9 @@ function getTodayLabel() {
     });
 }
 
-export function HomeScreen({ navigation }) {
+export function HomeScreen({ navigation, route }) {
     const { width, height } = useWindowDimensions();
+    const [loginToast, setLoginToast] = useState("");
 
     const float1 = useRef(new Animated.Value(0)).current;
     const float2 = useRef(new Animated.Value(0)).current;
@@ -85,6 +86,22 @@ export function HomeScreen({ navigation }) {
         ).start();
     }, [fadeIn, slideUp, float1, float2]);
 
+    useEffect(() => {
+        const toastMessage = route?.params?.toastMessage;
+        const loggedInAs = route?.params?.loggedInAs;
+        const messageToShow = toastMessage || (loggedInAs ? `Logged in as ${loggedInAs}` : "");
+        if (!messageToShow) return;
+
+        setLoginToast(messageToShow);
+
+        const timer = setTimeout(() => {
+            setLoginToast("");
+            navigation.setParams({ loggedInAs: undefined, toastMessage: undefined });
+        }, 2200);
+
+        return () => clearTimeout(timer);
+    }, [route?.params?.loggedInAs, route?.params?.toastMessage, navigation]);
+
     const blob1Y = float1.interpolate({
         inputRange: [0, 1],
         outputRange: [0, -14],
@@ -133,6 +150,12 @@ export function HomeScreen({ navigation }) {
                     ]}
                 >
                     <View style={styles.screenInner}>
+                        {loginToast ? (
+                            <View style={styles.toastWrap}>
+                                <Text style={styles.toastText}>{loginToast}</Text>
+                            </View>
+                        ) : null}
+
                         <View style={[styles.heroCard, { minHeight: heroMinHeight }]}>
                             <Animated.View
                                 style={[
@@ -283,6 +306,19 @@ const styles = StyleSheet.create({
     screenInner: {
         flex: 1,
         minHeight: "100%",
+    },
+    toastWrap: {
+        alignSelf: "center",
+        marginBottom: 10,
+        backgroundColor: "#1d7a32",
+        borderRadius: 999,
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+    },
+    toastText: {
+        color: "#ffffff",
+        fontSize: 12.5,
+        fontWeight: "700",
     },
 
     heroCard: {
