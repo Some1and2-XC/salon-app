@@ -12,6 +12,7 @@ import {
     NAV_LOGIN,
     NAV_SIGNUP,
     NAV_APP_TYPES
+    NAV_BARCODE_SCANNER,
 } from "../consts";
 
 export function ExampleHome({ navigation }: any ): React.JSX.Element {
@@ -24,7 +25,8 @@ export function ExampleHome({ navigation }: any ): React.JSX.Element {
         NAV_HOME,
         NAV_LOGIN,
         NAV_SIGNUP,
-        NAV_APP_TYPES
+        NAV_APP_TYPES,
+        NAV_BARCODE_SCANNER,
     ];
 
     return (
@@ -32,7 +34,7 @@ export function ExampleHome({ navigation }: any ): React.JSX.Element {
             <Text style={ sty.h1 }>Home Page!</Text>
             <Text>This is an example home page made so that other pages can be built with this as a reference!</Text>
 
-            {ENDPOINTS.map((v) => (<>
+           {ENDPOINTS.map((v) => (<>
                 <Button
                     key={v}
                     title={v}
