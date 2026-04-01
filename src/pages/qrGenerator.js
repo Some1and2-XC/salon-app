@@ -5,12 +5,10 @@ import QRCode from 'react-native-qrcode-svg';
 import { sty } from "../styles";
 
 export function QRScreen({route}) {
-    const { uid } = route.params;
-    const [qrValue, setQrValue] = useState('');
-    
-    useEffect(() => {
-        setQrValue(uid);
-    }, [uid]);
+
+    const qrValue = JSON.stringify(route.params.data);
+
+    console.log(qrValue);
 
     return (
         <View styles={sty.container}>
