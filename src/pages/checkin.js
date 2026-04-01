@@ -59,7 +59,6 @@ export function CheckinScreen({ navigation }) {
             }
             return;
         }
-        console.log(data);
 
         navigation.navigate(NAV_QR, { data: data });
     }

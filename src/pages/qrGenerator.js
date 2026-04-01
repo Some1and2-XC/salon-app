@@ -7,9 +7,7 @@ import { sty } from "../styles";
 export function QRScreen({route}) {
     const { uid } = route.params;
     const [qrValue, setQrValue] = useState('');
-
-    console.log(route.params);
-
+    
     useEffect(() => {
         setQrValue(uid);
     }, [uid]);
