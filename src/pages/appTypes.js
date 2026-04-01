@@ -107,7 +107,7 @@ export function AdminAppointmentTypesScreen() {
             <FlatList
                 data={tasks}
                 keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (<>
+                renderItem={({ item }) => (
                     <View style={sty.containerCard}>
                         <Text style={sty.textBold}>{item.name}</Text>
                         <Text>Price: ${ (item.price_cad_cent / 100).toFixed(2) }</Text>
@@ -121,7 +121,7 @@ export function AdminAppointmentTypesScreen() {
                             <Button onPress={() => confirmDeleteTask(item)} title="Delete" color="red" />
                         </View>
                     </View>
-                </>)}
+                )}
             />
 
             {/* Modal for Create / Update */}
@@ -156,7 +156,7 @@ export function AdminAppointmentTypesScreen() {
                         />
 
                         <View>
-                            <Button title={editingTask ? "Update" : "Create"} onPress={ () => saveTask } />
+                            <Button title={editingTask ? "Update" : "Create"} onPress={saveTask} />
                             <Button title="Cancel" color="red" onPress={() => setModalVisible(false)} />
                         </View>
                     </View>
