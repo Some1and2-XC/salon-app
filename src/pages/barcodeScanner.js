@@ -1,40 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Button, Alert, Platform } from "react-native";
-import { BarCodeScanner } from "expo-barcode-scanner";
+import { Button, View, Text, Alert, Platform } from "react-native";
+import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
 
 import { sty } from "../styles";
 import { NAV_CHECKIN_CONFIRM_ADMIN } from "../consts";
 
 export function BarcodeScannerScreen({ navigation }) {
 
-    const [hasPermission, setHasPermission] = useState(null);
-    const [scanned, setScanned] = useState(false);
+    const [facing, setFacing] = useState('back');
+    const [permission, requestPermission] = useCameraPermissions();
 
-    useEffect(() => {
-        if (Platform.OS !== "web") {
-            const getPermission = async () => {
-                const { status } = await BarCodeScanner.requestPermissionsAsync();
-                setHasPermission(status === "granted");
-            };
-            getPermission();
-        }
-    }, []);
+    if (!permission) {
+        // Camera permissions are still loading.
+        return <View />;
+    }
 
-    if (Platform.OS === "web") {
+    if (!permission.granted) {
+        // Camera permissions are not granted yet.
         return (
-            <View style={sty.containerCentered}>
-                <Text>Barcode scanner is not supported on web.</Text>
+            <View>
+                <Text>We need your permission to show the camera</Text>
+                <Button onPress={requestPermission} title="grant permission" />
             </View>
         );
     }
 
-    if (hasPermission === null) {
-        return <Text>Requesting camera permission...</Text>;
-    }
-
-    if (hasPermission === false) {
-        return <Text>No camera access</Text>;
-    }
+    // function toggleCameraFacing() {
+    //     setFacing(current => (current === 'back' ? 'front' : 'back'));
+    // }
 
     const handleBarCodeScanned = ({ data }) => {
         if (scanned) return;
@@ -55,15 +48,16 @@ export function BarcodeScannerScreen({ navigation }) {
     };
 
     return (
-        <View style={sty.containerCentered}>
-            <BarCodeScanner
+        <View style={sty.container}>
+            <CameraView
+                style={{ flex: 1 }}
+                barcodeScannerSettings={{
+                    barcodeTypes: ["qr"],
+                }}
                 onBarCodeScanned={handleBarCodeScanned}
-                style={StyleSheet.absoluteFillObject}
-            />
-
-            {scanned && (
-                <Button title="Scan Again" onPress={() => setScanned(false)} />
-            )}
+                facing={facing}
+                />
         </View>
     );
+
 }
