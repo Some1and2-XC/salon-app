@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, Button, FlatList, TouchableOpacity, ScrollView, Modal} from "react-native";
+import { View, Text, TextInput, Button, FlatList, ScrollView, Modal} from "react-native";
 import { Picker } from "@react-native-picker/picker";
 
-const API = process.env.EXPO_PUBLIC_DATABASE_API_DOMAIN;
+import { sty } from "../styles";
+import { apiFetch } from "../utils";
 
 export function AdminAppointmentTypesScreen() {
+
     const [tasks, setTasks] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
@@ -30,13 +32,11 @@ export function AdminAppointmentTypesScreen() {
     }, []);
 
     const fetchTasks = async () => {
-        try { 
-            const res = await fetch(`${API}/tasks`);
-            const data = await res.json();
-            setTasks(data);
-        } catch (err) {
-            console.log("Error fetching tasks: ", err);
-        }
+        await apiFetch("/tasks")
+            .then((res) => res.json())
+            .then((json) => setTasks(json))
+            .catch(console.error)
+            ;
     };
 
     const openCreateModal = () => {
@@ -66,21 +66,19 @@ export function AdminAppointmentTypesScreen() {
         };
 
         if (editingTask) {
-            await fetch(`${API}/tasks/${editingTask.id}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
+            await apiFetch(`/tasks/${editingTask.id}`, { method: "PATCH", body: JSON.stringify(payload), })
+                .catch(console.error)
+                ;
         } else {
-            await fetch(`${API}/tasks`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
+            await apiFetch("/tasks", { method: "POST", body: JSON.stringify(payload), })
+                .catch(console.error)
+                ;
         }
 
         setModalVisible(false);
-        fetchTasks();
+
+        await fetchTasks();
+
     };
 
     const confirmDeleteTask = (task) => {
@@ -89,26 +87,29 @@ export function AdminAppointmentTypesScreen() {
     };
 
     const deleteTask = async () => {
-        await fetch(`${API}/tasks/${taskToDelete.id}`, { method: "DELETE" });
+
+        await apiFetch(`/tasks/${taskToDelete.id}`, { method: "DELETE" })
+            .catch(console.error)
+            ;
+
         setDeleteModalVisible(false);
         fetchTasks();
+
     };
 
 
     return (
-        <View>
-            <Text>Admin Manage Services</Text>
+        <View style={sty.container}>
+            <Text style={sty.h1}>Admin Manage Services</Text>
 
-            <TouchableOpacity onPress={openCreateModal}>
-                <Text>+</Text>
-            </TouchableOpacity>
+            <Button title="New Appointment Type" onPress={openCreateModal} color="#2cc156" />
 
             <FlatList
                 data={tasks}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
-                    <View>
-                        <Text>{item.name}</Text>
+                    <View style={sty.containerCard}>
+                        <Text style={sty.textBold}>{item.name}</Text>
                         <Text>Price: ${ (item.price_cad_cent / 100).toFixed(2) }</Text>
                         <Text>Category: {taskCategories[item.task_category_id]?.name}</Text>
                         <Text>Time: { Math.round(item.time_for_booking / 60) } minutes</Text>
@@ -116,13 +117,8 @@ export function AdminAppointmentTypesScreen() {
                         <Text>Last Modified: {new Date(Number(item.last_modified)).toLocaleString()}</Text>
 
                         <View>
-                            <TouchableOpacity onPress={() => openEditModal(item)}>
-                                <Text>Update</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity onPress={() => confirmDeleteTask(item)}>
-                                <Text>Delete</Text>
-                            </TouchableOpacity>
+                            <Button onPress={() => openEditModal(item)} title="Update" />
+                            <Button onPress={() => confirmDeleteTask(item)} title="Delete" color="red" />
                         </View>
                     </View>
                 )}
@@ -167,10 +163,10 @@ export function AdminAppointmentTypesScreen() {
                 </View>
             </Modal>
 
-            <Modal visible={deleteModalVisible} transparent animationType="fade">
+            <Modal visible={deleteModalVisible} animationType="fade">
                 <View>
                     <View>
-                        <Text>Are you sure you want to delete this task?</Text>
+                        <Text>Are you sure you want to delete this task? ({taskToDelete ? `${taskToDelete.name}` : "NULL" })</Text>
                         <View>
                             <Button title="Yes" onPress={deleteTask} />
                             <Button title="Cancel" color="red" onPress={() => setDeleteModalVisible(false)} />
