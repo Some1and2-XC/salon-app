@@ -7,6 +7,7 @@ import {
     Button,
     Alert,
 } from 'react-native';
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 
 import { apiFetch } from "../utils";
 import { sty } from "../styles";
