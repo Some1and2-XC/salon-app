@@ -37,8 +37,10 @@ import {
     NAV_LOGIN,
     NAV_SIGNUP,
     NAV_APP_TYPES,
+    NAV_QR,
     NAV_BARCODE_SCANNER
 } from "./consts";
+import { QRScreen } from './pages/qrGenerator';
 
 export default function App() {
 
@@ -84,6 +86,7 @@ export default function App() {
         <Stack.Screen name={ NAV_LOGIN } component={ LoginScreen } />
         <Stack.Screen name={ NAV_SIGNUP } component={ SignupScreen } />
         <Stack.Screen name={ NAV_APP_TYPES } component={ AdminAppointmentTypesScreen } />
+        <Stack.Screen name={ NAV_QR} component={QRScreen} />
         <Stack.Screen name={ NAV_BARCODE_SCANNER } component={BarcodeScannerScreen} />
 
         {/*
