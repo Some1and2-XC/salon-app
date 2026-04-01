@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Alert, Platform } from "react-native";
+import { View, Text, StyleSheet, Button, Alert, Platform } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 
 import { sty } from "../styles";
-export function BarcodeScannerScreen() {
+import { NAV_CHECKIN_CONFIRM_ADMIN } from "../consts";
+
+export function BarcodeScannerScreen({ navigation }) {
 
     const [hasPermission, setHasPermission] = useState(null);
+    const [scanned, setScanned] = useState(false);
 
     useEffect(() => {
         if (Platform.OS !== "web") {
@@ -13,17 +16,14 @@ export function BarcodeScannerScreen() {
                 const { status } = await BarCodeScanner.requestPermissionsAsync();
                 setHasPermission(status === "granted");
             };
-
             getPermission();
         }
     }, []);
 
-    // Web fallback
     if (Platform.OS === "web") {
         return (
             <View style={sty.containerCentered}>
                 <Text>Barcode scanner is not supported on web.</Text>
-                <Text>Please run the app on a mobile device.</Text>
             </View>
         );
     }
@@ -37,8 +37,21 @@ export function BarcodeScannerScreen() {
     }
 
     const handleBarCodeScanned = ({ data }) => {
-        console.log("Found URL:", data);
-        Alert.alert("Found URL", data);
+        if (scanned) return;
+        setScanned(true);
+
+        try {
+            const parsed = JSON.parse(data);
+
+            navigation.navigate(NAV_CHECKIN_CONFIRM_ADMIN, {
+                userId: parsed.userId,
+                appointmentId: parsed.appointmentId
+            });
+
+        } catch (err) {
+            Alert.alert("Invalid QR Code");
+            setScanned(false);
+        }
     };
 
     return (
@@ -47,6 +60,10 @@ export function BarcodeScannerScreen() {
                 onBarCodeScanned={handleBarCodeScanned}
                 style={StyleSheet.absoluteFillObject}
             />
+
+            {scanned && (
+                <Button title="Scan Again" onPress={() => setScanned(false)} />
+            )}
         </View>
     );
 }
