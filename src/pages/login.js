@@ -17,37 +17,7 @@ import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "fir
 import { auth } from "../firebaseConfig";
 import { apiFetch } from "../utils";
 import { sty } from "../styles";
-import { NAV_HOME, NAV_SIGNUP } from "../consts";
-
-function getLoginErrorMessage(code) {
-    switch (code) {
-        case "auth/invalid-credential":
-            return "Invalid email or password.";
-        case "auth/user-not-found":
-            return "No account exists with this email.";
-        case "auth/wrong-password":
-            return "Incorrect password. Please try again.";
-        case "auth/invalid-email":
-            return "Please enter a valid email address.";
-        case "auth/too-many-requests":
-            return "Too many attempts. Please try again later.";
-        default:
-            return "Login failed. Please try again.";
-    }
-}
-
-function getPasswordResetErrorMessage(code) {
-    switch (code) {
-        case "auth/invalid-email":
-            return "Please enter a valid email address.";
-        case "auth/missing-email":
-            return "Please enter your email first.";
-        case "auth/too-many-requests":
-            return "Too many reset attempts. Please try again later.";
-        default:
-            return "Could not send password reset email. Please try again.";
-    }
-}
+import { NAV_HOME, NAV_SIGNUP, FIREBASE_AUTH_ERROR_MESSAGES  } from "../consts";
 
 export function LoginScreen({ navigation }) {
     const [email, setEmail] = useState("");
@@ -56,34 +26,38 @@ export function LoginScreen({ navigation }) {
     const [feedbackType, setFeedbackType] = useState("");
 
     const onLogin = async () => {
+        // TODO centralize email + password validation.
         const trimmedEmail = email.trim();
         setFeedbackMessage("");
         setFeedbackType("");
-
         if (!trimmedEmail || !password) {
             setFeedbackMessage("Please enter your email and password.");
             setFeedbackType("error");
             return;
         }
 
-        try {
-            await signInWithEmailAndPassword(auth, trimmedEmail, password);
+        signInWithEmailAndPassword(auth, trimmedEmail, password)
+            .then(() => apiFetch("/users/me"))
+            .then((res) => res.json())
+            // TODO replace loggedInAs with just pulling from the firebase token itself.
+            .then((res) => navigation.navigate(NAV_HOME, { loggedInAs: trimmedEmail }))
+            // TODO replace with global popup
+            .catch((error) => {
+                console.error("Login Failed", error);
+                // TODO while replacing with global popup, fixing the inconsistency between the feedback for this
+                // vs feedback for onForgotPassword
+                setFeedbackMessage(FIREBASE_AUTH_ERROR_MESSAGES[error.code] ?? "Could not send password reset email. Please try again.");
+                setFeedbackType("error");
+            })
+            ;
 
-            const res = await apiFetch("/users/me");
-            if (!res.ok) throw new Error("User not found in backend!");
-
-            navigation.navigate(NAV_HOME, { loggedInAs: trimmedEmail });
-        } catch (error) {
-            console.error("Login Failed", error);
-            setFeedbackMessage(getLoginErrorMessage(error.code));
-            setFeedbackType("error");
-        }
     };
 
     const onForgotPassword = async () => {
         const trimmedEmail = email.trim();
 
         if (!trimmedEmail) {
+            // TODO replace with global popup
             Alert.alert(
                 "Enter Email",
                 "Type your email above first, then tap Forgot Password."
@@ -91,19 +65,15 @@ export function LoginScreen({ navigation }) {
             return;
         }
 
-        try {
-            await sendPasswordResetEmail(auth, trimmedEmail);
-            Alert.alert(
-                "Reset Email Sent",
-                "If an account exists for this email, a password reset link has been sent."
-            );
-        } catch (error) {
-            console.error("Password Reset Failed", error);
-            Alert.alert(
+        sendPasswordResetEmail(auth, trimmedEmail)
+            .then(() => Alert.alert("Reset Email Sent", "If an account exists for this email, a password reset link has been sent."))
+            // TODO replace with global popup
+            .catch((error) => Alert.alert(
                 "Password Reset",
-                getPasswordResetErrorMessage(error.code)
-            );
-        }
+                FIREBASE_AUTH_ERROR_MESSAGES[error.code] ?? "Could not send password reset email. Please try again."
+            ))
+            ;
+
     };
 
     return (
@@ -179,8 +149,7 @@ export function LoginScreen({ navigation }) {
                                 >
                                     <Text style={styles.primaryButtonText}>Log In</Text>
                                 </Pressable>
-                                
-                                
+
                                 <View style={styles.dividerWrap}>
                                     <View style={styles.dividerLine} />
                                     <Text style={styles.dividerText}>OR</Text>

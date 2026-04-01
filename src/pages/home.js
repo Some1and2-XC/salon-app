@@ -88,6 +88,7 @@ export function HomeScreen({ navigation, route }) {
 
     useEffect(() => {
         const toastMessage = route?.params?.toastMessage;
+        // TODO replace with email in auth token (not route param).
         const loggedInAs = route?.params?.loggedInAs;
         const messageToShow = toastMessage || (loggedInAs ? `Logged in as ${loggedInAs}` : "");
         if (!messageToShow) return;

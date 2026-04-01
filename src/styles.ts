@@ -42,3 +42,5 @@ export const sty = StyleSheet.create({
     }
 
 });
+
+// TODO Make a global color pallet.

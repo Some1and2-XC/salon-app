@@ -32,7 +32,7 @@ export function AdminAppointmentTypesScreen() {
     }, []);
 
     const fetchTasks = async () => {
-        await apiFetch("/tasks")
+        apiFetch("/tasks")
             .then((res) => res.json())
             .then((json) => setTasks(json))
             .catch(console.error)
@@ -66,11 +66,11 @@ export function AdminAppointmentTypesScreen() {
         };
 
         if (editingTask) {
-            await apiFetch(`/tasks/${editingTask.id}`, { method: "PATCH", body: JSON.stringify(payload), })
+            apiFetch(`/tasks/${editingTask.id}`, { method: "PATCH", body: JSON.stringify(payload), })
                 .catch(console.error)
                 ;
         } else {
-            await apiFetch("/tasks", { method: "POST", body: JSON.stringify(payload), })
+            apiFetch("/tasks", { method: "POST", body: JSON.stringify(payload), })
                 .catch(console.error)
                 ;
         }
@@ -88,7 +88,8 @@ export function AdminAppointmentTypesScreen() {
 
     const deleteTask = async () => {
 
-        await apiFetch(`/tasks/${taskToDelete.id}`, { method: "DELETE" })
+        apiFetch(`/tasks/${taskToDelete.id}`, { method: "DELETE" })
+            // TODO Replace with global popup
             .catch(console.error)
             ;
 
