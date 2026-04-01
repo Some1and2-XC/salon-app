@@ -1,73 +1,73 @@
-import { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { useEffect } from 'react';
+import { StyleSheet, Text, View, Button, Platform } from 'react-native';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { apiFetch } from "../utils";
+import Toast from 'react-native-toast-message';
 
 import {
-    NAV_CHECKINCONFIRM,
+    NAV_QR,
+    NAV_LOGIN,
+    NAV_EXAMPLE_HOME
 } from "../consts";
+
+import { sty } from "../styles";
 
 export function CheckinScreen({ navigation }) {
 
-    const [phone, setPhone] = useState('');
+    const returnToHomePage = () => {
+        navigation.navigate(NAV_EXAMPLE_HOME);
+    };
 
-    const handleNumberPress = (num) => {
-        if (phone.length < 9) {
-            setPhone(phone + num);
+    useEffect(() => {
+        const auth = getAuth();
+
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if(!user) {
+                navigation.navigate(NAV_LOGIN);
+                return;
+            }
+        });
+
+        return unsubscribe;
+    }, []);
+
+    const handleGenerateQR = async() => {
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        const token = await user.getIdToken();
+
+        const res = await apiFetch(`/appointments`);
+
+        if(!res.ok) {
+            console.log("Error status", res.status);
+            return;
         }
-    };
 
-    const handleDelete = () => {
-        setPhone(phone.slice(0, -1));
-    };
+        const data = await res.json();
 
-    const handleClear = () => {
-        setPhone('');
-    };
-
-    const handleDone = () => {
-        if (phone.length === 9) {
-            navigation.navigate(NAV_CHECKINCONFIRM, { phone });
+        if (!data || data.length == 0) {
+            if(Platform.OS === 'web') {
+                alert('You must book an appointment before checking in');
+            }
+            else {
+                Toast.show({
+                    type: 'info',
+                    text1: 'No Appointment',
+                    text2: 'You must book an appointment before checking in'
+                });
+            }
+            return;
         }
-    };
+
+        navigation.navigate(NAV_QR, { userID: user.uid });
+    }
 
     return (
-        <View>
-
-            <Text>Enter Phone Number</Text>
-
-            <Text>{phone}</Text>
-
-            <View>
-                {[1,2,3,4,5,6,7,8,9].map((num) => (
-                    <TouchableOpacity
-                        key={num}
-                        onPress={() => handleNumberPress(num.toString())}
-                    >
-                        <Text>{num}</Text>
-                    </TouchableOpacity>
-                ))}
-
-                <TouchableOpacity onPress={handleClear}>
-                    <Text>Clear</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    onPress={() => handleNumberPress("0")}
-                >
-                    <Text>0</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={handleDelete}>
-                    <Text>⌫</Text>
-                </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity
-                onPress={handleDone}
-                disabled={phone.length !== 9}
-            >
-                <Text >Done</Text>
-            </TouchableOpacity>
-
+        <View style={sty.container}>
+            <Text style={sty.h1}>Check In</Text>
+            <Button style={sty.button} title={"HOME"} onPress={returnToHomePage} />
+            <Button style={sty.button} title={"QR Code"} onPress={handleGenerateQR} />
         </View>
     );
 }

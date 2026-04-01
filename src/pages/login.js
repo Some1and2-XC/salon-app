@@ -12,10 +12,11 @@ import {
     Platform,
     ScrollView,
 } from "react-native";
-import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 
 import { auth } from "../firebaseConfig";
 import { apiFetch } from "../utils";
+import { sty } from "../styles";
 import { NAV_HOME, NAV_SIGNUP } from "../consts";
 
 function getLoginErrorMessage(code) {
