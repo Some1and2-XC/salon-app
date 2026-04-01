@@ -16,7 +16,7 @@ import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "fir
 
 import { auth } from "../firebaseConfig";
 import { apiFetch } from "../utils";
-import { sty } from "../styles";
+import { commonUi } from "../styles";
 import { NAV_HOME, NAV_SIGNUP } from "../consts";
 
 function getLoginErrorMessage(code) {
@@ -214,109 +214,23 @@ export function LoginScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: "#f5efe9",
-    },
-
-    keyboardWrap: {
-        flex: 1,
-    },
-
-    scrollContent: {
-        flexGrow: 1,
-    },
-
-    pageWrap: {
-        flex: 1,
-        paddingHorizontal: 16,
-    },
-
-    centerWrap: {
-        flex: 1,
-        justifyContent: "center",
-    },
-
-    salonTitle: {
-        fontSize: 34,
-        fontWeight: "800",
-        textAlign: "center",
-        color: "#2b1b15",
-        marginBottom: 28,
-        letterSpacing: 1,
-    },
-
-    formCard: {
-        backgroundColor: "#fff8f2",
-        borderRadius: 26,
-        padding: 20,
-        borderWidth: 1,
-        borderColor: "#ead9ce",
-    },
-
-    formTitle: {
-        fontSize: 22,
-        fontWeight: "800",
-        color: "#281c17",
-        marginBottom: 6,
-    },
-
-    formDescription: {
-        fontSize: 13.5,
-        color: "#6a5348",
-        marginBottom: 16,
-    },
-
-    inputGroup: {
-        marginBottom: 14,
-    },
-
-    inputLabel: {
-        fontSize: 12,
-        fontWeight: "700",
-        color: "#8b6d5e",
-        marginBottom: 6,
-        textTransform: "uppercase",
-        letterSpacing: 0.8,
-    },
-
-    input: {
-        backgroundColor: "#f3e7de",
-        borderRadius: 18,
-        paddingHorizontal: 16,
-        paddingVertical: 15,
-        borderWidth: 1,
-        borderColor: "#e5d2c5",
-        fontSize: 15,
-        fontWeight: "600",
-        color: "#2b1b15",
-    },
-    feedbackText: {
-        marginTop: 2,
-        marginBottom: 10,
-        fontSize: 13,
-        fontWeight: "700",
-    },
-    feedbackError: {
-        color: "#b3261e",
-    },
-    feedbackSuccess: {
-        color: "#1d7a32",
-    },
-
-    primaryButton: {
-        backgroundColor: "#241713",
-        borderRadius: 24,
-        paddingVertical: 16,
-        alignItems: "center",
-        marginTop: 6,
-    },
-
-    primaryButtonText: {
-        color: "#fff8f3",
-        fontSize: 15,
-        fontWeight: "800",
-    },
+    safeArea: commonUi.screen.safeArea,
+    keyboardWrap: commonUi.screen.keyboardWrap,
+    scrollContent: commonUi.screen.scrollContent,
+    pageWrap: commonUi.screen.pageWrapWide,
+    centerWrap: commonUi.screen.centerWrap,
+    salonTitle: commonUi.auth.salonTitle,
+    formCard: commonUi.auth.formCard,
+    formTitle: commonUi.auth.formTitle,
+    formDescription: commonUi.auth.formDescription,
+    inputGroup: commonUi.auth.inputGroup,
+    inputLabel: commonUi.auth.inputLabel,
+    input: commonUi.auth.input,
+    feedbackText: commonUi.auth.feedbackText,
+    feedbackError: commonUi.auth.feedbackError,
+    feedbackSuccess: commonUi.auth.feedbackSuccess,
+    primaryButton: commonUi.auth.primaryButton,
+    primaryButtonText: commonUi.auth.primaryButtonText,
 
     secondaryButton: {
         backgroundColor: "#f2e4d8",
@@ -332,54 +246,16 @@ const styles = StyleSheet.create({
         fontWeight: "700",
     },
 
-    dividerWrap: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginTop: 18,
-        marginBottom: 16,
-    },
-
-    dividerLine: {
-        flex: 1,
-        height: 1,
-        backgroundColor: "#e3d2c7",
-    },
-
-    dividerText: {
-        marginHorizontal: 12,
-        fontSize: 12,
-        fontWeight: "700",
-        color: "#8b6d5e",
-        letterSpacing: 0.8,
-    },
+    dividerWrap: commonUi.auth.dividerWrap,
+    dividerLine: commonUi.auth.dividerLine,
+    dividerText: commonUi.auth.dividerText,
 
     signupInlineWrap: {
         alignItems: "center",
     },
 
-    signupText: {
-        fontSize: 14,
-        color: "#5e473c",
-        marginBottom: 10,
-    },
-
-    signupButton: {
-        backgroundColor: "#ead7ca",
-        borderRadius: 999,
-        paddingVertical: 12,
-        paddingHorizontal: 18,
-        borderWidth: 1,
-        borderColor: "#e0cabc",
-    },
-
-    signupButtonText: {
-        fontSize: 14,
-        fontWeight: "800",
-        color: "#2b1b15",
-    },
-
-    cardPressed: {
-        opacity: 0.9,
-        transform: [{ scale: 0.98 }],
-    },
+    signupText: commonUi.auth.inlineCtaPromptText,
+    signupButton: commonUi.auth.inlineCtaButton,
+    signupButtonText: commonUi.auth.inlineCtaButtonText,
+    cardPressed: commonUi.auth.cardPressed,
 });
