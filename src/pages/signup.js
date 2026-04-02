@@ -17,6 +17,7 @@ import { auth } from "../firebaseConfig";
 import { apiFetch } from "../utils";
 import { commonUi } from "../styles";
 import { NAV_HOME, NAV_LOGIN, FIREBASE_AUTH_ERROR_MESSAGES } from "../consts";
+import { colorScheme } from "../colorScheme";
 
 export function SignupScreen({ navigation }) {
     const [email, setEmail] = useState("");
@@ -135,7 +136,7 @@ export function SignupScreen({ navigation }) {
                                     <TextInput
                                         style={styles.input}
                                         placeholder="Enter your email"
-                                        placeholderTextColor="#8b6d5e"
+                                        placeholderTextColor={colorScheme.textLabel}
                                         value={email}
                                         onChangeText={setEmail}
                                         autoCapitalize="none"
@@ -149,7 +150,7 @@ export function SignupScreen({ navigation }) {
                                     <TextInput
                                         style={styles.input}
                                         placeholder="Enter your first name"
-                                        placeholderTextColor="#8b6d5e"
+                                        placeholderTextColor={colorScheme.textLabel}
                                         value={firstName}
                                         onChangeText={setFirstName}
                                         autoCapitalize="words"
@@ -162,7 +163,7 @@ export function SignupScreen({ navigation }) {
                                     <TextInput
                                         style={styles.input}
                                         placeholder="Enter your last name"
-                                        placeholderTextColor="#8b6d5e"
+                                        placeholderTextColor={colorScheme.textLabel}
                                         value={lastName}
                                         onChangeText={setLastName}
                                         autoCapitalize="words"
@@ -175,7 +176,7 @@ export function SignupScreen({ navigation }) {
                                     <TextInput
                                         style={styles.input}
                                         placeholder="Enter a password"
-                                        placeholderTextColor="#8b6d5e"
+                                        placeholderTextColor={colorScheme.textLabel}
                                         value={password}
                                         onChangeText={setPassword}
                                         secureTextEntry
@@ -190,7 +191,7 @@ export function SignupScreen({ navigation }) {
                                     <TextInput
                                         style={styles.input}
                                         placeholder="Re-enter your password"
-                                        placeholderTextColor="#8b6d5e"
+                                        placeholderTextColor={colorScheme.textLabel}
                                         value={confirmPassword}
                                         onChangeText={setConfirmPassword}
                                         secureTextEntry

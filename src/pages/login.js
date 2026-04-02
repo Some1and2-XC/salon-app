@@ -19,6 +19,7 @@ import { apiFetch } from "../utils";
 import { sty } from "../styles";
 import { commonUi } from "../styles";
 import { NAV_HOME, NAV_SIGNUP, FIREBASE_AUTH_ERROR_MESSAGES  } from "../consts";
+import { colorScheme } from "../colorScheme";
 
 export function LoginScreen({ navigation }) {
     const [email, setEmail] = useState("");
@@ -107,7 +108,7 @@ export function LoginScreen({ navigation }) {
                                     <TextInput
                                         style={styles.input}
                                         placeholder="Enter your email"
-                                        placeholderTextColor="#8b6d5e"
+                                        placeholderTextColor={colorScheme.textLabel}
                                         value={email}
                                         onChangeText={setEmail}
                                         autoCapitalize="none"
@@ -121,7 +122,7 @@ export function LoginScreen({ navigation }) {
                                     <TextInput
                                         style={styles.input}
                                         placeholder="Enter your password"
-                                        placeholderTextColor="#8b6d5e"
+                                        placeholderTextColor={colorScheme.textLabel}
                                         value={password}
                                         onChangeText={setPassword}
                                         secureTextEntry
@@ -203,7 +204,7 @@ const styles = StyleSheet.create({
     primaryButtonText: commonUi.auth.primaryButtonText,
 
     secondaryButton: {
-        backgroundColor: "#f2e4d8",
+        backgroundColor: colorScheme.panelBackgroundAlt,
         borderRadius: 24,
         paddingVertical: 15,
         alignItems: "center",
@@ -211,7 +212,7 @@ const styles = StyleSheet.create({
     },
 
     secondaryButtonText: {
-        color: "#2b1b15",
+        color: colorScheme.textDefault,
         fontSize: 14,
         fontWeight: "700",
     },

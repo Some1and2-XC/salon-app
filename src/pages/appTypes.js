@@ -15,6 +15,7 @@ import {
 
 import { commonUi } from "../styles";
 import { apiFetch } from "../utils";
+import { colorScheme } from "../colorScheme";
 
 function OptionModal({
     visible,
@@ -295,7 +296,7 @@ export function AdminAppointmentTypesScreen() {
 
     return (
         <SafeAreaView style={[styles.safeArea, Platform.OS === "web" && styles.safeAreaWeb]}>
-            <StatusBar barStyle="dark-content" backgroundColor="#f5efe9" />
+            <StatusBar barStyle="dark-content" backgroundColor={colorScheme.pageBackground} />
 
             <FlatList
                 style={[styles.scrollView, Platform.OS === "web" && styles.scrollViewWeb]}
@@ -378,7 +379,7 @@ export function AdminAppointmentTypesScreen() {
                                 <Text style={styles.inputLabel}>Service Name</Text>
                                 <TextInput
                                     placeholder="e.g. Acrylic Refill"
-                                    placeholderTextColor="#9a7e70"
+                                    placeholderTextColor={colorScheme.placeholder}
                                     value={name}
                                     onChangeText={setName}
                                     style={styles.input}
@@ -390,7 +391,7 @@ export function AdminAppointmentTypesScreen() {
                                     <Text style={styles.inputLabel}>Price (CAD)</Text>
                                     <TextInput
                                         placeholder="e.g. 45"
-                                        placeholderTextColor="#9a7e70"
+                                        placeholderTextColor={colorScheme.placeholder}
                                         value={price}
                                         onChangeText={setPrice}
                                         keyboardType="numeric"
@@ -402,7 +403,7 @@ export function AdminAppointmentTypesScreen() {
                                     <Text style={styles.inputLabel}>Duration (Minutes)</Text>
                                     <TextInput
                                         placeholder="e.g. 60"
-                                        placeholderTextColor="#9a7e70"
+                                        placeholderTextColor={colorScheme.placeholder}
                                         value={time}
                                         onChangeText={setTime}
                                         keyboardType="numeric"
@@ -541,7 +542,7 @@ const styles = StyleSheet.create({
     heroText: {
         fontSize: 14,
         lineHeight: 21,
-        color: "#5e473c",
+        color: colorScheme.textSubtle,
         marginTop: 10,
         marginBottom: 14,
         maxWidth: "94%",
@@ -559,17 +560,17 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 22,
         fontWeight: "800",
-        color: "#281c17",
+        color: colorScheme.textDark,
         marginBottom: 10,
         marginTop: 2,
     },
 
     taskCard: {
-        backgroundColor: "#fff8f2",
+        backgroundColor: colorScheme.whiteWarmCard,
         borderRadius: 24,
         padding: 16,
         borderWidth: 1,
-        borderColor: "#ead9ce",
+        borderColor: colorScheme.borderLight,
         marginBottom: 12,
     },
     taskCardTop: {
@@ -585,20 +586,20 @@ const styles = StyleSheet.create({
     taskName: {
         fontSize: 18,
         fontWeight: "800",
-        color: "#281c17",
+        color: colorScheme.textDark,
         marginBottom: 8,
     },
     categoryChip: {
         alignSelf: "flex-start",
-        backgroundColor: "#f2e4d8",
+        backgroundColor: colorScheme.panelBackgroundAlt,
         borderRadius: 999,
         paddingHorizontal: 12,
         paddingVertical: 7,
         borderWidth: 1,
-        borderColor: "#e2cfc1",
+        borderColor: colorScheme.categoryBorder,
     },
     categoryChipText: {
-        color: "#5a4034",
+        color: colorScheme.chipTextDark,
         fontSize: 12.5,
         fontWeight: "700",
     },
@@ -610,17 +611,17 @@ const styles = StyleSheet.create({
         gap: 16,
         paddingVertical: 6,
         borderBottomWidth: 1,
-        borderBottomColor: "#f0e2d8",
+        borderBottomColor: colorScheme.dividerLight,
     },
     detailLabel: {
         fontSize: 13,
         fontWeight: "700",
-        color: "#8b6d5e",
+        color: colorScheme.textLabel,
         flex: 0.8,
     },
     detailValue: {
         fontSize: 13,
-        color: "#5e473c",
+        color: colorScheme.textSubtle,
         flex: 1.4,
         textAlign: "right",
     },
@@ -635,10 +636,10 @@ const styles = StyleSheet.create({
     },
 
     emptyWrap: {
-        backgroundColor: "#fff8f2",
+        backgroundColor: colorScheme.whiteWarmCard,
         borderRadius: 24,
         borderWidth: 1,
-        borderColor: "#ead9ce",
+        borderColor: colorScheme.borderLight,
         padding: 22,
         alignItems: "center",
         marginTop: 4,
@@ -646,13 +647,13 @@ const styles = StyleSheet.create({
     emptyTitle: {
         fontSize: 18,
         fontWeight: "800",
-        color: "#281c17",
+        color: colorScheme.textDark,
         marginBottom: 6,
         textAlign: "center",
     },
     emptyText: {
         fontSize: 13.5,
-        color: "#6a5348",
+        color: colorScheme.textMuted,
         textAlign: "center",
         lineHeight: 20,
         marginBottom: 14,
@@ -663,34 +664,34 @@ const styles = StyleSheet.create({
 
     formModalBackdrop: {
         flex: 1,
-        backgroundColor: "rgba(16, 10, 8, 0.45)",
+        backgroundColor: colorScheme.overlayDarkStrong,
         justifyContent: "center",
         paddingHorizontal: 14,
     },
     modalCard: {
-        backgroundColor: "#fff8f2",
+        backgroundColor: colorScheme.whiteWarmCard,
         borderRadius: 26,
         borderWidth: 1,
-        borderColor: "#ead9ce",
+        borderColor: colorScheme.borderLight,
         maxHeight: "88%",
         padding: 18,
     },
     confirmCard: {
-        backgroundColor: "#fff8f2",
+        backgroundColor: colorScheme.whiteWarmCard,
         borderRadius: 24,
         borderWidth: 1,
-        borderColor: "#ead9ce",
+        borderColor: colorScheme.borderLight,
         padding: 18,
     },
     confirmTitle: {
         fontSize: 20,
         fontWeight: "800",
-        color: "#281c17",
+        color: colorScheme.textDark,
         marginBottom: 8,
     },
     confirmText: {
         fontSize: 14,
-        color: "#5e473c",
+        color: colorScheme.textSubtle,
         lineHeight: 21,
         marginBottom: 14,
     },
@@ -714,12 +715,12 @@ const styles = StyleSheet.create({
     input: commonUi.auth.input,
 
     selectButton: {
-        backgroundColor: "#f3e7de",
+        backgroundColor: colorScheme.panelBackground,
         borderRadius: 18,
         paddingHorizontal: 16,
         paddingVertical: 15,
         borderWidth: 1,
-        borderColor: "#e5d2c5",
+        borderColor: colorScheme.borderLightAlt,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
@@ -728,15 +729,15 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 15,
         fontWeight: "700",
-        color: "#2b1b15",
+        color: colorScheme.textDefault,
         paddingRight: 10,
     },
     selectValueMuted: {
-        color: "#8b6d5e",
+        color: colorScheme.textLabel,
     },
     selectChevron: {
         fontSize: 24,
-        color: "#7f5d4d",
+        color: colorScheme.textAccentSoft,
         marginTop: -2,
     },
 
@@ -752,25 +753,25 @@ const styles = StyleSheet.create({
     },
 
     secondaryButton: {
-        backgroundColor: "#f2e4d8",
+        backgroundColor: colorScheme.panelBackgroundAlt,
         borderRadius: 24,
         paddingVertical: 15,
         alignItems: "center",
     },
     secondaryButtonText: {
-        color: "#2b1b15",
+        color: colorScheme.textDefault,
         fontSize: 14,
         fontWeight: "700",
     },
 
     dangerButton: {
-        backgroundColor: "#7a211d",
+        backgroundColor: colorScheme.danger,
         borderRadius: 24,
         paddingVertical: 15,
         alignItems: "center",
     },
     dangerButtonText: {
-        color: "#fff8f3",
+        color: colorScheme.whiteWarm,
         fontSize: 14,
         fontWeight: "800",
     },
@@ -780,7 +781,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         paddingHorizontal: 18,
-        backgroundColor: "rgba(36, 23, 19, 0.22)",
+        backgroundColor: colorScheme.overlayDarkSoft,
     },
     modalBackdrop: {
         position: "absolute",
@@ -793,13 +794,13 @@ const styles = StyleSheet.create({
         width: "100%",
         maxWidth: 430,
         maxHeight: "70%",
-        backgroundColor: "#fff8f2",
+        backgroundColor: colorScheme.whiteWarmCard,
         borderRadius: 28,
         paddingHorizontal: 16,
         paddingTop: 16,
         paddingBottom: 14,
         borderWidth: 1,
-        borderColor: "#ead9ce",
+        borderColor: colorScheme.borderLight,
     },
     optionModalHeader: {
         flexDirection: "row",
@@ -810,7 +811,7 @@ const styles = StyleSheet.create({
     optionModalTitle: {
         fontSize: 18,
         fontWeight: "800",
-        color: "#231712",
+        color: colorScheme.textDarkest,
     },
     closeButton: {
         paddingHorizontal: 6,
@@ -819,7 +820,7 @@ const styles = StyleSheet.create({
     optionModalClose: {
         fontSize: 18,
         fontWeight: "800",
-        color: "#7f5d4d",
+        color: colorScheme.textAccentSoft,
     },
     optionModalList: {
         maxHeight: 420,
@@ -828,20 +829,20 @@ const styles = StyleSheet.create({
         paddingBottom: 8,
     },
     optionRow: {
-        backgroundColor: "#f3e7de",
+        backgroundColor: colorScheme.panelBackground,
         borderRadius: 18,
         paddingHorizontal: 14,
         paddingVertical: 14,
         borderWidth: 1,
-        borderColor: "#e5d2c5",
+        borderColor: colorScheme.borderLightAlt,
         marginTop: 10,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
     },
     optionRowSelected: {
-        backgroundColor: "#ead7ca",
-        borderColor: "#9b664d",
+        backgroundColor: colorScheme.accentTint,
+        borderColor: colorScheme.textAccent,
     },
     optionRowPressed: {
         opacity: 0.92,
@@ -854,28 +855,28 @@ const styles = StyleSheet.create({
     optionLabel: {
         fontSize: 15,
         fontWeight: "700",
-        color: "#2b1b15",
+        color: colorScheme.textDefault,
     },
     optionLabelSelected: {
-        color: "#231712",
+        color: colorScheme.textDarkest,
     },
     optionSubLabel: {
         marginTop: 4,
         fontSize: 12,
-        color: "#7f5d4d",
+        color: colorScheme.textAccentSoft,
         fontWeight: "600",
     },
     optionSubLabelSelected: {
-        color: "#9b664d",
+        color: colorScheme.textAccent,
     },
     optionCheck: {
         fontSize: 18,
         fontWeight: "800",
-        color: "#9b664d",
+        color: colorScheme.textAccent,
     },
     emptyOptionText: {
         fontSize: 14,
-        color: "#6a5348",
+        color: colorScheme.textMuted,
         textAlign: "center",
         paddingVertical: 22,
     },

@@ -18,6 +18,7 @@ import { Calendar } from "react-native-calendars";
 import { apiFetch } from "../utils";
 import { NAV_HOME } from "../consts";
 import { commonUi } from "../styles";
+import { colorScheme } from "../colorScheme";
 
 const EMPLOYEE_OPTIONS = {
     ANY: "ANY",
@@ -479,7 +480,7 @@ export function BookingScreen({ navigation }) {
                 <StatusBar barStyle="dark-content" />
                 <View style={styles.loadingWrap}>
                     <View style={styles.loadingCard}>
-                        <ActivityIndicator size="large" color="#9b664d" />
+                        <ActivityIndicator size="large" color={colorScheme.textAccent} />
                         <Text style={styles.loadingTitle}>Preparing Booking</Text>
                         <Text style={styles.loadingText}>
                             Loading services, employees, and available times...
@@ -812,23 +813,23 @@ export function BookingScreen({ navigation }) {
                                     ? {
                                           [selectedDate]: {
                                               selected: true,
-                                              selectedColor: "#9b664d",
+                                              selectedColor: colorScheme.textAccent,
                                           },
                                       }
                                     : {}
                             }
                             minDate={new Date().toISOString().split("T")[0]}
                             theme={{
-                                backgroundColor: "#fff8f2",
-                                calendarBackground: "#fff8f2",
-                                textSectionTitleColor: "#7f5d4d",
-                                selectedDayBackgroundColor: "#9b664d",
-                                selectedDayTextColor: "#fffaf6",
-                                todayTextColor: "#9b664d",
-                                dayTextColor: "#2b1b15",
-                                textDisabledColor: "#ccb8ab",
-                                monthTextColor: "#2b1b15",
-                                arrowColor: "#9b664d",
+                                backgroundColor: colorScheme.whiteWarmCard,
+                                calendarBackground: colorScheme.whiteWarmCard,
+                                textSectionTitleColor: colorScheme.textAccentSoft,
+                                selectedDayBackgroundColor: colorScheme.textAccent,
+                                selectedDayTextColor: colorScheme.whiteSoft,
+                                todayTextColor: colorScheme.textAccent,
+                                dayTextColor: colorScheme.textDefault,
+                                textDisabledColor: colorScheme.textDisabled,
+                                monthTextColor: colorScheme.textDefault,
+                                arrowColor: colorScheme.textAccent,
                             }}
                         />
                     </View>
@@ -879,18 +880,18 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         alignSelf: "flex-start",
-        backgroundColor: "#fff8f2",
+        backgroundColor: colorScheme.whiteWarmCard,
         borderRadius: 999,
         paddingVertical: 10,
         paddingHorizontal: 14,
         borderWidth: 1,
-        borderColor: "#ead9ce",
+        borderColor: colorScheme.borderLight,
         marginBottom: 12,
     },
 
     backButtonArrow: {
         fontSize: 18,
-        color: "#7f5d4d",
+        color: colorScheme.textAccentSoft,
         marginRight: 8,
         fontWeight: "800",
     },
@@ -898,7 +899,7 @@ const styles = StyleSheet.create({
     backButtonText: {
         fontSize: 14,
         fontWeight: "700",
-        color: "#2b1b15",
+        color: colorScheme.textDefault,
     },
 
     heroCard: commonUi.hero.heroCard,
@@ -917,7 +918,7 @@ const styles = StyleSheet.create({
     heroText: {
         fontSize: 15,
         lineHeight: 22,
-        color: "#5e473c",
+        color: colorScheme.textSubtle,
         maxWidth: "82%",
     },
 
@@ -926,14 +927,14 @@ const styles = StyleSheet.create({
     metaChipText: commonUi.hero.metaChipText,
 
     secondaryActionCardFull: {
-        backgroundColor: "#fff8f2",
+        backgroundColor: colorScheme.whiteWarmCard,
         borderRadius: 28,
         paddingHorizontal: 18,
         paddingTop: 18,
         paddingBottom: 18,
         minHeight: 150,
         borderWidth: 1,
-        borderColor: "#ead9ce",
+        borderColor: colorScheme.borderLight,
         width: "100%",
         marginBottom: 14,
     },
@@ -949,7 +950,7 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: "#f2e4d8",
+        backgroundColor: colorScheme.panelBackgroundAlt,
         alignItems: "center",
         justifyContent: "center",
     },
@@ -957,38 +958,38 @@ const styles = StyleSheet.create({
     iconSmall: {
         fontSize: 13,
         fontWeight: "800",
-        color: "#7e5d4d",
+        color: colorScheme.textAccentSoft,
     },
 
     cornerText: {
         fontSize: 12,
         fontWeight: "700",
-        color: "#8b6d5e",
+        color: colorScheme.textLabel,
     },
 
     secondaryTitle: {
         fontSize: 22,
         lineHeight: 26,
         fontWeight: "800",
-        color: "#281c17",
+        color: colorScheme.textDark,
         marginBottom: 6,
     },
 
     secondaryDescription: {
         fontSize: 13.5,
         lineHeight: 20,
-        color: "#6a5348",
+        color: colorScheme.textMuted,
         maxWidth: "92%",
         marginBottom: 14,
     },
 
     selectButton: {
-        backgroundColor: "#f3e7de",
+        backgroundColor: colorScheme.panelBackground,
         borderRadius: 18,
         paddingHorizontal: 16,
         paddingVertical: 15,
         borderWidth: 1,
-        borderColor: "#e5d2c5",
+        borderColor: colorScheme.borderLightAlt,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
@@ -1006,17 +1007,17 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 15,
         fontWeight: "700",
-        color: "#2b1b15",
+        color: colorScheme.textDefault,
         paddingRight: 10,
     },
 
     selectValueMuted: {
-        color: "#8b6d5e",
+        color: colorScheme.textLabel,
     },
 
     selectChevron: {
         fontSize: 24,
-        color: "#7f5d4d",
+        color: colorScheme.textAccentSoft,
         marginTop: -2,
     },
 
@@ -1029,35 +1030,35 @@ const styles = StyleSheet.create({
     preferenceChip: {
         flex: 1,
         minWidth: 140,
-        backgroundColor: "#f3e7de",
+        backgroundColor: colorScheme.panelBackground,
         borderRadius: 16,
         paddingVertical: 13,
         paddingHorizontal: 14,
         borderWidth: 1,
-        borderColor: "#e5d2c5",
+        borderColor: colorScheme.borderLightAlt,
         alignItems: "center",
         justifyContent: "center",
     },
 
     preferenceChipActive: {
-        backgroundColor: "#241713",
-        borderColor: "#241713",
+        backgroundColor: colorScheme.darkSurface,
+        borderColor: colorScheme.darkSurface,
     },
 
     preferenceChipText: {
         fontSize: 14,
         fontWeight: "700",
-        color: "#6a5348",
+        color: colorScheme.textMuted,
     },
 
     preferenceChipTextActive: {
-        color: "#fff8f3",
+        color: colorScheme.whiteWarm,
     },
 
     primaryActionCard: {
         position: "relative",
         overflow: "hidden",
-        backgroundColor: "#241713",
+        backgroundColor: colorScheme.darkSurface,
         borderRadius: 28,
         paddingHorizontal: 18,
         paddingTop: 18,
@@ -1072,7 +1073,7 @@ const styles = StyleSheet.create({
         width: 170,
         height: 170,
         borderRadius: 85,
-        backgroundColor: "#b97f5f",
+        backgroundColor: colorScheme.accentGlow,
         top: -40,
         right: -30,
         opacity: 0.13,
@@ -1089,25 +1090,25 @@ const styles = StyleSheet.create({
         width: 52,
         height: 52,
         borderRadius: 26,
-        backgroundColor: "rgba(255,255,255,0.08)",
+        backgroundColor: colorScheme.overlayWhiteSoft,
         alignItems: "center",
         justifyContent: "center",
     },
 
     iconLarge: {
         fontSize: 22,
-        color: "#f2d0b9",
+        color: colorScheme.accentHighlight,
     },
 
     pillDark: {
-        backgroundColor: "rgba(242,208,185,0.12)",
+        backgroundColor: colorScheme.overlayAccentSoft,
         borderRadius: 999,
         paddingHorizontal: 11,
         paddingVertical: 7,
     },
 
     pillDarkText: {
-        color: "#f2d0b9",
+        color: colorScheme.accentHighlight,
         fontSize: 12,
         fontWeight: "700",
     },
@@ -1116,7 +1117,7 @@ const styles = StyleSheet.create({
         fontSize: 26,
         lineHeight: 31,
         fontWeight: "800",
-        color: "#fff8f3",
+        color: colorScheme.whiteWarm,
         marginBottom: 9,
         maxWidth: "82%",
     },
@@ -1124,7 +1125,7 @@ const styles = StyleSheet.create({
     primaryDescription: {
         fontSize: 14,
         lineHeight: 21,
-        color: "#d8c2b5",
+        color: colorScheme.textOnDark,
         maxWidth: "96%",
         marginBottom: 18,
     },
@@ -1144,7 +1145,7 @@ const styles = StyleSheet.create({
 
     summaryKey: {
         fontSize: 14,
-        color: "#d8c2b5",
+        color: colorScheme.textOnDark,
         fontWeight: "700",
     },
 
@@ -1152,12 +1153,12 @@ const styles = StyleSheet.create({
         flex: 1,
         textAlign: "right",
         fontSize: 14,
-        color: "#fff8f3",
+        color: colorScheme.whiteWarm,
         fontWeight: "700",
     },
 
     innerCreateButton: {
-        backgroundColor: "#d8b59f",
+        backgroundColor: colorScheme.accentButton,
         borderRadius: 24,
         paddingVertical: 16,
         paddingHorizontal: 18,
@@ -1169,7 +1170,7 @@ const styles = StyleSheet.create({
     innerCreateButtonText: {
         fontSize: 15,
         fontWeight: "800",
-        color: "#2b1b15",
+        color: colorScheme.textDefault,
         letterSpacing: 0.2,
     },
 
@@ -1181,31 +1182,31 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         paddingHorizontal: 20,
-        backgroundColor: "#f5efe9",
+        backgroundColor: colorScheme.pageBackground,
     },
 
     loadingCard: {
-        backgroundColor: "#fff8f2",
+        backgroundColor: colorScheme.whiteWarmCard,
         borderRadius: 28,
         paddingHorizontal: 24,
         paddingVertical: 28,
         alignItems: "center",
         borderWidth: 1,
-        borderColor: "#ead9ce",
+        borderColor: colorScheme.borderLight,
     },
 
     loadingTitle: {
         marginTop: 16,
         fontSize: 20,
         fontWeight: "800",
-        color: "#231712",
+        color: colorScheme.textDarkest,
     },
 
     loadingText: {
         marginTop: 8,
         fontSize: 14,
         lineHeight: 21,
-        color: "#6a5348",
+        color: colorScheme.textMuted,
         textAlign: "center",
     },
 
@@ -1214,7 +1215,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         paddingHorizontal: 18,
-        backgroundColor: "rgba(36, 23, 19, 0.22)",
+        backgroundColor: colorScheme.overlayDarkSoft,
     },
 
     modalBackdrop: {
@@ -1228,17 +1229,17 @@ const styles = StyleSheet.create({
     calendarCard: {
         width: "100%",
         maxWidth: 420,
-        backgroundColor: "#fff8f2",
+        backgroundColor: colorScheme.whiteWarmCard,
         borderRadius: 28,
         padding: 16,
         borderWidth: 1,
-        borderColor: "#ead9ce",
+        borderColor: colorScheme.borderLight,
     },
 
     calendarTitle: {
         fontSize: 18,
         fontWeight: "800",
-        color: "#231712",
+        color: colorScheme.textDarkest,
         marginBottom: 12,
         textAlign: "center",
     },
@@ -1247,13 +1248,13 @@ const styles = StyleSheet.create({
         width: "100%",
         maxWidth: 430,
         maxHeight: "70%",
-        backgroundColor: "#fff8f2",
+        backgroundColor: colorScheme.whiteWarmCard,
         borderRadius: 28,
         paddingHorizontal: 16,
         paddingTop: 16,
         paddingBottom: 14,
         borderWidth: 1,
-        borderColor: "#ead9ce",
+        borderColor: colorScheme.borderLight,
     },
 
     optionModalHeader: {
@@ -1266,7 +1267,7 @@ const styles = StyleSheet.create({
     optionModalTitle: {
         fontSize: 18,
         fontWeight: "800",
-        color: "#231712",
+        color: colorScheme.textDarkest,
     },
 
     closeButton: {
@@ -1277,7 +1278,7 @@ const styles = StyleSheet.create({
     optionModalClose: {
         fontSize: 18,
         fontWeight: "800",
-        color: "#7f5d4d",
+        color: colorScheme.textAccentSoft,
     },
 
     optionModalList: {
@@ -1289,12 +1290,12 @@ const styles = StyleSheet.create({
     },
 
     optionRow: {
-        backgroundColor: "#f3e7de",
+        backgroundColor: colorScheme.panelBackground,
         borderRadius: 18,
         paddingHorizontal: 14,
         paddingVertical: 14,
         borderWidth: 1,
-        borderColor: "#e5d2c5",
+        borderColor: colorScheme.borderLightAlt,
         marginTop: 10,
         flexDirection: "row",
         alignItems: "center",
@@ -1302,8 +1303,8 @@ const styles = StyleSheet.create({
     },
 
     optionRowSelected: {
-        backgroundColor: "#ead7ca",
-        borderColor: "#9b664d",
+        backgroundColor: colorScheme.accentTint,
+        borderColor: colorScheme.textAccent,
     },
 
     optionRowPressed: {
@@ -1319,33 +1320,33 @@ const styles = StyleSheet.create({
     optionLabel: {
         fontSize: 15,
         fontWeight: "700",
-        color: "#2b1b15",
+        color: colorScheme.textDefault,
     },
 
     optionLabelSelected: {
-        color: "#231712",
+        color: colorScheme.textDarkest,
     },
 
     optionSubLabel: {
         marginTop: 4,
         fontSize: 12,
-        color: "#7f5d4d",
+        color: colorScheme.textAccentSoft,
         fontWeight: "600",
     },
 
     optionSubLabelSelected: {
-        color: "#9b664d",
+        color: colorScheme.textAccent,
     },
 
     optionCheck: {
         fontSize: 18,
         fontWeight: "800",
-        color: "#9b664d",
+        color: colorScheme.textAccent,
     },
 
     emptyOptionText: {
         fontSize: 14,
-        color: "#6a5348",
+        color: colorScheme.textMuted,
         textAlign: "center",
         paddingVertical: 22,
     },

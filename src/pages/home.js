@@ -16,6 +16,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { NAV_CHECKIN, NAV_BOOKING, NAV_LOGIN } from "../consts";
 import { commonUi } from "../styles";
+import { colorScheme } from "../colorScheme";
 
 function getGreeting() {
     const hour = new Date().getHours();
@@ -284,13 +285,13 @@ const styles = StyleSheet.create({
     toastWrap: {
         alignSelf: "center",
         marginBottom: 10,
-        backgroundColor: "#1d7a32",
+        backgroundColor: colorScheme.feedbackSuccess,
         borderRadius: 999,
         paddingHorizontal: 14,
         paddingVertical: 8,
     },
     toastText: {
-        color: "#ffffff",
+        color: colorScheme.white,
         fontSize: 12.5,
         fontWeight: "700",
     },
@@ -311,7 +312,7 @@ const styles = StyleSheet.create({
     heroText: {
         fontSize: 15,
         lineHeight: 22,
-        color: "#5e473c",
+        color: colorScheme.textSubtle,
         maxWidth: "78%",
     },
 
@@ -322,7 +323,7 @@ const styles = StyleSheet.create({
     primaryActionCard: {
         position: "relative",
         overflow: "hidden",
-        backgroundColor: "#241713",
+        backgroundColor: colorScheme.darkSurface,
         borderRadius: 28,
         paddingHorizontal: 18,
         paddingTop: 18,
@@ -337,7 +338,7 @@ const styles = StyleSheet.create({
         width: 170,
         height: 170,
         borderRadius: 85,
-        backgroundColor: "#b97f5f",
+        backgroundColor: colorScheme.accentGlow,
         top: -40,
         right: -30,
         opacity: 0.13,
@@ -354,25 +355,25 @@ const styles = StyleSheet.create({
         width: 52,
         height: 52,
         borderRadius: 26,
-        backgroundColor: "rgba(255,255,255,0.08)",
+        backgroundColor: colorScheme.overlayWhiteSoft,
         alignItems: "center",
         justifyContent: "center",
     },
 
     iconLarge: {
         fontSize: 22,
-        color: "#f2d0b9",
+        color: colorScheme.accentHighlight,
     },
 
     pillDark: {
-        backgroundColor: "rgba(242,208,185,0.12)",
+        backgroundColor: colorScheme.overlayAccentSoft,
         borderRadius: 999,
         paddingHorizontal: 11,
         paddingVertical: 7,
     },
 
     pillDarkText: {
-        color: "#f2d0b9",
+        color: colorScheme.accentHighlight,
         fontSize: 12,
         fontWeight: "700",
     },
@@ -381,7 +382,7 @@ const styles = StyleSheet.create({
         fontSize: 26,
         lineHeight: 31,
         fontWeight: "800",
-        color: "#fff8f3",
+        color: colorScheme.whiteWarm,
         marginBottom: 9,
         maxWidth: "82%",
     },
@@ -389,7 +390,7 @@ const styles = StyleSheet.create({
     primaryDescription: {
         fontSize: 14,
         lineHeight: 21,
-        color: "#d8c2b5",
+        color: colorScheme.textOnDark,
         maxWidth: "94%",
         marginBottom: 18,
     },
@@ -402,26 +403,26 @@ const styles = StyleSheet.create({
     },
 
     primaryFooterText: {
-        color: "#fff8f3",
+        color: colorScheme.whiteWarm,
         fontWeight: "700",
         fontSize: 14.5,
     },
 
     primaryArrow: {
-        color: "#f2d0b9",
+        color: colorScheme.accentHighlight,
         fontSize: 22,
         fontWeight: "700",
     },
 
     secondaryActionCardFull: {
-        backgroundColor: "#fff8f2",
+        backgroundColor: colorScheme.whiteWarmCard,
         borderRadius: 28,
         paddingHorizontal: 18,
         paddingTop: 18,
         paddingBottom: 18,
         minHeight: 150,
         borderWidth: 1,
-        borderColor: "#ead9ce",
+        borderColor: colorScheme.borderLight,
         width: "100%",
     },
 
@@ -436,34 +437,34 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: "#f2e4d8",
+        backgroundColor: colorScheme.panelBackgroundAlt,
         alignItems: "center",
         justifyContent: "center",
     },
 
     iconSmall: {
         fontSize: 18,
-        color: "#7e5d4d",
+        color: colorScheme.textAccentSoft,
     },
 
     cornerText: {
         fontSize: 12,
         fontWeight: "700",
-        color: "#8b6d5e",
+        color: colorScheme.textLabel,
     },
 
     secondaryTitle: {
         fontSize: 22,
         lineHeight: 26,
         fontWeight: "800",
-        color: "#281c17",
+        color: colorScheme.textDark,
         marginBottom: 6,
     },
 
     secondaryDescription: {
         fontSize: 13.5,
         lineHeight: 20,
-        color: "#6a5348",
+        color: colorScheme.textMuted,
         maxWidth: "92%",
     },
 
@@ -472,7 +473,7 @@ const styles = StyleSheet.create({
     },
 
     logoutBar: {
-        backgroundColor: "#d8b59f",
+        backgroundColor: colorScheme.accentButton,
         borderRadius: 28,
         paddingVertical: 16,
         paddingHorizontal: 18,
@@ -490,7 +491,7 @@ const styles = StyleSheet.create({
     logoutBarText: {
         fontSize: 15,
         fontWeight: "800",
-        color: "#2b1b15",
+        color: colorScheme.textDefault,
         letterSpacing: 0.2,
     },
 
