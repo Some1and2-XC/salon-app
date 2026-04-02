@@ -370,9 +370,6 @@ export const commonUi = {
             flex: 1,
             justifyContent: "center",
         },
-        keyboardWrap: {
-            flex: 1,
-        },
     },
     auth: {
         salonTitle: {

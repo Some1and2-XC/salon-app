@@ -17,11 +17,15 @@ import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "fir
 import { auth } from "../firebaseConfig";
 import { apiFetch } from "../utils";
 import { sty } from "../styles";
-import { commonUi } from "../styles";
+import { useTheme } from "../styles";
 import { NAV_HOME, NAV_SIGNUP, FIREBASE_AUTH_ERROR_MESSAGES  } from "../consts";
 import { colorScheme } from "../colorScheme";
 
 export function LoginScreen({ navigation }) {
+
+    const commonUi = useTheme((state) => state.getCommonUi)();
+    const colorScheme = useTheme((state) => state.getScheme)();
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [feedbackMessage, setFeedbackMessage] = useState("");
@@ -79,154 +83,92 @@ export function LoginScreen({ navigation }) {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
-            <StatusBar barStyle="dark-content" />
+        <KeyboardAvoidingView>
+            <ScrollView style={commonUi.screen.pageMargins}>
+                <Text style={commonUi.auth.salonTitle}>SALON APP</Text>
 
-            <KeyboardAvoidingView
-                style={styles.keyboardWrap}
-                behavior={Platform.OS === "ios" ? "padding" : undefined}
-            >
-                <ScrollView
-                    contentContainerStyle={styles.scrollContent}
-                    keyboardShouldPersistTaps="handled"
-                    showsVerticalScrollIndicator={false}
-                >
-                    <View style={styles.pageWrap}>
-                        <View style={styles.centerWrap}>
-                            <Text style={styles.salonTitle}>SALON APP</Text>
+                <View style={commonUi.auth.formCard}>
+                    <Text style={commonUi.auth.formTitle}>Log In</Text>
 
-                            <View style={styles.formCard}>
-                                <Text style={styles.formTitle}>Log In</Text>
+                    <Text style={commonUi.auth.formDescription}>
+                        Enter your email and password to continue.
+                    </Text>
 
-                                <Text style={styles.formDescription}>
-                                    Enter your email and password to continue.
-                                </Text>
+                    <View style={commonUi.auth.inputGroup}>
+                        <Text style={commonUi.auth.inputLabel}>Email</Text>
 
-                                <View style={styles.inputGroup}>
-                                    <Text style={styles.inputLabel}>Email</Text>
-
-                                    <TextInput
-                                        style={styles.input}
-                                        placeholder="Enter your email"
-                                        placeholderTextColor={colorScheme.textLabel}
-                                        value={email}
-                                        onChangeText={setEmail}
-                                        autoCapitalize="none"
-                                        keyboardType="email-address"
-                                    />
-                                </View>
-
-                                <View style={styles.inputGroup}>
-                                    <Text style={styles.inputLabel}>Password</Text>
-
-                                    <TextInput
-                                        style={styles.input}
-                                        placeholder="Enter your password"
-                                        placeholderTextColor={colorScheme.textLabel}
-                                        value={password}
-                                        onChangeText={setPassword}
-                                        secureTextEntry
-                                    />
-                                </View>
-
-                                {feedbackMessage ? (
-                                    <Text
-                                        style={[
-                                            styles.feedbackText,
-                                            feedbackType === "success"
-                                                ? styles.feedbackSuccess
-                                                : styles.feedbackError,
-                                        ]}
-                                    >
-                                        {feedbackMessage}
-                                    </Text>
-                                ) : null}
-
-                                <Pressable
-                                    style={({ pressed }) => [
-                                        styles.primaryButton,
-                                        pressed && styles.cardPressed,
-                                    ]}
-                                    onPress={onLogin}
-                                >
-                                    <Text style={styles.primaryButtonText}>Log In</Text>
-                                </Pressable>
-
-                                <View style={styles.dividerWrap}>
-                                    <View style={styles.dividerLine} />
-                                    <Text style={styles.dividerText}>OR</Text>
-                                    <View style={styles.dividerLine} />
-                                </View>
-
-                                <View style={styles.signupInlineWrap}>
-                                    <Text style={styles.signupText}>
-                                        Don&apos;t have an account?
-                                    </Text>
-
-                                    <Pressable
-                                        style={({ pressed }) => [
-                                            styles.signupButton,
-                                            pressed && styles.cardPressed,
-                                        ]}
-                                        onPress={() => navigation.navigate(NAV_SIGNUP)}
-                                    >
-                                        <Text style={styles.signupButtonText}>
-                                            Create Account
-                                        </Text>
-                                    </Pressable>
-                                </View>
-                            </View>
-                        </View>
+                        <TextInput
+                            style={commonUi.auth.input}
+                            placeholder="Enter your email"
+                            placeholderTextColor={colorScheme.textLabel}
+                            value={email}
+                            onChangeText={setEmail}
+                            autoCapitalize="none"
+                            keyboardType="email-address"
+                        />
                     </View>
-                </ScrollView>
-            </KeyboardAvoidingView>
-        </SafeAreaView>
+
+                    <View style={commonUi.auth.inputGroup}>
+                        <Text style={commonUi.auth.inputLabel}>Password</Text>
+
+                        <TextInput
+                            style={commonUi.auth.input}
+                            placeholder="Enter your password"
+                            placeholderTextColor={colorScheme.textLabel}
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry
+                        />
+                    </View>
+
+                    {feedbackMessage ? (
+                        <Text
+                            style={[
+                                commonUi.auth.feedbackText,
+                                feedbackType === "success"
+                                    ? commonUi.auth.feedbackSuccess
+                                    : commonUi.auth.feedbackError,
+                            ]}
+                        >
+                            {feedbackMessage}
+                        </Text>
+                    ) : null}
+
+                    <Pressable
+                        style={({ pressed }) => [
+                            commonUi.auth.primaryButton,
+                            pressed && commonUi.auth.cardPressed,
+                        ]}
+                        onPress={onLogin}
+                    >
+                        <Text style={commonUi.auth.primaryButtonText}>Log In</Text>
+                    </Pressable>
+
+                    <View style={commonUi.auth.dividerWrap}>
+                        <View style={commonUi.auth.dividerLine} />
+                        <Text style={commonUi.auth.dividerText}>OR</Text>
+                        <View style={commonUi.auth.dividerLine} />
+                    </View>
+
+                    <View style={commonUi.auth.signupInlineWrap}>
+                        <Text style={commonUi.auth.signupText}>
+                            Don&apos;t have an account?
+                        </Text>
+
+                        <Pressable
+                            style={({ pressed }) => [
+                                commonUi.auth.signupButton,
+                                pressed && commonUi.auth.cardPressed,
+                            ]}
+                            onPress={() => navigation.navigate(NAV_SIGNUP)}
+                        >
+                            <Text style={commonUi.auth.signupButtonText}>
+                                Create Account
+                            </Text>
+                        </Pressable>
+                    </View>
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
-
-const styles = StyleSheet.create({
-    safeArea: commonUi.screen.safeArea,
-    keyboardWrap: commonUi.screen.keyboardWrap,
-    scrollContent: commonUi.screen.scrollContent,
-    pageWrap: commonUi.screen.pageWrapWide,
-    centerWrap: commonUi.screen.centerWrap,
-    salonTitle: commonUi.auth.salonTitle,
-    formCard: commonUi.auth.formCard,
-    formTitle: commonUi.auth.formTitle,
-    formDescription: commonUi.auth.formDescription,
-    inputGroup: commonUi.auth.inputGroup,
-    inputLabel: commonUi.auth.inputLabel,
-    input: commonUi.auth.input,
-    feedbackText: commonUi.auth.feedbackText,
-    feedbackError: commonUi.auth.feedbackError,
-    feedbackSuccess: commonUi.auth.feedbackSuccess,
-    primaryButton: commonUi.auth.primaryButton,
-    primaryButtonText: commonUi.auth.primaryButtonText,
-
-    secondaryButton: {
-        backgroundColor: colorScheme.panelBackgroundAlt,
-        borderRadius: 24,
-        paddingVertical: 15,
-        alignItems: "center",
-        marginTop: 10,
-    },
-
-    secondaryButtonText: {
-        color: colorScheme.textDefault,
-        fontSize: 14,
-        fontWeight: "700",
-    },
-
-    dividerWrap: commonUi.auth.dividerWrap,
-    dividerLine: commonUi.auth.dividerLine,
-    dividerText: commonUi.auth.dividerText,
-
-    signupInlineWrap: {
-        alignItems: "center",
-    },
-
-    signupText: commonUi.auth.inlineCtaPromptText,
-    signupButton: commonUi.auth.inlineCtaButton,
-    signupButtonText: commonUi.auth.inlineCtaButtonText,
-    cardPressed: commonUi.auth.cardPressed,
-});
