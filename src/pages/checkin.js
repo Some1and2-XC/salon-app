@@ -9,6 +9,8 @@ import {
     NAV_QR,
     NAV_LOGIN,
     NAV_EXAMPLE_HOME,
+    TOAST_TYPE_SUCCESS,
+    TOAST_TYPE_ERROR,
     TOAST_TYPE_INFO,
 } from "../consts";
 
@@ -52,7 +54,7 @@ export function CheckinScreen({ navigation }) {
 
         if (!data || data.length === 0) {
             showAppToast(
-                TOAST_TYPE_INFO,
+                TOAST_TYPE_WARNING,
                 "No Appointment",
                 "You must book an appointment before checking in."
             );
@@ -60,15 +62,6 @@ export function CheckinScreen({ navigation }) {
         }
 
         navigation.navigate(NAV_QR, { data });
-    };
-
-    // TEST BUTTON for toast feature
-    const handleTestToast = () => {
-        showAppToast(
-            TOAST_TYPE_INFO,
-            "Test Toast",
-            "This is a test popup message."
-        );
     };
 
     return (
@@ -87,10 +80,10 @@ export function CheckinScreen({ navigation }) {
             />
 
             {/* Temporary testing button */}
-            <Button
-                title="Test Toast"
-                onPress={handleTestToast}
-            />
+
+            <Button title="Toast Success" onPress={() => showAppToast(TOAST_TYPE_SUCCESS , "Header", "Content")} />
+            <Button title="Toast Error"   onPress={() => showAppToast(TOAST_TYPE_ERROR   , "Header", "Content")} />
+            <Button title="Toast Info"    onPress={() => showAppToast(TOAST_TYPE_INFO    , "Header", "Content")} />
 
         </View>
     );

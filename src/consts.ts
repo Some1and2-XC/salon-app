@@ -20,6 +20,12 @@ export const APPOINTMENT_STATE_CANCELLED: number = 3;
 export const APPOINTMENT_STATE_COMPLETED: number = 4;
 
 export const TOAST_TYPE_INFO: number = 0;
-export const TOAST_TYPE_WARNING: number = 1;
-export const TOAST_TYPE_SUCCESS: number = 2;
-export const TOAST_TYPE_ERROR: number = 3;
+export const TOAST_TYPE_SUCCESS: number = 1;
+export const TOAST_TYPE_ERROR: number = 2;
+// export const TOAST_TYPE_WARNING: number = 3;
+
+export const TOAST_TYPE_MAPPINGS = {
+    0: "info",
+    2: "success",
+    3: "error",
+}
