@@ -5,7 +5,6 @@ export const colorSchemeBrown = {
     whiteSoft: "#fffaf6",
     whiteWarm: "#fff8f3",
     whiteWarmCard: "#fff8f2",
-    pureWhite: "#fff",
     // Background surfaces
     pageBackground: "#f5efe9",
     panelBackground: "#f3e7de",
@@ -59,7 +58,6 @@ export const colorSchemePink = {
     whiteSoft: "#fffafc",
     whiteWarm: "#fff5f8",
     whiteWarmCard: "#fff4f7",
-    pureWhite: "#fff",
     // Background surfaces
     pageBackground: "#fdf0f4",
     panelBackground: "#f9e4ec",
@@ -113,7 +111,6 @@ export const colorSchemeSeaside = {
     whiteSoft: "#f8fbff",
     whiteWarm: "#f5f8ff",
     whiteWarmCard: "#f4f7ff",
-    pureWhite: "#fff",
     // Background surfaces
     pageBackground: "#eef4fb",
     panelBackground: "#e4eef8",
@@ -167,7 +164,6 @@ export const colorSchemeBlueAndYellow = {
     whiteSoft: "#fefcf8",
     whiteWarm: "#fdf8f0",
     whiteWarmCard: "#fcf7ee",
-    pureWhite: "#fff",
     // Background surfaces - aged marble & parchment
     pageBackground: "#fdf8f0",
     panelBackground: "#f5ede0",
@@ -221,7 +217,6 @@ export const colorSchemeBluesAndReds = {
     whiteSoft: "#fefbf5",
     whiteWarm: "#faf6ee",
     whiteWarmCard: "#f8f3e8",
-    pureWhite: "#fff",
     // Background surfaces - travertine & parchment
     pageBackground: "#faf6ee",
     panelBackground: "#f0e8d8",
@@ -276,7 +271,6 @@ export const colorSchemeGreens = {
     whiteSoft: "#f8fbf5",
     whiteWarm: "#f4f8f0",
     whiteWarmCard: "#f0f5ea",
-    pureWhite: "#fff",
     // Background surfaces - dappled forest floor
     pageBackground: "#f2f7ec",
     panelBackground: "#e4eeda",
@@ -330,7 +324,6 @@ export const colorSchemePurples = {
     whiteSoft: "#fdf8ff",
     whiteWarm: "#faf4ff",
     whiteWarmCard: "#f7f0ff",
-    pureWhite: "#fff",
     // Background surfaces - twilight haze
     pageBackground: "#f5eeff",
     panelBackground: "#ece0f8",
@@ -384,7 +377,6 @@ export const colorSchemeIssYellow = {
     whiteSoft: "#fffdf5",
     whiteWarm: "#fffae8",
     whiteWarmCard: "#fff8e0",
-    pureWhite: "#fff",
     // Background surfaces - golden hour
     pageBackground: "#fdf6d8",
     panelBackground: "#f8eebc",
@@ -438,7 +430,6 @@ export const colorSchemeYellow = {
     whiteSoft: "#fffefc",
     whiteWarm: "#fffef5",
     whiteWarmCard: "#fffdf0",
-    pureWhite: "#fff",
     // Background surfaces - pale buttercream
     pageBackground: "#fffde8",
     panelBackground: "#fdfada",
@@ -492,7 +483,6 @@ export const colorSchemeBlue = {
     whiteSoft: "#f8f9fc",
     whiteWarm: "#f4f6fb",
     whiteWarmCard: "#f0f3f9",
-    pureWhite: "#fff",
     // Background surfaces - iced linen
     pageBackground: "#f2f4f8",
     panelBackground: "#e8ecf4",
@@ -546,7 +536,6 @@ export const colorSchemePinkDark = {
     whiteSoft: "#1a0d15",
     whiteWarm: "#fceef7",
     whiteWarmCard: "#1f1119",
-    pureWhite: "#fff",
     // Background surfaces
     pageBackground: "#130a10",
     panelBackground: "#1a0d15",
@@ -602,7 +591,6 @@ export const colorSchemeBlueDark = {
     whiteSoft: "#0d1219",
     whiteWarm: "#eef4fc",
     whiteWarmCard: "#111923",
-    pureWhite: "#fff",
     // Background surfaces
     pageBackground: "#0a0f18",
     panelBackground: "#0d1420",
@@ -656,7 +644,6 @@ export const colorSchemeGreenDark = {
     whiteSoft: "#0d1a12",
     whiteWarm: "#eefcf2",
     whiteWarmCard: "#111f16",
-    pureWhite: "#fff",
     // Background surfaces
     pageBackground: "#0a130c",
     panelBackground: "#0d1a10",
@@ -710,7 +697,6 @@ export const colorSchemePurpleDark = {
     whiteSoft: "#130d1a",
     whiteWarm: "#f4eefc",
     whiteWarmCard: "#18111f",
-    pureWhite: "#fff",
     // Background surfaces
     pageBackground: "#0e0a13",
     panelBackground: "#130d1a",
@@ -788,7 +774,3 @@ export const MAP_COLOR_SCHEME = {
     "green_dark"      : colorSchemeGreenDark,
     "purple_dark"     : colorSchemePurpleDark,
 };
-
-// TODO delete this
-// export var colorScheme = MAP_COLOR_SCHEME.brown;
-export var colorScheme = MAP_COLOR_SCHEME.purple_dark;
