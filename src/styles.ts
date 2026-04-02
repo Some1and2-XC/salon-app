@@ -1,11 +1,12 @@
 import { StyleSheet } from 'react-native';
+import { colorScheme } from "./colorScheme";
 
 export const sty = StyleSheet.create({
 
     container: {
         flex: 1,
         padding: 16,
-        backgroundColor: '#fff'
+        backgroundColor: colorScheme.pureWhite
     },
 
     containerCentered: {
@@ -28,7 +29,7 @@ export const sty = StyleSheet.create({
 
     text: {
         fontSize: 16,
-        color: '#222'
+        color: colorScheme.screenText
     },
 
     textBold: {
@@ -47,7 +48,7 @@ export const commonUi = {
     screen: {
         safeArea: {
             flex: 1,
-            backgroundColor: "#f5efe9",
+            backgroundColor: colorScheme.pageBackground,
         },
         safeAreaWeb: {
             height: "100vh",
@@ -91,26 +92,26 @@ export const commonUi = {
             fontSize: 34,
             fontWeight: "800",
             textAlign: "center",
-            color: "#2b1b15",
+            color: colorScheme.textDefault,
             marginBottom: 28,
             letterSpacing: 1,
         },
         formCard: {
-            backgroundColor: "#fff8f2",
+            backgroundColor: colorScheme.whiteWarmCard,
             borderRadius: 26,
             padding: 20,
             borderWidth: 1,
-            borderColor: "#ead9ce",
+            borderColor: colorScheme.borderLight,
         },
         formTitle: {
             fontSize: 22,
             fontWeight: "800",
-            color: "#281c17",
+            color: colorScheme.textDark,
             marginBottom: 6,
         },
         formDescription: {
             fontSize: 13.5,
-            color: "#6a5348",
+            color: colorScheme.textMuted,
             marginBottom: 16,
         },
         inputGroup: {
@@ -119,21 +120,21 @@ export const commonUi = {
         inputLabel: {
             fontSize: 12,
             fontWeight: "700",
-            color: "#8b6d5e",
+            color: colorScheme.textLabel,
             marginBottom: 6,
             textTransform: "uppercase",
             letterSpacing: 0.8,
         },
         input: {
-            backgroundColor: "#f3e7de",
+            backgroundColor: colorScheme.panelBackground,
             borderRadius: 18,
             paddingHorizontal: 16,
             paddingVertical: 15,
             borderWidth: 1,
-            borderColor: "#e5d2c5",
+            borderColor: colorScheme.borderLightAlt,
             fontSize: 15,
             fontWeight: "600",
-            color: "#2b1b15",
+            color: colorScheme.textDefault,
         },
         feedbackText: {
             marginTop: 2,
@@ -142,20 +143,20 @@ export const commonUi = {
             fontWeight: "700",
         },
         feedbackError: {
-            color: "#b3261e",
+            color: colorScheme.feedbackError,
         },
         feedbackSuccess: {
-            color: "#1d7a32",
+            color: colorScheme.feedbackSuccess,
         },
         primaryButton: {
-            backgroundColor: "#241713",
+            backgroundColor: colorScheme.darkSurface,
             borderRadius: 24,
             paddingVertical: 16,
             alignItems: "center",
             marginTop: 6,
         },
         primaryButtonText: {
-            color: "#fff8f3",
+            color: colorScheme.whiteWarm,
             fontSize: 15,
             fontWeight: "800",
         },
@@ -168,13 +169,13 @@ export const commonUi = {
         dividerLine: {
             flex: 1,
             height: 1,
-            backgroundColor: "#e3d2c7",
+            backgroundColor: colorScheme.borderMuted,
         },
         dividerText: {
             marginHorizontal: 12,
             fontSize: 12,
             fontWeight: "700",
-            color: "#8b6d5e",
+            color: colorScheme.textLabel,
             letterSpacing: 0.8,
         },
         cardPressed: {
@@ -182,21 +183,21 @@ export const commonUi = {
             transform: [{ scale: 0.98 }],
         },
         inlineCtaButton: {
-            backgroundColor: "#ead7ca",
+            backgroundColor: colorScheme.accentTint,
             borderRadius: 999,
             paddingVertical: 12,
             paddingHorizontal: 18,
             borderWidth: 1,
-            borderColor: "#e0cabc",
+            borderColor: colorScheme.borderAccentSoft,
         },
         inlineCtaButtonText: {
             fontSize: 14,
             fontWeight: "800",
-            color: "#2b1b15",
+            color: colorScheme.textDefault,
         },
         inlineCtaPromptText: {
             fontSize: 14,
-            color: "#5e473c",
+            color: colorScheme.textSubtle,
             marginBottom: 10,
         },
     },
@@ -208,7 +209,7 @@ export const commonUi = {
             paddingHorizontal: 20,
             paddingTop: 24,
             paddingBottom: 32,
-            backgroundColor: "#ead7ca",
+            backgroundColor: colorScheme.accentTint,
             marginBottom: 14,
             justifyContent: "space-between",
             width: "100%",
@@ -231,7 +232,7 @@ export const commonUi = {
         heroFadeMain: {
             width: "84%",
             height: 26,
-            backgroundColor: "#f3e7de",
+            backgroundColor: colorScheme.panelBackground,
             borderTopLeftRadius: 100,
             borderTopRightRadius: 100,
             opacity: 0.72,
@@ -239,7 +240,7 @@ export const commonUi = {
         heroFadeSmall: {
             width: "56%",
             height: 14,
-            backgroundColor: "#f3e7de",
+            backgroundColor: colorScheme.panelBackground,
             marginTop: -4,
             borderTopLeftRadius: 50,
             borderTopRightRadius: 50,
@@ -250,7 +251,7 @@ export const commonUi = {
             width: 220,
             height: 220,
             borderRadius: 110,
-            backgroundColor: "#d4ab93",
+            backgroundColor: colorScheme.accentBlob,
             right: -55,
             top: -45,
             opacity: 0.35,
@@ -260,7 +261,7 @@ export const commonUi = {
             width: 140,
             height: 140,
             borderRadius: 70,
-            backgroundColor: "#f6ece4",
+            backgroundColor: colorScheme.accentCream,
             right: 48,
             bottom: -42,
             opacity: 0.95,
@@ -270,7 +271,7 @@ export const commonUi = {
             width: 90,
             height: 90,
             borderRadius: 45,
-            backgroundColor: "#c7896b",
+            backgroundColor: colorScheme.accentBlobStrong,
             top: 102,
             opacity: 0.12,
         },
@@ -279,19 +280,19 @@ export const commonUi = {
             fontWeight: "700",
             letterSpacing: 1.7,
             textTransform: "uppercase",
-            color: "#7f5d4d",
+            color: colorScheme.textAccentSoft,
         },
         heroTitle: {
             fontSize: 38,
             fontWeight: "800",
             lineHeight: 41,
-            color: "#231712",
+            color: colorScheme.textDarkest,
         },
         heroTitleAccent: {
             fontSize: 38,
             fontWeight: "800",
             lineHeight: 41,
-            color: "#9b664d",
+            color: colorScheme.textAccent,
             marginBottom: 12,
         },
         metaRow: {
@@ -300,14 +301,14 @@ export const commonUi = {
             flexWrap: "wrap",
         },
         metaChip: {
-            backgroundColor: "#241713",
+            backgroundColor: colorScheme.darkSurface,
             paddingHorizontal: 14,
             paddingVertical: 9,
             borderRadius: 999,
             alignSelf: "flex-start",
         },
         metaChipText: {
-            color: "#fffaf6",
+            color: colorScheme.whiteSoft,
             fontWeight: "700",
             fontSize: 12.5,
         },
