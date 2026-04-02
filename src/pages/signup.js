@@ -15,21 +15,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 
 import { auth } from "../firebaseConfig";
 import { apiFetch } from "../utils";
-import { commonUi } from "../styles";
-import { NAV_HOME, NAV_LOGIN } from "../consts";
-
-function getSignUpErrorMessage(code) {
-    switch (code) {
-        case "auth/email-already-in-use":
-            return "An account already exists with this email.";
-        case "auth/invalid-email":
-            return "Please enter a valid email address.";
-        case "auth/weak-password":
-            return "Password must be at least 6 characters.";
-        default:
-            return "Sign up failed. Please try again.";
-    }
-}
+import { NAV_HOME, NAV_LOGIN, FIREBASE_AUTH_ERROR_MESSAGES } from "../consts";
 
 export function SignupScreen({ navigation }) {
     const [email, setEmail] = useState("");
@@ -41,6 +27,7 @@ export function SignupScreen({ navigation }) {
     const [feedbackType, setFeedbackType] = useState("");
 
     const onSignUp = async () => {
+        // TODO centralize email + password validation.
         const trimmedEmail = email.trim();
         const trimmedFirstName = firstName.trim();
         const trimmedLastName = lastName.trim();
@@ -83,10 +70,8 @@ export function SignupScreen({ navigation }) {
             return;
         }
 
-        try {
-            await createUserWithEmailAndPassword(auth, trimmedEmail, password);
-
-            const res = await apiFetch("/users", {
+        createUserWithEmailAndPassword(auth, trimmedEmail, password)
+            .then(() => apiFetch("/users", {
                 method: "POST",
                 body: JSON.stringify({
                     email: trimmedEmail,
@@ -94,20 +79,20 @@ export function SignupScreen({ navigation }) {
                     last_name: trimmedLastName,
                     phone: null,
                 }),
-            });
-
-            if (!res.ok) {
-                throw new Error("Failed to create user in backend!");
-            }
-
-            navigation.navigate(NAV_HOME, {
+            }))
+            .then((res) => res.json())
+            // TODO replace loggedInAs with just pulling from the firebase token itself.
+            .then((res) => navigation.navigate(NAV_HOME, {
                 toastMessage: `Account created for ${trimmedEmail}`,
-            });
-        } catch (error) {
-            console.error("Sign Up Failed", error);
-            setFeedbackMessage(getSignUpErrorMessage(error.code));
-            setFeedbackType("error");
-        }
+            }))
+            .catch((error) => {
+                // TODO replace with global popup
+                console.error("Sign Up Failed", error);
+                setFeedbackMessage(FIREBASE_AUTH_ERROR_MESSAGES[error.code] ?? "Sign up failed. Please try again.");
+                setFeedbackType("error");
+            })
+            ;
+
     };
 
     return (
@@ -116,6 +101,7 @@ export function SignupScreen({ navigation }) {
         >
             <StatusBar barStyle="dark-content" />
 
+            {/* TODO Remove all platform specific behavior */}
             <KeyboardAvoidingView
                 style={styles.keyboardWrap}
                 behavior={Platform.OS === "ios" ? "padding" : undefined}

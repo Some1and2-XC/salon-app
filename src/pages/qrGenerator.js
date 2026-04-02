@@ -8,6 +8,7 @@ export function QRScreen({route}) {
 
     const qrValue = JSON.stringify(route.params.data);
 
+    // TODO remove this log call (or console.trace or something...).
     console.log(qrValue);
 
     return (

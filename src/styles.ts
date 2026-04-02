@@ -313,3 +313,5 @@ export const commonUi = {
         },
     },
 };
+
+// TODO Make a global color pallet.
