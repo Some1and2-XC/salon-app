@@ -74,7 +74,8 @@ export default function App() {
     if (!authReady) return null;
 
     return (<SafeAreaProvider>
-        <SafeAreaView style={[{ flex: 1 }, commonUi.screen.safeArea ]} edges={["left", "right"]}>
+        {/* <SafeAreaView style={commonUi.screen.scrollView} edges={["left", "right"]}> */}
+        <SafeAreaView style={commonUi.screen.safeArea} edges={["left", "right"]}>
             <StatusBar translucent backgroundColor="transparent" />
 
             <NavigationContainer>

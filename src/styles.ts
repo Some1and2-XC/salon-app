@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 import { colorScheme, colorSchemeGreens, COLOR_SCHEME_BROWN, COLOR_SCHEME_GREENS, MAP_COLOR_SCHEME } from "./colorScheme";
 
 import { create } from "zustand";
@@ -53,12 +53,12 @@ export function useCommonUi(scheme) {
         screen: {
             safeArea: {
                 flex: 1,
+                // Fixed broken scrolling on web
                 backgroundColor: scheme.pageBackground,
-            },
-            safeAreaWeb: {
-                height: "100vh",
-                maxHeight: "100vh",
-                overflow: "hidden",
+                ...(Platform.OS === "web" && {
+                    height: "100vh",
+                    overflow: "auto"
+                })
             },
             pageMargins: {
                 padding: 14,

@@ -38,9 +38,6 @@ export function HomeScreen({ navigation, route }) {
 
     const commonUi = useTheme((state) => state.getCommonUi)();
     const colorScheme = useTheme((state) => state.getScheme)() ?? colorSchemeGreens;
-
-    console.log(commonUi);
-
     const styles = useMemo(() => makeStyles(colorScheme), [colorScheme]);
 
     const { width, height } = useWindowDimensions();
