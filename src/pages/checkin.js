@@ -1,13 +1,15 @@
-import { useEffect } from 'react';
-import { StyleSheet, Text, View, Button, Platform } from 'react-native';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { useEffect } from "react";
+import { Text, View, Button } from "react-native";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
 import { apiFetch } from "../utils";
-import Toast from 'react-native-toast-message';
+import { showAppToast } from "../toastUtils";
 
 import {
     NAV_QR,
     NAV_LOGIN,
-    NAV_EXAMPLE_HOME
+    NAV_EXAMPLE_HOME,
+    TOAST_TYPE_INFO,
 } from "../consts";
 
 import { sty } from "../styles";
@@ -22,52 +24,74 @@ export function CheckinScreen({ navigation }) {
         const auth = getAuth();
 
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if(!user) {
+            if (!user) {
                 navigation.navigate(NAV_LOGIN);
-                return;
             }
         });
 
         return unsubscribe;
-    }, []);
+    }, [navigation]);
 
-    const handleGenerateQR = async() => {
+    const handleGenerateQR = async () => {
         const auth = getAuth();
         const user = auth.currentUser;
 
-        const token = await user.getIdToken();
+        if (!user) {
+            navigation.navigate(NAV_LOGIN);
+            return;
+        }
 
-        const res = await apiFetch(`/appointments`);
+        const res = await apiFetch("/appointments");
 
-        if(!res.ok) {
+        if (!res.ok) {
             console.log("Error status", res.status);
             return;
         }
 
         const data = await res.json();
 
-        if (!data || data.length == 0) {
-            if(Platform.OS === 'web') {
-                alert('You must book an appointment before checking in');
-            }
-            else {
-                Toast.show({
-                    type: 'info',
-                    text1: 'No Appointment',
-                    text2: 'You must book an appointment before checking in'
-                });
-            }
+        if (!data || data.length === 0) {
+            showAppToast(
+                TOAST_TYPE_INFO,
+                "No Appointment",
+                "You must book an appointment before checking in."
+            );
             return;
         }
 
-        navigation.navigate(NAV_QR, { data: data });
-    }
+        navigation.navigate(NAV_QR, { data });
+    };
+
+    // TEST BUTTON for toast feature
+    const handleTestToast = () => {
+        showAppToast(
+            TOAST_TYPE_INFO,
+            "Test Toast",
+            "This is a test popup message."
+        );
+    };
 
     return (
         <View style={sty.container}>
+
             <Text style={sty.h1}>Check In</Text>
-            <Button style={sty.button} title={"HOME"} onPress={returnToHomePage} />
-            <Button style={sty.button} title={"QR Code"} onPress={handleGenerateQR} />
+
+            <Button
+                title="HOME"
+                onPress={returnToHomePage}
+            />
+
+            <Button
+                title="QR Code"
+                onPress={handleGenerateQR}
+            />
+
+            {/* Temporary testing button */}
+            <Button
+                title="Test Toast"
+                onPress={handleTestToast}
+            />
+
         </View>
     );
 }

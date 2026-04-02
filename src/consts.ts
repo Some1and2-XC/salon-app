@@ -13,8 +13,13 @@ export const NAV_SIGNUP: string = "signup";
 export const NAV_APP_TYPES: string = "app-types";
 export const NAV_BARCODE_SCANNER: string = "barcode-scanner";
 
-export const APPOINTMENT_STATE_UNCONFIRMED : int = 0
-export const APPOINTMENT_STATE_ACCEPTED    : int = 1;
-export const APPOINTMENT_STATE_CONFIRMED   : int = 2;
-export const APPOINTMENT_STATE_CANCELLED   : int = 3;
-export const APPOINTMENT_STATE_COMPLETED   : int = 4;
+export const APPOINTMENT_STATE_UNCONFIRMED: number = 0;
+export const APPOINTMENT_STATE_ACCEPTED: number = 1;
+export const APPOINTMENT_STATE_CONFIRMED: number = 2;
+export const APPOINTMENT_STATE_CANCELLED: number = 3;
+export const APPOINTMENT_STATE_COMPLETED: number = 4;
+
+export const TOAST_TYPE_INFO: number = 0;
+export const TOAST_TYPE_WARNING: number = 1;
+export const TOAST_TYPE_SUCCESS: number = 2;
+export const TOAST_TYPE_ERROR: number = 3;
