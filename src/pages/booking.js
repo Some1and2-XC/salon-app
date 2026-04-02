@@ -15,7 +15,7 @@ import {
     useWindowDimensions,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
-import { apiFetch } from "../utils";
+import { apiFetch, assertFetchSuccessful } from "../utils";
 import { NAV_HOME } from "../consts";
 import { commonUi } from "../styles";
 import { colorScheme } from "../colorScheme";
@@ -31,22 +31,6 @@ function showAlert(title, message) {
     } else {
         Alert.alert(title, message);
     }
-}
-
-async function createAppointmentRequest(appointment) {
-    const response = await apiFetch("/appointments", {
-        method: "POST",
-        body: JSON.stringify(appointment),
-    });
-
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => null);
-        const message =
-            errorBody?.message || `Server error: ${response.status}`;
-        throw new Error(message);
-    }
-
-    return await response.json();
 }
 
 function getAvailableTimesForDay(day, availabilities, appointmentLength) {
@@ -499,26 +483,16 @@ export function BookingScreen({ navigation }) {
             appointmentLength,
         );
 
-        try {
-            await createAppointmentRequest(appointment);
-            showAlert("Success", "Your appointment has been booked.");
-        } catch (err) {
-            console.error(err);
+        apiFetch("/appointments", {
+                method: "POST",
+                body: JSON.stringify(appointment),
+            })
+            .then((res) => res.json())
+            .then(assertFetchSuccessful)
+            .then(() => showAlert("Success", "Your appointment has been booked."))
+            .catch((err) => showAlert("Server Error", errorBody?.message || `Server error: ${response.status}`))
+            ;
 
-            if (err.message.includes("401") || err.message.includes("403")) {
-                showAlert("Session Expired", "Please log in again.");
-            } else if (err.message.includes("Network request failed")) {
-                showAlert(
-                    "No Connection",
-                    "Check your internet and try again.",
-                );
-            } else {
-                showAlert(
-                    "Error",
-                    err.message || "Failed to create appointment.",
-                );
-            }
-        }
     };
 
     const isFormComplete =

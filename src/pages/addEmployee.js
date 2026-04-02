@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Button, Platform, Alert } from "react-native";
-import { apiFetch } from "../utils";
+import { apiFetch, assertFetchSuccessful } from "../utils";
 import { sty } from "../styles";
 import { v7 as uuidv7 } from "uuid";
 import { Picker } from "@react-native-picker/picker";
@@ -25,7 +25,7 @@ export function AddEmployeeScreen() {
     const [form, setForm] = useState(emptyForm());
     const [mode, setMode] = useState("add");
     const [employees, setEmployees] = useState([]);
-    const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
+    const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
 
     useEffect(() => {
         apiFetch("/employees")
@@ -42,27 +42,22 @@ export function AddEmployeeScreen() {
     }
 
     async function handleRemove() {
+
         if (!selectedEmployeeId) {
             showAlert("Error", "Please select an employee.");
             return;
         }
-        try {
-            const res = await apiFetch(`/employees/${selectedEmployeeId}`, {
-                method: "DELETE",
-            });
 
-            if (!res.ok) {
-                throw new Error(`Failed: ${res.status}`);
-            }
+        apiFetch(`/employees/${selectedEmployeeId}`, { method: "DELETE", })
+            .then(assertFetchSuccessful)
+            .then(() => {
+                setEmployees(employees.filter((e) => e.ud !== selectedEmployeeId));
+                setSelectedEmployeeId(null);
+                showAlert("Success", "Removed employee successfully!");
+            })
+            .catch((err) => showAlert("Error", err.message || "Failed to remove employee."))
+            ;
 
-            showAlert("Success", "Employee removed.");
-            setEmployees((prev) =>
-                prev.filter((e) => String(e.id) !== selectedEmployeeId),
-            );
-            setSelectedEmployeeId("");
-        } catch (err) {
-            showAlert("Error", err.message || "Failed to remove employee.");
-        }
     }
 
     async function handleSubmit() {
@@ -73,25 +68,17 @@ export function AddEmployeeScreen() {
             );
             return;
         }
-        try {
-            const res = await apiFetch("/employees", {
+
+        apiFetch("/employees", {
                 method: "POST",
                 body: JSON.stringify(form),
-            });
+            })
+            .then(assertFetchSuccessful)
+            .then(() => showAlert("Success", `${form.first_name} ${form.last_name} has been added.`))
+            .then(() => setForm(emptyForm()))
+            .catch((err) => showAlert("Error", err.message || "Failed to add employee."))
+            ;
 
-            if (!res.ok) {
-                const err = await res.json().catch(() => null);
-                throw new Error(err?.message || `Server error: ${res.status}`);
-            }
-
-            showAlert(
-                "Success",
-                `${form.first_name} ${form.last_name} has been added.`,
-            );
-            setForm(emptyForm());
-        } catch (err) {
-            showAlert("Error", err.message || "Failed to add employee.");
-        }
     }
 
     return (

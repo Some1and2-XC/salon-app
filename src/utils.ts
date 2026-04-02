@@ -13,3 +13,17 @@ export async function apiFetch(path: string, options: any = {}) {
     },
   });
 }
+
+// A utility function to check if a network request was successful.
+// Usage:
+// apiFetch("/foo")
+//     .then(assertFetchSuccessful)
+//     .then(/* do other stuff */)
+//     .catch((error) => { /* Error handling stuff */ })
+//     ;
+export function assertFetchSuccessful(req) {
+    // Throw error if failed
+    if (!req.ok) throw new Error(`Network Request Failed! Status: ${req.status}`);
+    // Return otherwise
+    return req;
+}
