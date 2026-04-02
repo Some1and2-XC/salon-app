@@ -10,6 +10,7 @@ import {
 } from "../consts";
 
 import { sty } from "../styles";
+import { commonUi } from '../styles';
 
 export function CheckinScreen({ navigation }) {
 
@@ -64,7 +65,7 @@ export function CheckinScreen({ navigation }) {
         })
         return (
             <TouchableOpacity
-                style={styles.button}
+                style={styles.formCard}
                 onPress={() => navigation.navigate(NAV_QR, { appointment: item })}
             >
                 <Text>{"Appointment"}</Text>
@@ -87,12 +88,6 @@ export function CheckinScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-    button: {
-        paddingVertical: 12,
-        paddingHorizontal: 16,
-        borderRadius: 6,
-        backgroundColor: '#7d796f',
-        margin: 10
-    }
+    formCard: commonUi.auth.formCard
 });
 
