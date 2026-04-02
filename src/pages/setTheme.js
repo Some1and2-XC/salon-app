@@ -15,15 +15,11 @@ export function SetThemeScreen({ navigation }) {
     const colorSchemeName = useTheme((state) => state.scheme);
     const styles = useMemo(() => makeBookingStyles(colorScheme), [colorScheme]);
 
-    console.log(colorScheme);
-    console.log(styles);
-
     const [showSelectionModal, setShowSelectionModal] = useState(false);
 
     const colorSchemeOptions = Object.keys(MAP_COLOR_SCHEME).map((k) => ({
         label: k,
         value: k,
-        // value: MAP_COLOR_SCHEME[k],
     }));
 
     return (
