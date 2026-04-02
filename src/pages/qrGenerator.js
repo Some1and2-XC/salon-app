@@ -6,13 +6,14 @@ import { sty } from "../styles";
 
 export function QRScreen({route}) {
 
-    const qrValue = JSON.stringify(route.params.data);
+    const { appointment } = route.params;
+    const qrValue = JSON.stringify(appointment);
 
     // TODO remove this log call (or console.trace or something...).
     console.log(qrValue);
 
     return (
-        <View styles={sty.container}>
+        <View style={sty.container}>
             <Text>Checkin Confirmed! Use this to checkin for your appointment!</Text>
             {qrValue !== '' && (
                 <View style={sty.containerCentered}>
