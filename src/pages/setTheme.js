@@ -30,13 +30,13 @@ export function SetThemeScreen({ navigation }) {
         <ScrollView style={commonUi.screen.pageMargins}>
 
             <Button
-                title="Back!"
-                onPress={() => navigation.navigate(NAV_HOME) }
+                title="Select Theme!"
+                onPress={() => setShowSelectionModal(true)}
                 />
 
             <Button
-                title="Select Theme!"
-                onPress={() => setShowSelectionModal(true)}
+                title="Back!"
+                onPress={() => navigation.navigate(NAV_HOME) }
                 />
 
             <OptionModal
