@@ -5,7 +5,8 @@ export const NAV_CHECKIN: string = "checkin";
 
 export const NAV_CHECKINCONFIRM: string = "checkin-confirm";
 export const NAV_CHECKIN_CONFIRM_ADMIN: string = "admin-checkin-confirm";
-export const NAV_CHECKIN_CONFIRM_ADMIN_LIST: string = "admin-checkin-confirm-list";
+export const NAV_CHECKIN_CONFIRM_ADMIN_LIST: string =
+    "admin-checkin-confirm-list";
 export const NAV_QR: string = "qr";
 export const NAV_HOME: string = "home";
 export const NAV_LOGIN: string = "login";
@@ -15,12 +16,13 @@ export const NAV_BARCODE_SCANNER: string = "barcode-scanner";
 export const NAV_ADMIN_HOMEPAGE: string = "adminHomepage";
 export const NAV_ADD_EMPLOYEE: string = "addEmployee";
 export const NAV_SET_AVAILABILITY: string = "setAvailability";
+export const NAV_SET_THEME: string = "set-theme";
 
-export const APPOINTMENT_STATE_UNCONFIRMED : int = 0
-export const APPOINTMENT_STATE_ACCEPTED    : int = 1;
-export const APPOINTMENT_STATE_CONFIRMED   : int = 2;
-export const APPOINTMENT_STATE_CANCELLED   : int = 3;
-export const APPOINTMENT_STATE_COMPLETED   : int = 4;
+export const APPOINTMENT_STATE_UNCONFIRMED: int = 0;
+export const APPOINTMENT_STATE_ACCEPTED: int = 1;
+export const APPOINTMENT_STATE_CONFIRMED: int = 2;
+export const APPOINTMENT_STATE_CANCELLED: int = 3;
+export const APPOINTMENT_STATE_COMPLETED: int = 4;
 
 export const FIREBASE_AUTH_ERROR_MESSAGES = {
     "auth/invalid-credential": "Invalid email or password.",
@@ -28,5 +30,6 @@ export const FIREBASE_AUTH_ERROR_MESSAGES = {
     "auth/wrong-password": "Incorrect password. Please try again.",
     "auth/invalid-email": "Please enter a valid email address.",
     "auth/missing-email": "Please enter your email first.",
-    "auth/too-many-requests": "Too many reset attempts. Please try again later.",
+    "auth/too-many-requests":
+        "Too many reset attempts. Please try again later.",
 };
