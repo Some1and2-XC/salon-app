@@ -1,7 +1,3 @@
-/*
-waiting for admin page to connect navigation, put on main test screen for now 
-*/
-
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, Platform, Alert } from "react-native";
 import { apiFetch } from "../utils";
