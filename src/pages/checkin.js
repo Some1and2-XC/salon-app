@@ -15,11 +15,22 @@ import { sty } from "../styles";
 export function CheckinScreen({ navigation }) {
 
     const handleGenerateQR = async() => {
+        const auth = getAuth();
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if(!user) {
+                navigation.navigate(NAV_LOGIN);
+            }
+            return unsubscribe;
+        });
 
-        apiFetch(`/appointments`)
-            .then((res) => res.json())
-            // TODO replace with global popup handler (or just remove)
-            .then((res) => {
+        try {
+
+            const res = await apiFetch('/appointments');
+            const data = res.json();
+
+            // TODO replace with global popup handler (or just remove
+
+            if((data) => {
                 if (!data || data.length == 0) {
                     if(Platform.OS === 'web') {
                         alert('You must book an appointment before checking in');
@@ -35,10 +46,12 @@ export function CheckinScreen({ navigation }) {
                 }
                 return res;
             })
-            .then((res) => navigation.navigate(NAV_QR, { data: data }))
+            navigation.navigate(NAV_QR, { data: data })
+        }
+        catch(e) {
             // TODO replace with global popup handler.
-            .catch(console.error)
-            ;
+            console.error("Error: ", e);
+        }
 
     }
 
