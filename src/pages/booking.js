@@ -41,7 +41,8 @@ async function createAppointmentRequest(appointment) {
 
     if (!response.ok) {
         const errorBody = await response.json().catch(() => null);
-        const message = errorBody?.message || `Server error: ${response.status}`;
+        const message =
+            errorBody?.message || `Server error: ${response.status}`;
         throw new Error(message);
     }
 
@@ -52,21 +53,49 @@ function getAvailableTimesForDay(day, availabilities, appointmentLength) {
     const slots = [];
 
     for (const slot of availabilities) {
-        const start = new Date(slot.start_time * 1000);
-        const end = new Date(slot.end_time * 1000);
+        const slotDay = Math.floor(slot.start_time / (24 * 60 * 60));
+        if (slotDay !== day) continue;
 
-        if (start.getDay() !== day) continue;
+        const startSeconds = slot.start_time % (24 * 60 * 60);
+        const endSeconds = slot.end_time % (24 * 60 * 60);
 
-        let current = start.getTime();
-
-        while (current + appointmentLength * 60 * 1000 <= end.getTime()) {
-            const d = new Date(current);
-            slots.push(formatTime(d.getHours() * 60 + d.getMinutes()));
-            current += appointmentLength * 60 * 1000;
+        let current = startSeconds;
+        while (current + appointmentLength * 60 <= endSeconds) {
+            const hours = Math.floor(current / 3600);
+            const minutes = Math.floor((current % 3600) / 60);
+            slots.push(formatTime(hours * 60 + minutes));
+            current += appointmentLength * 60;
         }
     }
 
     return slots;
+}
+
+function findAvailableEmployeeForSlot(
+    day,
+    timeString,
+    availabilities,
+    appointmentLength,
+) {
+    const [hours, minutes] = timeString.split(":").map(Number);
+    const timeInSeconds = hours * 3600 + minutes * 60;
+
+    for (const slot of availabilities) {
+        const slotDay = Math.floor(slot.start_time / (24 * 60 * 60));
+        if (slotDay !== day) continue;
+
+        const startSeconds = slot.start_time % (24 * 60 * 60);
+        const endSeconds = slot.end_time % (24 * 60 * 60);
+
+        if (
+            timeInSeconds >= startSeconds &&
+            timeInSeconds + appointmentLength * 60 <= endSeconds
+        ) {
+            return slot.employee_id;
+        }
+    }
+
+    return null;
 }
 
 function buildAppointment(
@@ -75,7 +104,7 @@ function buildAppointment(
     taskId,
     employeePreference,
     employeeId,
-    appointmentLength
+    appointmentLength,
 ) {
     const [hours, minutes] = time.split(":").map(Number);
     const startDate = new Date(date + "T00:00:00");
@@ -149,17 +178,21 @@ function OptionModal({
                         nestedScrollEnabled={true}
                     >
                         {options.length === 0 ? (
-                            <Text style={styles.emptyOptionText}>{emptyText}</Text>
+                            <Text style={styles.emptyOptionText}>
+                                {emptyText}
+                            </Text>
                         ) : (
                             options.map((option) => {
-                                const isSelected = option.value === selectedValue;
+                                const isSelected =
+                                    option.value === selectedValue;
 
                                 return (
                                     <Pressable
                                         key={String(option.value)}
                                         style={({ pressed }) => [
                                             styles.optionRow,
-                                            isSelected && styles.optionRowSelected,
+                                            isSelected &&
+                                                styles.optionRowSelected,
                                             pressed && styles.optionRowPressed,
                                         ]}
                                         onPress={() => {
@@ -171,7 +204,8 @@ function OptionModal({
                                             <Text
                                                 style={[
                                                     styles.optionLabel,
-                                                    isSelected && styles.optionLabelSelected,
+                                                    isSelected &&
+                                                        styles.optionLabelSelected,
                                                 ]}
                                             >
                                                 {option.label}
@@ -191,7 +225,9 @@ function OptionModal({
                                         </View>
 
                                         {isSelected && (
-                                            <Text style={styles.optionCheck}>✓</Text>
+                                            <Text style={styles.optionCheck}>
+                                                ✓
+                                            </Text>
                                         )}
                                     </Pressable>
                                 );
@@ -266,28 +302,42 @@ export function BookingScreen({ navigation }) {
     const [showCalendar, setShowCalendar] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [employeePreference, setEmployeePreference] = useState(
-        EMPLOYEE_OPTIONS.ANY
+        EMPLOYEE_OPTIONS.ANY,
     );
 
     const [showTaskModal, setShowTaskModal] = useState(false);
     const [showEmployeeModal, setShowEmployeeModal] = useState(false);
     const [showTimeModal, setShowTimeModal] = useState(false);
 
-    const selectedTask = tasks.find((t) => String(t.id) === String(selectedTaskId));
+    const selectedTask = tasks.find(
+        (t) => String(t.id) === String(selectedTaskId),
+    );
     const selectedEmployee = employees.find(
-        (e) => String(e.id) === String(selectedEmployeeId)
+        (e) => String(e.id) === String(selectedEmployeeId),
     );
     const appointmentLength = (selectedTask?.time_for_booking || 900) / 60;
+
+    const filteredAvailabilities = useMemo(() => {
+        if (employeePreference === EMPLOYEE_OPTIONS.ANY) {
+            return availabilities;
+        }
+
+        if (!selectedEmployeeId) return [];
+
+        return availabilities.filter(
+            (a) => String(a.employee_id) === String(selectedEmployeeId),
+        );
+    }, [availabilities, employeePreference, selectedEmployeeId]);
 
     const availableTimes = useMemo(() => {
         if (!selectedDate) return [];
 
         return getAvailableTimesForDay(
             new Date(selectedDate + "T12:00:00").getDay(),
-            availabilities,
-            appointmentLength
+            filteredAvailabilities,
+            appointmentLength,
         );
-    }, [selectedDate, availabilities, appointmentLength]);
+    }, [selectedDate, filteredAvailabilities, appointmentLength]);
 
     useEffect(() => {
         Animated.parallel([
@@ -315,7 +365,7 @@ export function BookingScreen({ navigation }) {
                     duration: 3600,
                     useNativeDriver: true,
                 }),
-            ])
+            ]),
         ).start();
 
         Animated.loop(
@@ -330,13 +380,9 @@ export function BookingScreen({ navigation }) {
                     duration: 4300,
                     useNativeDriver: true,
                 }),
-            ])
+            ]),
         ).start();
     }, [fadeIn, slideUp, float1, float2]);
-
-    useEffect(() => {
-        setSelectedTime(availableTimes.length > 0 ? availableTimes[0] : "");
-    }, [availableTimes]);
 
     useEffect(() => {
         Promise.all([
@@ -364,11 +410,30 @@ export function BookingScreen({ navigation }) {
             .finally(() => setIsLoading(false));
     }, []);
 
+    useEffect(() => {
+        setSelectedDate(null);
+        setSelectedTime("");
+    }, [selectedTaskId]);
+
+    useEffect(() => {
+        setSelectedTime("");
+    }, [selectedDate]);
+
+    useEffect(() => {
+        setSelectedEmployeeId("");
+        setSelectedDate(null);
+        setSelectedTime("");
+    }, [employeePreference]);
+
+    useEffect(() => {
+        setSelectedTime("");
+    }, [availableTimes]);
+
     const handleDayChange = (weekday) => {
         const nextTimes = getAvailableTimesForDay(
             weekday,
             availabilities,
-            appointmentLength
+            appointmentLength,
         );
 
         setSelectedTime(nextTimes.length > 0 ? nextTimes[0] : "");
@@ -377,17 +442,6 @@ export function BookingScreen({ navigation }) {
     const handleCreateAppointment = async () => {
         if (!selectedTaskId) {
             showAlert("No task selected", "Please select a task.");
-            return;
-        }
-
-        if (
-            employeePreference === EMPLOYEE_OPTIONS.SPECIFIC &&
-            !selectedEmployeeId
-        ) {
-            showAlert(
-                "No employee selected",
-                "Please select an employee or choose any."
-            );
             return;
         }
 
@@ -401,13 +455,42 @@ export function BookingScreen({ navigation }) {
             return;
         }
 
+        let employeeId = selectedEmployeeId;
+
+        if (employeePreference === EMPLOYEE_OPTIONS.ANY) {
+            const day = new Date(selectedDate + "T12:00:00").getDay();
+            employeeId = findAvailableEmployeeForSlot(
+                day,
+                selectedTime,
+                availabilities,
+                appointmentLength,
+            );
+
+            if (!employeeId) {
+                showAlert(
+                    "No employee available",
+                    "No employee is available for that time.",
+                );
+                return;
+            }
+        } else if (
+            employeePreference === EMPLOYEE_OPTIONS.SPECIFIC &&
+            !selectedEmployeeId
+        ) {
+            showAlert(
+                "No employee selected",
+                "Please select an employee or choose any.",
+            );
+            return;
+        }
+
         const appointment = buildAppointment(
             selectedDate,
             selectedTime,
             Number(selectedTaskId),
-            employeePreference,
-            selectedEmployeeId,
-            appointmentLength
+            EMPLOYEE_OPTIONS.SPECIFIC,
+            employeeId,
+            appointmentLength,
         );
 
         try {
@@ -419,9 +502,15 @@ export function BookingScreen({ navigation }) {
             if (err.message.includes("401") || err.message.includes("403")) {
                 showAlert("Session Expired", "Please log in again.");
             } else if (err.message.includes("Network request failed")) {
-                showAlert("No Connection", "Check your internet and try again.");
+                showAlert(
+                    "No Connection",
+                    "Check your internet and try again.",
+                );
             } else {
-                showAlert("Error", err.message || "Failed to create appointment.");
+                showAlert(
+                    "Error",
+                    err.message || "Failed to create appointment.",
+                );
             }
         }
     };
@@ -455,10 +544,11 @@ export function BookingScreen({ navigation }) {
         employeePreference === EMPLOYEE_OPTIONS.ANY
             ? "Any employee"
             : selectedEmployee
-            ? selectedEmployee.first_name && selectedEmployee.last_name
-                ? `${selectedEmployee.first_name} ${selectedEmployee.last_name}`
-                : selectedEmployee.first_name || `Employee ${selectedEmployee.id}`
-            : "Not selected";
+              ? selectedEmployee.first_name && selectedEmployee.last_name
+                  ? `${selectedEmployee.first_name} ${selectedEmployee.last_name}`
+                  : selectedEmployee.first_name ||
+                    `Employee ${selectedEmployee.id}`
+              : "Not selected";
 
     const blob1Y = float1.interpolate({
         inputRange: [0, 1],
@@ -475,13 +565,18 @@ export function BookingScreen({ navigation }) {
     if (isLoading) {
         return (
             <SafeAreaView
-                style={[styles.safeArea, Platform.OS === "web" && styles.safeAreaWeb]}
+                style={[
+                    styles.safeArea,
+                    Platform.OS === "web" && styles.safeAreaWeb,
+                ]}
             >
                 <StatusBar barStyle="dark-content" />
                 <View style={styles.loadingWrap}>
                     <View style={styles.loadingCard}>
-                        <ActivityIndicator size="large" color={colorScheme.textAccent} />
-                        <Text style={styles.loadingTitle}>Preparing Booking</Text>
+                        <ActivityIndicator size="large" color="#9b664d" />
+                        <Text style={styles.loadingTitle}>
+                            Preparing Booking
+                        </Text>
                         <Text style={styles.loadingText}>
                             Loading services, employees, and available times...
                         </Text>
@@ -493,7 +588,10 @@ export function BookingScreen({ navigation }) {
 
     return (
         <SafeAreaView
-            style={[styles.safeArea, Platform.OS === "web" && styles.safeAreaWeb]}
+            style={[
+                styles.safeArea,
+                Platform.OS === "web" && styles.safeAreaWeb,
+            ]}
         >
             <StatusBar barStyle="dark-content" />
 
@@ -530,10 +628,17 @@ export function BookingScreen({ navigation }) {
                             onPress={() => navigation.navigate(NAV_HOME)}
                         >
                             <Text style={styles.backButtonArrow}>←</Text>
-                            <Text style={styles.backButtonText}>Back to Home</Text>
+                            <Text style={styles.backButtonText}>
+                                Back to Home
+                            </Text>
                         </Pressable>
 
-                        <View style={[styles.heroCard, { minHeight: heroMinHeight }]}>
+                        <View
+                            style={[
+                                styles.heroCard,
+                                { minHeight: heroMinHeight },
+                            ]}
+                        >
                             <Animated.View
                                 style={[
                                     styles.blobOne,
@@ -557,15 +662,21 @@ export function BookingScreen({ navigation }) {
                             />
 
                             <View style={styles.heroTopRow}>
-                                <Text style={styles.kicker}>BOOK APPOINTMENT</Text>
+                                <Text style={styles.kicker}>
+                                    BOOK APPOINTMENT
+                                </Text>
                             </View>
 
                             <View style={styles.heroTextBlock}>
-                                <Text style={styles.heroTitle}>Create Your</Text>
-                                <Text style={styles.heroTitleAccent}>Booking</Text>
+                                <Text style={styles.heroTitle}>
+                                    Create Your
+                                </Text>
+                                <Text style={styles.heroTitleAccent}>
+                                    Booking
+                                </Text>
                                 <Text style={styles.heroText}>
-                                    Choose a service, pick your stylist, and reserve a
-                                    time that works best for you.
+                                    Choose a service, pick your stylist, and
+                                    reserve a time that works best for you.
                                 </Text>
                             </View>
 
@@ -591,7 +702,9 @@ export function BookingScreen({ navigation }) {
                             label="Select the service you want to book."
                             value={selectedTask?.name || "Choose a task"}
                             meta={
-                                selectedTask ? `${appointmentLength} min` : "Service"
+                                selectedTask
+                                    ? `${appointmentLength} min`
+                                    : "Service"
                             }
                             onPress={() => setShowTaskModal(true)}
                         />
@@ -601,30 +714,39 @@ export function BookingScreen({ navigation }) {
                                 <View style={styles.iconWrapSmall}>
                                     <Text style={styles.iconSmall}>02</Text>
                                 </View>
-                                <Text style={styles.cornerText}>Preference</Text>
+                                <Text style={styles.cornerText}>
+                                    Preference
+                                </Text>
                             </View>
 
-                            <Text style={styles.secondaryTitle}>Employee Choice</Text>
+                            <Text style={styles.secondaryTitle}>
+                                Employee Choice
+                            </Text>
                             <Text style={styles.secondaryDescription}>
-                                Pick any available employee or choose someone specific.
+                                Pick any available employee or choose someone
+                                specific.
                             </Text>
 
                             <View style={styles.preferenceRow}>
                                 <Pressable
                                     style={({ pressed }) => [
                                         styles.preferenceChip,
-                                        employeePreference === EMPLOYEE_OPTIONS.ANY &&
+                                        employeePreference ===
+                                            EMPLOYEE_OPTIONS.ANY &&
                                             styles.preferenceChipActive,
                                         pressed && styles.cardPressed,
                                     ]}
                                     onPress={() =>
-                                        setEmployeePreference(EMPLOYEE_OPTIONS.ANY)
+                                        setEmployeePreference(
+                                            EMPLOYEE_OPTIONS.ANY,
+                                        )
                                     }
                                 >
                                     <Text
                                         style={[
                                             styles.preferenceChipText,
-                                            employeePreference === EMPLOYEE_OPTIONS.ANY &&
+                                            employeePreference ===
+                                                EMPLOYEE_OPTIONS.ANY &&
                                                 styles.preferenceChipTextActive,
                                         ]}
                                     >
@@ -642,7 +764,7 @@ export function BookingScreen({ navigation }) {
                                     ]}
                                     onPress={() =>
                                         setEmployeePreference(
-                                            EMPLOYEE_OPTIONS.SPECIFIC
+                                            EMPLOYEE_OPTIONS.SPECIFIC,
                                         )
                                     }
                                 >
@@ -659,7 +781,8 @@ export function BookingScreen({ navigation }) {
                                 </Pressable>
                             </View>
 
-                            {employeePreference === EMPLOYEE_OPTIONS.SPECIFIC && (
+                            {employeePreference ===
+                                EMPLOYEE_OPTIONS.SPECIFIC && (
                                 <Pressable
                                     style={({ pressed }) => [
                                         styles.selectButton,
@@ -721,10 +844,12 @@ export function BookingScreen({ navigation }) {
                                 </View>
                             </View>
 
-                            <Text style={styles.primaryTitle}>Review Details</Text>
+                            <Text style={styles.primaryTitle}>
+                                Review Details
+                            </Text>
                             <Text style={styles.primaryDescription}>
-                                Double-check your booking information before creating
-                                the appointment.
+                                Double-check your booking information before
+                                creating the appointment.
                             </Text>
 
                             <View style={styles.summaryGrid}>
@@ -736,7 +861,9 @@ export function BookingScreen({ navigation }) {
                                 </View>
 
                                 <View style={styles.summaryRow}>
-                                    <Text style={styles.summaryKey}>Employee</Text>
+                                    <Text style={styles.summaryKey}>
+                                        Employee
+                                    </Text>
                                     <Text style={styles.summaryValue}>
                                         {summaryEmployee}
                                     </Text>
@@ -760,7 +887,9 @@ export function BookingScreen({ navigation }) {
 
                                 {!!selectedTask && (
                                     <View style={styles.summaryRow}>
-                                        <Text style={styles.summaryKey}>Duration</Text>
+                                        <Text style={styles.summaryKey}>
+                                            Duration
+                                        </Text>
                                         <Text style={styles.summaryValue}>
                                             {appointmentLength} min
                                         </Text>
@@ -771,8 +900,11 @@ export function BookingScreen({ navigation }) {
                             <Pressable
                                 style={({ pressed }) => [
                                     styles.innerCreateButton,
-                                    !isFormComplete && styles.createButtonDisabled,
-                                    pressed && isFormComplete && styles.cardPressed,
+                                    !isFormComplete &&
+                                        styles.createButtonDisabled,
+                                    pressed &&
+                                        isFormComplete &&
+                                        styles.cardPressed,
                                 ]}
                                 onPress={handleCreateAppointment}
                             >
@@ -804,7 +936,9 @@ export function BookingScreen({ navigation }) {
                             onDayPress={(day) => {
                                 setSelectedDate(day.dateString);
                                 handleDayChange(
-                                    new Date(day.dateString + "T12:00:00").getDay()
+                                    new Date(
+                                        day.dateString + "T12:00:00",
+                                    ).getDay(),
                                 );
                                 setShowCalendar(false);
                             }}
@@ -813,7 +947,8 @@ export function BookingScreen({ navigation }) {
                                     ? {
                                           [selectedDate]: {
                                               selected: true,
-                                              selectedColor: colorScheme.textAccent,
+                                              selectedColor:
+                                                  colorScheme.textAccent,
                                           },
                                       }
                                     : {}
@@ -822,8 +957,10 @@ export function BookingScreen({ navigation }) {
                             theme={{
                                 backgroundColor: colorScheme.whiteWarmCard,
                                 calendarBackground: colorScheme.whiteWarmCard,
-                                textSectionTitleColor: colorScheme.textAccentSoft,
-                                selectedDayBackgroundColor: colorScheme.textAccent,
+                                textSectionTitleColor:
+                                    colorScheme.textAccentSoft,
+                                selectedDayBackgroundColor:
+                                    colorScheme.textAccent,
                                 selectedDayTextColor: colorScheme.whiteSoft,
                                 todayTextColor: colorScheme.textAccent,
                                 dayTextColor: colorScheme.textDefault,
