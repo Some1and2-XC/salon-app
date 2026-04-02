@@ -13,7 +13,6 @@ import { User as FBUser, onAuthStateChanged } from "firebase/auth";
 import Toast from "react-native-toast-message";
 
 import { auth } from "./firebaseConfig";
-import { toastConfig } from "./toastConfig";
 
 // Screen imports
 import { ExampleHome } from "./pages/index";
@@ -123,7 +122,6 @@ export default function App() {
                         />
                     </Stack.Navigator>
 
-                    <Toast config={toastConfig} />
                 </NavigationContainer>
             </SafeAreaView>
         </SafeAreaProvider>
