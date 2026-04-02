@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import { StatusBar } from 'expo-status-bar';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { Platform } from "react-native";
@@ -57,6 +57,7 @@ export default function App() {
     }, []);
 
     const commonUi = useTheme((state) => state.getCommonUi)();
+    const colorScheme = useTheme((state) => state.getScheme)();
 
     const [user, setUser] = useState<FBUser | null>(null);
     const [authReady, setAuthReady] = useState(false);
@@ -85,7 +86,10 @@ export default function App() {
         <SafeAreaView style={commonUi.screen.safeArea} edges={["left", "right"]}>
             <StatusBar translucent backgroundColor="transparent" />
 
-            <NavigationContainer>
+            <NavigationContainer theme={{ ...DefaultTheme,
+                colors: { ...DefaultTheme.colors,
+                    background: colorScheme.pageBackground,
+            }}}>
                 <Stack.Navigator initialRouteName={ initialRoute }
                     screenOptions={{ headerShown: false }}
                 >

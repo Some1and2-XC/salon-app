@@ -54,8 +54,8 @@ export function useCommonUi(scheme) {
         screen: {
             safeArea: {
                 flex: 1,
-                // Fixed broken scrolling on web
                 backgroundColor: scheme.pageBackground,
+                // Fixed broken scrolling on web
                 ...(Platform.OS === "web" && {
                     height: "100vh",
                     overflow: "auto"
