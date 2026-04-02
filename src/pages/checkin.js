@@ -16,36 +16,35 @@ export function CheckinScreen({ navigation }) {
 
     const handleGenerateQR = async() => {
         const auth = getAuth();
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if(!user) {
-                navigation.navigate(NAV_LOGIN);
-            }
-            return unsubscribe;
-        });
+        const user = auth.currentUser;
+
+        if(!user) {
+            // Maybe add something that lets users know that they should be logged in to view their QR codes
+            navigation.navigate(NAV_LOGIN);
+            return;
+        }
 
         try {
 
             const res = await apiFetch('/appointments');
-            const data = res.json();
+            const data = await res.json();
 
             // TODO replace with global popup handler (or just remove
 
-            if((data) => {
-                if (!data || data.length == 0) {
-                    if(Platform.OS === 'web') {
+            if (!data || data.length == 0) {
+                if(Platform.OS === 'web') {
                         alert('You must book an appointment before checking in');
-                    }
-                    else {
-                        Toast.show({
-                            type: 'info',
-                            text1: 'No Appointment',
-                            text2: 'You must book an appointment before checking in'
-                        });
-                    }
-                    return;
                 }
-                return res;
-            })
+                else {
+                    Toast.show({
+                        type: 'info',
+                        text1: 'No Appointment',
+                        text2: 'You must book an appointment before checking in'
+                    });
+                }
+                return;
+            }
+
             navigation.navigate(NAV_QR, { data: data })
         }
         catch(e) {
