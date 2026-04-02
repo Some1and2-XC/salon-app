@@ -15,6 +15,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 
 import { auth } from "../firebaseConfig";
 import { apiFetch } from "../utils";
+import { commonUi } from "../styles";
 import { NAV_HOME, NAV_LOGIN, FIREBASE_AUTH_ERROR_MESSAGES } from "../consts";
 
 export function SignupScreen({ navigation }) {

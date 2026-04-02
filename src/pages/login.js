@@ -17,6 +17,7 @@ import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "fir
 import { auth } from "../firebaseConfig";
 import { apiFetch } from "../utils";
 import { sty } from "../styles";
+import { commonUi } from "../styles";
 import { NAV_HOME, NAV_SIGNUP, FIREBASE_AUTH_ERROR_MESSAGES  } from "../consts";
 
 export function LoginScreen({ navigation }) {
