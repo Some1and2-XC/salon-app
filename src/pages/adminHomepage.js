@@ -6,7 +6,8 @@ import {
     NAV_CHECKIN_CONFIRM_ADMIN_LIST, 
     NAV_APP_TYPES, 
     NAV_BARCODE_SCANNER,
-    NAV_ADD_EMPLOYEE
+    NAV_ADD_EMPLOYEE, 
+    NAV_SET_AVAILABILITY
 } from "../consts"; 
 
 export function AdminHomepageScreen({ navigation }) { 
@@ -16,7 +17,8 @@ export function AdminHomepageScreen({ navigation }) {
     NAV_CHECKIN_CONFIRM_ADMIN_LIST, 
     NAV_APP_TYPES, 
     NAV_BARCODE_SCANNER,
-    NAV_ADD_EMPLOYEE
+    NAV_ADD_EMPLOYEE, 
+    NAV_SET_AVAILABILITY
     ]; return ( 
 
         <View style={ sty.container }> 
