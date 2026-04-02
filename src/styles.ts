@@ -318,8 +318,6 @@ export function useCommonUi(scheme) {
                 fontSize: 12.5,
             },
         },
-        card: {
-        },
     };
 
 }
