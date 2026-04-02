@@ -20,7 +20,6 @@ export const colorSchemeBrown = {
     textAccent: "#9b664d",
     textOnDark: "#d8c2b5",
     textDisabled: "#ccb8ab",
-    screenText: "#222",
     // Borders and dividers
     borderLight: "#ead9ce",
     borderLightAlt: "#e5d2c5",
@@ -73,7 +72,6 @@ export const colorSchemePink = {
     textAccent: "#9b4d6e",
     textOnDark: "#d8b5c4",
     textDisabled: "#ccaab8",
-    screenText: "#222",
     // Borders and dividers
     borderLight: "#eacdd8",
     borderLightAlt: "#e5c5d3",
@@ -126,7 +124,6 @@ export const colorSchemeSeaside = {
     textAccent: "#4d7e9b",
     textOnDark: "#b5cdd8",
     textDisabled: "#aabfcc",
-    screenText: "#222",
     // Borders and dividers
     borderLight: "#ccdaea",
     borderLightAlt: "#c5d3e5",
@@ -179,7 +176,6 @@ export const colorSchemeBlueAndYellow = {
     textAccent: "#2b5ea7",
     textOnDark: "#d6e4f7",
     textDisabled: "#c0ad96",
-    screenText: "#1e1208",
     // Borders and dividers - worn travertine
     borderLight: "#e8dcc8",
     borderLightAlt: "#e0d2b8",
@@ -233,7 +229,6 @@ export const colorSchemeBluesAndReds = {
     textAccent: "#8c261d",
     textOnDark: "#e8d8cc",
     textDisabled: "#b8a888",
-    screenText: "#1c120a",
     // Borders and dividers
     borderLight: "#ddd0b0",
     borderLightAlt: "#d4c49c",
@@ -286,7 +281,6 @@ export const colorSchemeGreens = {
     textAccent: "#2e6e28",
     textOnDark: "#c8ddb8",
     textDisabled: "#a0b890",
-    screenText: "#0e1c0a",
     // Borders and dividers - lichen & leaf edge
     borderLight: "#c4d8b0",
     borderLightAlt: "#b8cc9e",
@@ -339,7 +333,6 @@ export const colorSchemePurples = {
     textAccent: "#6a30c0",
     textOnDark: "#d8c4f0",
     textDisabled: "#b4a0cc",
-    screenText: "#160a2a",
     // Borders and dividers - amethyst edge
     borderLight: "#d4c0ec",
     borderLightAlt: "#cab4e4",
@@ -392,7 +385,6 @@ export const colorSchemeIssYellow = {
     textAccent: "#a06800",
     textOnDark: "#f0d878",
     textDisabled: "#c0a848",
-    screenText: "#1e1400",
     // Borders and dividers - dried wheat edge
     borderLight: "#e8d07a",
     borderLightAlt: "#e0c660",
@@ -445,7 +437,6 @@ export const colorSchemeYellow = {
     textAccent: "#a07800",
     textOnDark: "#fdf5b0",
     textDisabled: "#c0b060",
-    screenText: "#2a2400",
     // Borders and dividers - pale straw
     borderLight: "#f0e898",
     borderLightAlt: "#ece080",
@@ -498,7 +489,6 @@ export const colorSchemeBlue = {
     textAccent: "#3a50a0",
     textOnDark: "#c8d0e8",
     textDisabled: "#9aa4c0",
-    screenText: "#0e1220",
     // Borders and dividers - pale steel
     borderLight: "#d0d8ec",
     borderLightAlt: "#c8d0e4",
@@ -551,7 +541,6 @@ export const colorSchemePinkDark = {
     textAccent: "#f06090",
     textOnDark: "#3d1a2e",
     textDisabled: "#6b3a56",
-    screenText: "#f5dcea",
     // Borders and dividers
     borderLight: "#3a1829",
     borderLightAlt: "#38172a",
@@ -606,7 +595,6 @@ export const colorSchemeBlueDark = {
     textAccent: "#6090f0",
     textOnDark: "#1a2e3d",
     textDisabled: "#3a4e6b",
-    screenText: "#dce8f5",
     // Borders and dividers
     borderLight: "#182938",
     borderLightAlt: "#172a38",
@@ -659,7 +647,6 @@ export const colorSchemeGreenDark = {
     textAccent: "#60f090",
     textOnDark: "#1a3d26",
     textDisabled: "#3a6b4a",
-    screenText: "#dcf5e4",
     // Borders and dividers
     borderLight: "#183829",
     borderLightAlt: "#173828",
@@ -712,7 +699,6 @@ export const colorSchemePurpleDark = {
     textAccent: "#9060f0",
     textOnDark: "#2a1a3d",
     textDisabled: "#4e3a6b",
-    screenText: "#e8dcf5",
     // Borders and dividers
     borderLight: "#281838",
     borderLightAlt: "#271738",
