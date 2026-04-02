@@ -757,7 +757,22 @@ export const colorSchemePurpleDark = {
     chipTextDark: "#d4b8f0",
 } as const;
 
-export const COLOR_SCHEME_MAP = {
+export const COLOR_SCHEME_BROWN           : string = "brown";
+export const COLOR_SCHEME_PINK            : string = "pink";
+export const COLOR_SCHEME_SEASIDE         : string = "seaside";
+export const COLOR_SCHEME_BLUE_AND_YELLOW : string = "blue_and_yellow";
+export const COLOR_SCHEME_BLUES_AND_RES   : string = "blues_and_res";
+export const COLOR_SCHEME_GREENS          : string = "greens";
+export const COLOR_SCHEME_PURPLES         : string = "purples";
+export const COLOR_SCHEME_ISS_YELLOW      : string = "iss_yellow";
+export const COLOR_SCHEME_YELLOW          : string = "yellow";
+export const COLOR_SCHEME_BLUE            : string = "blue";
+export const COLOR_SCHEME_PINK_DARK       : string = "pink_dark";
+export const COLOR_SCHEME_BLUE_DARK       : string = "blue_dark";
+export const COLOR_SCHEME_GREEN_DARK      : string = "green_dark";
+export const COLOR_SCHEME_PURPLE_DARK     : string = "purple_dark";
+
+export const MAP_COLOR_SCHEME = {
     brown           : colorSchemeBrown,
     pink            : colorSchemePink,
     seaside         : colorSchemeSeaside,
@@ -774,4 +789,6 @@ export const COLOR_SCHEME_MAP = {
     purple_dark     : colorSchemePurpleDark,
 };
 
-export var colorScheme = COLOR_SCHEME_MAP.brown;
+// TODO delete this
+// export var colorScheme = MAP_COLOR_SCHEME.brown;
+export var colorScheme = MAP_COLOR_SCHEME.purple_dark;
