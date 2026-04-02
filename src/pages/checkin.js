@@ -1,13 +1,16 @@
-import { useEffect } from 'react';
-import { StyleSheet, Text, View, Button, Platform } from 'react-native';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { apiFetch } from "../utils";
-import Toast from 'react-native-toast-message';
+import { useEffect } from "react";
+import { Text, View, Button } from "react-native";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+import { apiFetch, showAppToast } from "../utils";
 
 import {
     NAV_QR,
     NAV_LOGIN,
-    NAV_EXAMPLE_HOME
+    NAV_EXAMPLE_HOME,
+    TOAST_TYPE_SUCCESS,
+    TOAST_TYPE_ERROR,
+    TOAST_TYPE_INFO,
 } from "../consts";
 
 import { sty } from "../styles";
@@ -44,6 +47,7 @@ export function CheckinScreen({ navigation }) {
 
     return (
         <View style={sty.container}>
+
             <Text style={sty.h1}>Check In</Text>
             {/* TODO make this a list of user appointments */}
             <Button style={sty.button} title={"QR Code"} onPress={handleGenerateQR} />
