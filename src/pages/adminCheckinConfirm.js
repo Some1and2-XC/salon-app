@@ -25,7 +25,6 @@ export function AdminCheckinConfirm({ navigation, route }) {
                 .then((res) => res.json())
                 .then((res) => setParams(res[0]))
                 .catch(console.error)
-                .await
                 ;
         }
 
@@ -68,7 +67,8 @@ export function AdminCheckinConfirm({ navigation, route }) {
 
         if (params.uuid) {
             // Makes fetch request
-            await apiFetch(`/appointments/${params.uuid}`, fetch_body)
+            apiFetch(`/appointments/${params.uuid}`, fetch_body)
+                .then((res) => res.json())
                 .catch(console.error)
                 ;
         }

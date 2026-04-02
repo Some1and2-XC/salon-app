@@ -14,59 +14,39 @@ import { sty } from "../styles";
 
 export function CheckinScreen({ navigation }) {
 
-    const returnToHomePage = () => {
-        navigation.navigate(NAV_EXAMPLE_HOME);
-    };
-
-    useEffect(() => {
-        const auth = getAuth();
-
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if(!user) {
-                navigation.navigate(NAV_LOGIN);
-                return;
-            }
-        });
-
-        return unsubscribe;
-    }, []);
-
     const handleGenerateQR = async() => {
-        const auth = getAuth();
-        const user = auth.currentUser;
 
-        const token = await user.getIdToken();
+        apiFetch(`/appointments`)
+            .then((res) => res.json())
+            // TODO replace with global popup handler (or just remove)
+            .then((res) => {
+                if (!data || data.length == 0) {
+                    if(Platform.OS === 'web') {
+                        alert('You must book an appointment before checking in');
+                    }
+                    else {
+                        Toast.show({
+                            type: 'info',
+                            text1: 'No Appointment',
+                            text2: 'You must book an appointment before checking in'
+                        });
+                    }
+                    return;
+                }
+                return res;
+            })
+            .then((res) => navigation.navigate(NAV_QR, { data: data }))
+            // TODO replace with global popup handler.
+            .catch(console.error)
+            ;
 
-        const res = await apiFetch(`/appointments`);
-
-        if(!res.ok) {
-            console.log("Error status", res.status);
-            return;
-        }
-
-        const data = await res.json();
-
-        if (!data || data.length == 0) {
-            if(Platform.OS === 'web') {
-                alert('You must book an appointment before checking in');
-            }
-            else {
-                Toast.show({
-                    type: 'info',
-                    text1: 'No Appointment',
-                    text2: 'You must book an appointment before checking in'
-                });
-            }
-            return;
-        }
-
-        navigation.navigate(NAV_QR, { data: data });
     }
 
     return (
         <View style={sty.container}>
             <Text style={sty.h1}>Check In</Text>
             <Button style={sty.button} title={"HOME"} onPress={returnToHomePage} />
+            {/* TODO make this a list of user appointments */}
             <Button style={sty.button} title={"QR Code"} onPress={handleGenerateQR} />
         </View>
     );

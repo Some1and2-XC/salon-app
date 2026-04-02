@@ -19,3 +19,12 @@ export const APPOINTMENT_STATE_ACCEPTED    : int = 1;
 export const APPOINTMENT_STATE_CONFIRMED   : int = 2;
 export const APPOINTMENT_STATE_CANCELLED   : int = 3;
 export const APPOINTMENT_STATE_COMPLETED   : int = 4;
+
+export const FIREBASE_AUTH_ERROR_MESSAGES = {
+    "auth/invalid-credential": "Invalid email or password.",
+    "auth/user-not-found": "No account exists with this email.",
+    "auth/wrong-password": "Incorrect password. Please try again.",
+    "auth/invalid-email": "Please enter a valid email address.",
+    "auth/missing-email": "Please enter your email first.",
+    "auth/too-many-requests": "Too many reset attempts. Please try again later.",
+};
