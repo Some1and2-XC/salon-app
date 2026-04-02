@@ -471,7 +471,7 @@ export function AdminAppointmentTypesScreen() {
 
             <Modal visible={deleteModalVisible} animationType="fade" transparent>
                 <View style={styles.formModalBackdrop}>
-                    <View style={styles.confirmCard}>
+                    <View style={[ styles.modalCard, {maxWidth: 420} ]}>
                         <Text style={styles.confirmTitle}>Delete Appointment Type?</Text>
                         <Text style={styles.confirmText}>
                             Are you sure you want to delete{" "}

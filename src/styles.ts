@@ -31,7 +31,7 @@ export const sty = StyleSheet.create({
 
     text: {
         fontSize: 16,
-        color: colorScheme.screenText
+        color: "black",
     },
 
     textBold: {
