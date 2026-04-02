@@ -35,10 +35,12 @@ function OptionModal({
             animationType="fade"
             onRequestClose={onClose}
         >
-            <View style={styles.modalOverlay}>
-                <Pressable style={styles.modalBackdrop} onPress={onClose} />
 
-                <View style={styles.optionModalCard}>
+            <View style={styles.formModalBackdrop}>
+
+                <View style={[ styles.modalCard, {maxWidth: 420} ]}>
+                    <Pressable style={ styles.modalBackdrop } onPress={onClose} />
+
                     <View style={styles.optionModalHeader}>
                         <Text style={styles.optionModalTitle}>{title}</Text>
 
@@ -316,7 +318,7 @@ export function AdminAppointmentTypesScreen() {
 
                             <Text style={commonUi.hero.kicker}>Admin Dashboard</Text>
                             <Text style={commonUi.hero.heroTitle}>Appointment Types</Text>
-                            <Text style={styles.heroText}>
+                            <Text style={commonUi.hero.kicker}>
                                 Create, update, and organize salon services.
                             </Text>
 
@@ -529,10 +531,6 @@ function makeStyles(colorScheme) {
             marginBottom: 10,
         },
 
-        heroCard: {
-            // ...commonUi.hero.heroCard,
-            marginBottom: 14,
-        },
         // blobOne: commonUi.hero.blobOne,
         // blobTwo: commonUi.hero.blobTwo,
         // kicker: commonUi.hero.kicker,
@@ -678,7 +676,10 @@ function makeStyles(colorScheme) {
             borderColor: colorScheme.borderLight,
             maxHeight: "88%",
             padding: 18,
+            alignSelf: "center",
+            width: "100%",
         },
+
         confirmCard: {
             backgroundColor: colorScheme.whiteWarmCard,
             borderRadius: 24,
@@ -773,13 +774,6 @@ function makeStyles(colorScheme) {
             fontWeight: "800",
         },
 
-        modalOverlay: {
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            paddingHorizontal: 18,
-            backgroundColor: colorScheme.overlayDarkSoft,
-        },
         modalBackdrop: {
             position: "absolute",
             top: 0,
@@ -787,24 +781,7 @@ function makeStyles(colorScheme) {
             bottom: 0,
             left: 0,
         },
-        optionModalCard: {
-            width: "100%",
-            maxWidth: 430,
-            maxHeight: "70%",
-            backgroundColor: colorScheme.whiteWarmCard,
-            borderRadius: 28,
-            paddingHorizontal: 16,
-            paddingTop: 16,
-            paddingBottom: 14,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLight,
-        },
-        optionModalHeader: {
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 10,
-        },
+
         optionModalTitle: {
             fontSize: 18,
             fontWeight: "800",
