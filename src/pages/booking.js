@@ -853,493 +853,469 @@ export function BookingScreen({ navigation }) {
 
 function makeStyles(colorScheme) {
 
-        return StyleSheet.create({
-
-            // safeArea: commonUi.screen.safeArea,
-            // safeAreaWeb: commonUi.screen.safeAreaWeb,
-            // scrollView: commonUi.screen.scrollView,
-            // scrollViewWeb: commonUi.screen.scrollViewWeb,
-            // scrollContent: commonUi.screen.scrollContent,
-            // screenInner: commonUi.screen.screenInner,
-
-            backButton: {
-                flexDirection: "row",
-                alignItems: "center",
-                alignSelf: "flex-start",
-                backgroundColor: colorScheme.whiteWarmCard,
-                borderRadius: 999,
-                paddingVertical: 10,
-                paddingHorizontal: 14,
-                borderWidth: 1,
-                borderColor: colorScheme.borderLight,
-                marginBottom: 12,
-            },
-
-            backButtonArrow: {
-                fontSize: 18,
-                color: colorScheme.textAccentSoft,
-                marginRight: 8,
-                fontWeight: "800",
-            },
-
-            backButtonText: {
-                fontSize: 14,
-                fontWeight: "700",
-                color: colorScheme.textDefault,
-            },
-
-            // heroCard: commonUi.hero.heroCard,
-            // heroTopRow: commonUi.hero.heroTopRow,
-            // heroTextBlock: commonUi.hero.heroTextBlock,
-            // heroFadeWrap: commonUi.hero.heroFadeWrap,
-            // heroFadeMain: commonUi.hero.heroFadeMain,
-            // heroFadeSmall: commonUi.hero.heroFadeSmall,
-            // blobOne: commonUi.hero.blobOne,
-            // blobTwo: commonUi.hero.blobTwo,
-            // blobThree: commonUi.hero.blobThree,
-            // kicker: commonUi.hero.kicker,
-            // heroTitle: commonUi.hero.heroTitle,
-            // heroTitleAccent: commonUi.hero.heroTitleAccent,
-
-            heroText: {
-                fontSize: 15,
-                lineHeight: 22,
-                color: colorScheme.textSubtle,
-                maxWidth: "82%",
-            },
-
-            // metaRow: commonUi.hero.metaRow,
-            // metaChip: commonUi.hero.metaChip,
-            // metaChipText: commonUi.hero.metaChipText,
-
-            secondaryActionCardFull: {
-                backgroundColor: colorScheme.whiteWarmCard,
-                borderRadius: 28,
-                paddingHorizontal: 18,
-                paddingTop: 18,
-                paddingBottom: 18,
-                minHeight: 150,
-                borderWidth: 1,
-                borderColor: colorScheme.borderLight,
-                width: "100%",
-                marginBottom: 14,
-            },
-
-            smallTopRow: {
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 12,
-            },
-
-            iconWrapSmall: {
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                backgroundColor: colorScheme.panelBackgroundAlt,
-                alignItems: "center",
-                justifyContent: "center",
-            },
-
-            iconSmall: {
-                fontSize: 13,
-                fontWeight: "800",
-                color: colorScheme.textAccentSoft,
-            },
-
-            cornerText: {
-                fontSize: 12,
-                fontWeight: "700",
-                color: colorScheme.textLabel,
-            },
-
-            secondaryTitle: {
-                fontSize: 22,
-                lineHeight: 26,
-                fontWeight: "800",
-                color: colorScheme.textDark,
-                marginBottom: 6,
-            },
-
-            secondaryDescription: {
-                fontSize: 13.5,
-                lineHeight: 20,
-                color: colorScheme.textMuted,
-                maxWidth: "92%",
-                marginBottom: 14,
-            },
-
-            selectButton: {
-                backgroundColor: colorScheme.panelBackground,
-                borderRadius: 18,
-                paddingHorizontal: 16,
-                paddingVertical: 15,
-                borderWidth: 1,
-                borderColor: colorScheme.borderLightAlt,
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-            },
-
-            selectButtonDisabled: {
-                opacity: 0.6,
-            },
-
-            employeeSelectButton: {
-                marginTop: 14,
-            },
-
-            selectValue: {
-                flex: 1,
-                fontSize: 15,
-                fontWeight: "700",
-                color: colorScheme.textDefault,
-                paddingRight: 10,
-            },
-
-            selectValueMuted: {
-                color: colorScheme.textLabel,
-            },
-
-            selectChevron: {
-                fontSize: 24,
-                color: colorScheme.textAccentSoft,
-                marginTop: -2,
-            },
-
-            preferenceRow: {
-                flexDirection: "row",
-                gap: 10,
-                flexWrap: "wrap",
-            },
-
-            preferenceChip: {
-                flex: 1,
-                minWidth: 140,
-                backgroundColor: colorScheme.panelBackground,
-                borderRadius: 16,
-                paddingVertical: 13,
-                paddingHorizontal: 14,
-                borderWidth: 1,
-                borderColor: colorScheme.borderLightAlt,
-                alignItems: "center",
-                justifyContent: "center",
-            },
-
-            preferenceChipActive: {
-                backgroundColor: colorScheme.darkSurface,
-                borderColor: colorScheme.darkSurface,
-            },
-
-            preferenceChipText: {
-                fontSize: 14,
-                fontWeight: "700",
-                color: colorScheme.textMuted,
-            },
-
-            preferenceChipTextActive: {
-                color: colorScheme.whiteWarm,
-            },
-
-            primaryActionCard: {
-                position: "relative",
-                overflow: "hidden",
-                backgroundColor: colorScheme.darkSurface,
-                borderRadius: 28,
-                paddingHorizontal: 18,
-                paddingTop: 18,
-                paddingBottom: 18,
-                marginBottom: 8,
-                minHeight: 270,
-                width: "100%",
-            },
-
-            cardGlow: {
-                position: "absolute",
-                width: 170,
-                height: 170,
-                borderRadius: 85,
-                backgroundColor: colorScheme.accentGlow,
-                top: -40,
-                right: -30,
-                opacity: 0.13,
-            },
-
-            cardHeaderRow: {
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: 18,
-            },
-
-            iconWrapLarge: {
-                width: 52,
-                height: 52,
-                borderRadius: 26,
-                backgroundColor: colorScheme.overlayWhiteSoft,
-                alignItems: "center",
-                justifyContent: "center",
-            },
-
-            iconLarge: {
-                fontSize: 22,
-                color: colorScheme.accentHighlight,
-            },
-
-            pillDark: {
-                backgroundColor: colorScheme.overlayAccentSoft,
-                borderRadius: 999,
-                paddingHorizontal: 11,
-                paddingVertical: 7,
-            },
-
-            pillDarkText: {
-                color: colorScheme.accentHighlight,
-                fontSize: 12,
-                fontWeight: "700",
-            },
-
-            primaryTitle: {
-                fontSize: 26,
-                lineHeight: 31,
-                fontWeight: "800",
-                color: colorScheme.whiteWarm,
-                marginBottom: 9,
-                maxWidth: "82%",
-            },
-
-            primaryDescription: {
-                fontSize: 14,
-                lineHeight: 21,
-                color: colorScheme.textOnDark,
-                maxWidth: "96%",
-                marginBottom: 18,
-            },
-
-            summaryGrid: {
-                gap: 8,
-                marginBottom: 18,
-            },
-
-            summaryRow: {
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-                gap: 10,
-                paddingVertical: 3,
-            },
-
-            summaryKey: {
-                fontSize: 14,
-                color: colorScheme.textOnDark,
-                fontWeight: "700",
-            },
-
-            summaryValue: {
-                flex: 1,
-                textAlign: "right",
-                fontSize: 14,
-                color: colorScheme.whiteWarm,
-                fontWeight: "700",
-            },
-
-            innerCreateButton: {
-                backgroundColor: colorScheme.accentButton,
-                borderRadius: 24,
-                paddingVertical: 16,
-                paddingHorizontal: 18,
-                alignItems: "center",
-                justifyContent: "center",
-                marginTop: "auto",
-            },
-
-            innerCreateButtonText: {
-                fontSize: 15,
-                fontWeight: "800",
-                color: colorScheme.textDefault,
-                letterSpacing: 0.2,
-            },
-
-            createButtonDisabled: {
-                opacity: 0.72,
-            },
-
-            loadingWrap: {
-                flex: 1,
-                justifyContent: "center",
-                paddingHorizontal: 20,
-                backgroundColor: colorScheme.pageBackground,
-            },
-
-            loadingCard: {
-                backgroundColor: colorScheme.whiteWarmCard,
-                borderRadius: 28,
-                paddingHorizontal: 24,
-                paddingVertical: 28,
-                alignItems: "center",
-                borderWidth: 1,
-                borderColor: colorScheme.borderLight,
-            },
-
-            loadingTitle: {
-                marginTop: 16,
-                fontSize: 20,
-                fontWeight: "800",
-                color: colorScheme.textDarkest,
-            },
-
-            loadingText: {
-                marginTop: 8,
-                fontSize: 14,
-                lineHeight: 21,
-                color: colorScheme.textMuted,
-                textAlign: "center",
-            },
-
-            modalOverlay: {
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-                paddingHorizontal: 18,
-                backgroundColor: colorScheme.overlayDarkSoft,
-            },
-
-            modalBackdrop: {
-                position: "absolute",
-                top: 0,
-                right: 0,
-                bottom: 0,
-                left: 0,
-            },
-
-            calendarCard: {
-                width: "100%",
-                maxWidth: 420,
-                backgroundColor: colorScheme.whiteWarmCard,
-                borderRadius: 28,
-                padding: 16,
-                borderWidth: 1,
-                borderColor: colorScheme.borderLight,
-            },
-
-            calendarTitle: {
-                fontSize: 18,
-                fontWeight: "800",
-                color: colorScheme.textDarkest,
-                marginBottom: 12,
-                textAlign: "center",
-            },
-
-            optionModalCard: {
-                width: "100%",
-                maxWidth: 430,
-                maxHeight: "70%",
-                backgroundColor: colorScheme.whiteWarmCard,
-                borderRadius: 28,
-                paddingHorizontal: 16,
-                paddingTop: 16,
-                paddingBottom: 14,
-                borderWidth: 1,
-                borderColor: colorScheme.borderLight,
-            },
-
-            optionModalHeader: {
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 10,
-            },
-
-            optionModalTitle: {
-                fontSize: 18,
-                fontWeight: "800",
-                color: colorScheme.textDarkest,
-            },
-
-            closeButton: {
-                paddingHorizontal: 6,
-                paddingVertical: 2,
-            },
-
-            optionModalClose: {
-                fontSize: 18,
-                fontWeight: "800",
-                color: colorScheme.textAccentSoft,
-            },
-
-            optionModalList: {
-                maxHeight: 420,
-            },
-
-            optionModalListContent: {
-                paddingBottom: 8,
-            },
-
-            optionRow: {
-                backgroundColor: colorScheme.panelBackground,
-                borderRadius: 18,
-                paddingHorizontal: 14,
-                paddingVertical: 14,
-                borderWidth: 1,
-                borderColor: colorScheme.borderLightAlt,
-                marginTop: 10,
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-            },
-
-            optionRowSelected: {
-                backgroundColor: colorScheme.accentTint,
-                borderColor: colorScheme.textAccent,
-            },
-
-            optionRowPressed: {
-                opacity: 0.92,
-                transform: [{ scale: 0.99 }],
-            },
-
-            optionTextWrap: {
-                flex: 1,
-                paddingRight: 12,
-            },
-
-            optionLabel: {
-                fontSize: 15,
-                fontWeight: "700",
-                color: colorScheme.textDefault,
-            },
-
-            optionLabelSelected: {
-                color: colorScheme.textDarkest,
-            },
-
-            optionSubLabel: {
-                marginTop: 4,
-                fontSize: 12,
-                color: colorScheme.textAccentSoft,
-                fontWeight: "600",
-            },
-
-            optionSubLabelSelected: {
-                color: colorScheme.textAccent,
-            },
-
-            optionCheck: {
-                fontSize: 18,
-                fontWeight: "800",
-                color: colorScheme.textAccent,
-            },
-
-            emptyOptionText: {
-                fontSize: 14,
-                color: colorScheme.textMuted,
-                textAlign: "center",
-                paddingVertical: 22,
-            },
-
-            cardPressed: {
-                opacity: 0.93,
-                transform: [{ scale: 0.985 }],
-            },
-        });
+    return StyleSheet.create({
+
+        backButton: {
+            flexDirection: "row",
+            alignItems: "center",
+            alignSelf: "flex-start",
+            backgroundColor: colorScheme.whiteWarmCard,
+            borderRadius: 999,
+            paddingVertical: 10,
+            paddingHorizontal: 14,
+            borderWidth: 1,
+            borderColor: colorScheme.borderLight,
+            marginBottom: 12,
+        },
+
+        backButtonArrow: {
+            fontSize: 18,
+            color: colorScheme.textAccentSoft,
+            marginRight: 8,
+            fontWeight: "800",
+        },
+
+        backButtonText: {
+            fontSize: 14,
+            fontWeight: "700",
+            color: colorScheme.textDefault,
+        },
+
+        heroText: {
+            fontSize: 15,
+            lineHeight: 22,
+            color: colorScheme.textSubtle,
+            maxWidth: "82%",
+        },
+
+        secondaryActionCardFull: {
+            backgroundColor: colorScheme.whiteWarmCard,
+            borderRadius: 28,
+            paddingHorizontal: 18,
+            paddingTop: 18,
+            paddingBottom: 18,
+            minHeight: 150,
+            borderWidth: 1,
+            borderColor: colorScheme.borderLight,
+            width: "100%",
+            marginBottom: 14,
+        },
+
+        smallTopRow: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 12,
+        },
+
+        iconWrapSmall: {
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: colorScheme.panelBackgroundAlt,
+            alignItems: "center",
+            justifyContent: "center",
+        },
+
+        iconSmall: {
+            fontSize: 13,
+            fontWeight: "800",
+            color: colorScheme.textAccentSoft,
+        },
+
+        cornerText: {
+            fontSize: 12,
+            fontWeight: "700",
+            color: colorScheme.textLabel,
+        },
+
+        secondaryTitle: {
+            fontSize: 22,
+            lineHeight: 26,
+            fontWeight: "800",
+            color: colorScheme.textDark,
+            marginBottom: 6,
+        },
+
+        secondaryDescription: {
+            fontSize: 13.5,
+            lineHeight: 20,
+            color: colorScheme.textMuted,
+            maxWidth: "92%",
+            marginBottom: 14,
+        },
+
+        selectButton: {
+            backgroundColor: colorScheme.panelBackground,
+            borderRadius: 18,
+            paddingHorizontal: 16,
+            paddingVertical: 15,
+            borderWidth: 1,
+            borderColor: colorScheme.borderLightAlt,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+        },
+
+        selectButtonDisabled: {
+            opacity: 0.6,
+        },
+
+        employeeSelectButton: {
+            marginTop: 14,
+        },
+
+        selectValue: {
+            flex: 1,
+            fontSize: 15,
+            fontWeight: "700",
+            color: colorScheme.textDefault,
+            paddingRight: 10,
+        },
+
+        selectValueMuted: {
+            color: colorScheme.textLabel,
+        },
+
+        selectChevron: {
+            fontSize: 24,
+            color: colorScheme.textAccentSoft,
+            marginTop: -2,
+        },
+
+        preferenceRow: {
+            flexDirection: "row",
+            gap: 10,
+            flexWrap: "wrap",
+        },
+
+        preferenceChip: {
+            flex: 1,
+            minWidth: 140,
+            backgroundColor: colorScheme.panelBackground,
+            borderRadius: 16,
+            paddingVertical: 13,
+            paddingHorizontal: 14,
+            borderWidth: 1,
+            borderColor: colorScheme.borderLightAlt,
+            alignItems: "center",
+            justifyContent: "center",
+        },
+
+        preferenceChipActive: {
+            backgroundColor: colorScheme.darkSurface,
+            borderColor: colorScheme.darkSurface,
+        },
+
+        preferenceChipText: {
+            fontSize: 14,
+            fontWeight: "700",
+            color: colorScheme.textMuted,
+        },
+
+        preferenceChipTextActive: {
+            color: colorScheme.whiteWarm,
+        },
+
+        primaryActionCard: {
+            position: "relative",
+            overflow: "hidden",
+            backgroundColor: colorScheme.darkSurface,
+            borderRadius: 28,
+            paddingHorizontal: 18,
+            paddingTop: 18,
+            paddingBottom: 18,
+            marginBottom: 8,
+            minHeight: 270,
+            width: "100%",
+        },
+
+        cardGlow: {
+            position: "absolute",
+            width: 170,
+            height: 170,
+            borderRadius: 85,
+            backgroundColor: colorScheme.accentGlow,
+            top: -40,
+            right: -30,
+            opacity: 0.13,
+        },
+
+        cardHeaderRow: {
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 18,
+        },
+
+        iconWrapLarge: {
+            width: 52,
+            height: 52,
+            borderRadius: 26,
+            backgroundColor: colorScheme.overlayWhiteSoft,
+            alignItems: "center",
+            justifyContent: "center",
+        },
+
+        iconLarge: {
+            fontSize: 22,
+            color: colorScheme.accentHighlight,
+        },
+
+        pillDark: {
+            backgroundColor: colorScheme.overlayAccentSoft,
+            borderRadius: 999,
+            paddingHorizontal: 11,
+            paddingVertical: 7,
+        },
+
+        pillDarkText: {
+            color: colorScheme.accentHighlight,
+            fontSize: 12,
+            fontWeight: "700",
+        },
+
+        primaryTitle: {
+            fontSize: 26,
+            lineHeight: 31,
+            fontWeight: "800",
+            color: colorScheme.whiteWarm,
+            marginBottom: 9,
+            maxWidth: "82%",
+        },
+
+        primaryDescription: {
+            fontSize: 14,
+            lineHeight: 21,
+            color: colorScheme.textOnDark,
+            maxWidth: "96%",
+            marginBottom: 18,
+        },
+
+        summaryGrid: {
+            gap: 8,
+            marginBottom: 18,
+        },
+
+        summaryRow: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            gap: 10,
+            paddingVertical: 3,
+        },
+
+        summaryKey: {
+            fontSize: 14,
+            color: colorScheme.textOnDark,
+            fontWeight: "700",
+        },
+
+        summaryValue: {
+            flex: 1,
+            textAlign: "right",
+            fontSize: 14,
+            color: colorScheme.whiteWarm,
+            fontWeight: "700",
+        },
+
+        innerCreateButton: {
+            backgroundColor: colorScheme.accentButton,
+            borderRadius: 24,
+            paddingVertical: 16,
+            paddingHorizontal: 18,
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: "auto",
+        },
+
+        innerCreateButtonText: {
+            fontSize: 15,
+            fontWeight: "800",
+            color: colorScheme.textDefault,
+            letterSpacing: 0.2,
+        },
+
+        createButtonDisabled: {
+            opacity: 0.72,
+        },
+
+        loadingWrap: {
+            flex: 1,
+            justifyContent: "center",
+            paddingHorizontal: 20,
+            backgroundColor: colorScheme.pageBackground,
+        },
+
+        loadingCard: {
+            backgroundColor: colorScheme.whiteWarmCard,
+            borderRadius: 28,
+            paddingHorizontal: 24,
+            paddingVertical: 28,
+            alignItems: "center",
+            borderWidth: 1,
+            borderColor: colorScheme.borderLight,
+        },
+
+        loadingTitle: {
+            marginTop: 16,
+            fontSize: 20,
+            fontWeight: "800",
+            color: colorScheme.textDarkest,
+        },
+
+        loadingText: {
+            marginTop: 8,
+            fontSize: 14,
+            lineHeight: 21,
+            color: colorScheme.textMuted,
+            textAlign: "center",
+        },
+
+        modalOverlay: {
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            paddingHorizontal: 18,
+            backgroundColor: colorScheme.overlayDarkSoft,
+        },
+
+        modalBackdrop: {
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+        },
+
+        calendarCard: {
+            width: "100%",
+            maxWidth: 420,
+            backgroundColor: colorScheme.whiteWarmCard,
+            borderRadius: 28,
+            padding: 16,
+            borderWidth: 1,
+            borderColor: colorScheme.borderLight,
+        },
+
+        calendarTitle: {
+            fontSize: 18,
+            fontWeight: "800",
+            color: colorScheme.textDarkest,
+            marginBottom: 12,
+            textAlign: "center",
+        },
+
+        optionModalCard: {
+            width: "100%",
+            maxWidth: 430,
+            maxHeight: "70%",
+            backgroundColor: colorScheme.whiteWarmCard,
+            borderRadius: 28,
+            paddingHorizontal: 16,
+            paddingTop: 16,
+            paddingBottom: 14,
+            borderWidth: 1,
+            borderColor: colorScheme.borderLight,
+        },
+
+        optionModalHeader: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 10,
+        },
+
+        optionModalTitle: {
+            fontSize: 18,
+            fontWeight: "800",
+            color: colorScheme.textDarkest,
+        },
+
+        closeButton: {
+            paddingHorizontal: 6,
+            paddingVertical: 2,
+        },
+
+        optionModalClose: {
+            fontSize: 18,
+            fontWeight: "800",
+            color: colorScheme.textAccentSoft,
+        },
+
+        optionModalList: {
+            maxHeight: 420,
+        },
+
+        optionModalListContent: {
+            paddingBottom: 8,
+        },
+
+        optionRow: {
+            backgroundColor: colorScheme.panelBackground,
+            borderRadius: 18,
+            paddingHorizontal: 14,
+            paddingVertical: 14,
+            borderWidth: 1,
+            borderColor: colorScheme.borderLightAlt,
+            marginTop: 10,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+        },
+
+        optionRowSelected: {
+            backgroundColor: colorScheme.accentTint,
+            borderColor: colorScheme.textAccent,
+        },
+
+        optionRowPressed: {
+            opacity: 0.92,
+            transform: [{ scale: 0.99 }],
+        },
+
+        optionTextWrap: {
+            flex: 1,
+            paddingRight: 12,
+        },
+
+        optionLabel: {
+            fontSize: 15,
+            fontWeight: "700",
+            color: colorScheme.textDefault,
+        },
+
+        optionLabelSelected: {
+            color: colorScheme.textDarkest,
+        },
+
+        optionSubLabel: {
+            marginTop: 4,
+            fontSize: 12,
+            color: colorScheme.textAccentSoft,
+            fontWeight: "600",
+        },
+
+        optionSubLabelSelected: {
+            color: colorScheme.textAccent,
+        },
+
+        optionCheck: {
+            fontSize: 18,
+            fontWeight: "800",
+            color: colorScheme.textAccent,
+        },
+
+        emptyOptionText: {
+            fontSize: 14,
+            color: colorScheme.textMuted,
+            textAlign: "center",
+            paddingVertical: 22,
+        },
+
+        cardPressed: {
+            opacity: 0.93,
+            transform: [{ scale: 0.985 }],
+        },
+    });
 }
