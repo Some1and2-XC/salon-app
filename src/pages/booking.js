@@ -114,7 +114,7 @@ function formatDisplayDate(dateString) {
     });
 }
 
-function OptionModal({
+export function OptionModal({
     visible,
     title,
     options,
@@ -122,7 +122,7 @@ function OptionModal({
     onSelect,
     onClose,
     emptyText = "No options available",
-    styles
+    styles,
 }) {
     return (
         <Modal
@@ -851,7 +851,7 @@ export function BookingScreen({ navigation }) {
 }
 
 
-function makeStyles(colorScheme) {
+export function makeStyles(colorScheme) {
 
     return StyleSheet.create({
 

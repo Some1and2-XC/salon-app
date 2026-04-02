@@ -28,6 +28,7 @@ import { AdminAppointmentTypesScreen } from "./pages/appTypes";
 import { BarcodeScannerScreen } from "./pages/barcodeScanner";
 import { QRScreen } from './pages/qrGenerator';
 import { AdminHomepageScreen } from './pages/adminHomepage';
+import { SetThemeScreen } from './pages/setTheme';
 
 const Stack = createStackNavigator();
 
@@ -44,10 +45,16 @@ import {
         NAV_APP_TYPES,
         NAV_QR,
         NAV_BARCODE_SCANNER,
-        NAV_ADMIN_HOMEPAGE
+        NAV_ADMIN_HOMEPAGE,
+        NAV_SET_THEME,
 } from "./consts";
 
 export default function App() {
+
+    // Inits scheme from storage
+    useEffect(() => {
+        useTheme.getState().loadScheme();
+    }, []);
 
     const commonUi = useTheme((state) => state.getCommonUi)();
 
@@ -100,6 +107,7 @@ export default function App() {
                     <Stack.Screen name={ NAV_QR } component={ QRScreen} />
                     <Stack.Screen name={ NAV_BARCODE_SCANNER } component={BarcodeScannerScreen} />
                     <Stack.Screen name={ NAV_ADMIN_HOMEPAGE } component={AdminHomepageScreen} />
+                    <Stack.Screen name={ NAV_SET_THEME } component={SetThemeScreen} />
 
                     {/*
 
