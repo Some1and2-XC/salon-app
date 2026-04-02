@@ -159,6 +159,14 @@ export default function App() {
                             name={NAV_SET_THEME}
                             component={SetThemeScreen}
                         />
+                        <Stack.Screen
+                            name={NAV_ADD_EMPLOYEE}
+                            component={AddEmployeeScreen}
+                        />
+                        <Stack.Screen
+                            name={NAV_SET_AVAILABILITY}
+                            component={SetAvailabilityScreen}
+                        />
                     </Stack.Navigator>
                     <Toast />
                 </NavigationContainer>
