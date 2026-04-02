@@ -773,20 +773,20 @@ export const COLOR_SCHEME_GREEN_DARK      : string = "green_dark";
 export const COLOR_SCHEME_PURPLE_DARK     : string = "purple_dark";
 
 export const MAP_COLOR_SCHEME = {
-    brown           : colorSchemeBrown,
-    pink            : colorSchemePink,
-    seaside         : colorSchemeSeaside,
-    blue_and_yellow : colorSchemeBlueAndYellow,
-    blues_and_res   : colorSchemeBluesAndReds,
-    greens          : colorSchemeGreens,
-    purples         : colorSchemePurples,
-    iss_yellow      : colorSchemeIssYellow,
-    yellow          : colorSchemeYellow,
-    blue            : colorSchemeBlue,
-    pink_dark       : colorSchemePinkDark,
-    blue_dark       : colorSchemeBlueDark,
-    green_dark      : colorSchemeGreenDark,
-    purple_dark     : colorSchemePurpleDark,
+    "brown"           : colorSchemeBrown,
+    "pink"            : colorSchemePink,
+    "seaside"         : colorSchemeSeaside,
+    "blue_and_yellow" : colorSchemeBlueAndYellow,
+    "blues_and_reds"  : colorSchemeBluesAndReds,
+    "greens"          : colorSchemeGreens,
+    "purples"         : colorSchemePurples,
+    "iss_yellow"      : colorSchemeIssYellow,
+    "yellow"          : colorSchemeYellow,
+    "blue"            : colorSchemeBlue,
+    "pink_dark"       : colorSchemePinkDark,
+    "blue_dark"       : colorSchemeBlueDark,
+    "green_dark"      : colorSchemeGreenDark,
+    "purple_dark"     : colorSchemePurpleDark,
 };
 
 // TODO delete this

@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { colorScheme, COLOR_SCHEME_BROWN, MAP_COLOR_SCHEME } from "./colorScheme";
+import { colorScheme, colorSchemeGreens, COLOR_SCHEME_BROWN, COLOR_SCHEME_GREENS, MAP_COLOR_SCHEME } from "./colorScheme";
 
 import { create } from "zustand";
 
@@ -49,6 +49,7 @@ export const sty = StyleSheet.create({
 export function useCommonUi(scheme) {
 
     return {
+
         screen: {
             safeArea: {
                 flex: 1,
@@ -59,8 +60,8 @@ export function useCommonUi(scheme) {
                 maxHeight: "100vh",
                 overflow: "hidden",
             },
-            scrollView: {
-                flex: 1,
+            pageMargins: {
+                padding: 14,
             },
             scrollViewWeb: {
                 minHeight: 0,
@@ -322,11 +323,12 @@ export function useCommonUi(scheme) {
 }
 
 // A global color scheme
-const useTheme = create((set) => ({
-    scheme: COLOR_SCHEME_BROWN,
-    reset: () => set((state) => ({ scheme: COLOR_SCHEME_BROWN })),
-    set: (schemeName: string) => set((state) => ({ scheme: schemeName })),
-    getScheme: () => { MAP_COLOR_SCHEME[scheme] ?? MAP_COLOR_SCHEME[COLOR_SCHEME_BROWN] },
+export const useTheme = create((set, get) => ({
+    scheme: COLOR_SCHEME_GREENS,
+    reset: () => set((state) => ({ scheme: COLOR_SCHEME_GREENS })),
+    set: (scheme: string) => set({ scheme }),
+    getScheme: () => { return MAP_COLOR_SCHEME[get().scheme] ?? colorSchemeGreens; },
+    getCommonUi: () => useCommonUi(get().getScheme()),
 }))
 
 export const commonUi = {

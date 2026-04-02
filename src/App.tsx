@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
+import { Platform } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 // Shows behind buttons
 import * as NavigationBar from "expo-navigation-bar";
@@ -11,7 +12,7 @@ import * as NavigationBar from "expo-navigation-bar";
 import { User as FBUser, onAuthStateChanged } from 'firebase/auth';
 
 import { auth } from "./firebaseConfig";
-import { sty } from "./styles";
+import { sty, useTheme } from "./styles";
 
 // Screen imports
 import { ExampleHome } from "./pages/index";
@@ -48,6 +49,8 @@ import {
 
 export default function App() {
 
+    const commonUi = useTheme((state) => state.getCommonUi)();
+
     const [user, setUser] = useState<FBUser | null>(null);
     const [authReady, setAuthReady] = useState(false);
 
@@ -60,19 +63,20 @@ export default function App() {
         return unsub;
     }, []);
 
-    // Doesn't render until we know if the user is logged in or not.
-    // May be replaced with a spinner in the future.
-    if (!authReady) return null;
-
     // Sets the initial route.
     // Thought should be put into if the default unauthenticated screen should be the login screen
     // or signup (I think login is a sensible default).
     // const initialRoute: string = user ? NAV_HOME : NAV_LOGIN;
     const initialRoute: string = NAV_EXAMPLE_HOME; // for debugging and dev purposes
 
+    // Doesn't render until we know if the user is logged in or not.
+    // May be replaced with a spinner in the future.
+    if (!authReady) return null;
+
     return (<SafeAreaProvider>
-        <SafeAreaView style={{ flex: 1}} edges={["left", "right"]}>
+        <SafeAreaView style={[{ flex: 1 }, commonUi.screen.safeArea ]} edges={["left", "right"]}>
             <StatusBar translucent backgroundColor="transparent" />
+
             <NavigationContainer>
                 <Stack.Navigator initialRouteName={ initialRoute }
                     screenOptions={{ headerShown: false }}
