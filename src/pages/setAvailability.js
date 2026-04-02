@@ -63,11 +63,11 @@ function fromSecondsFromWeekStart(seconds) {
 
 export function SetAvailabilityScreen() {
     const [employees, setEmployees] = useState([]);
-    const [selectedEmployee, setSelectedEmployee] = useState("");
-    const [selectedDate, setSelectedDate] = useState("");
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [selectedDate, setSelectedDate] = useState(null);
     const [showCalendar, setShowCalendar] = useState(false);
     const [currentAvailability, setCurrentAvailability] = useState([]);
-    const [mode, setMode] = useState(null); // "add" | "remove" | null
+    const [mode, setMode] = useState(null);
     const [startTime, setStartTime] = useState("");
     const [endTime, setEndTime] = useState("");
 
