@@ -84,12 +84,13 @@ export function SetAvailabilityScreen() {
         if (!selectedEmployee) return;
         apiFetch("/availability")
             .then((res) => res.json())
-            .then((data) => {
-                const filtered = data.filter(
-                    (slot) => slot.employee_id === selectedEmployee,
-                );
-                setCurrentAvailability(filtered);
-            })
+            .then((data) =>
+                setCurrentAvailability(
+                    data.filter(
+                        (slot) => slot.employee_id === selectedEmployee,
+                    ),
+                ),
+            )
             .catch(() => showAlert("Error", "Failed to load availability."));
         setMode(null);
         setStartTime("");
@@ -98,15 +99,15 @@ export function SetAvailabilityScreen() {
 
     async function handleRemoveAvailability(id) {
         try {
-            const response = await apiFetch(`/availability/${id}`, {
+            const res = await apiFetch(`/availability/${id}`, {
                 method: "DELETE",
             });
-            if (!response.ok) {
-                const errorBody = await response.json().catch(() => null);
-                const message =
-                    errorBody?.message || `Server error: ${response.status}`;
-                throw new Error(message);
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => null);
+                throw new Error(err?.message || `Server error: ${res.status}`);
             }
+
             setCurrentAvailability((prev) =>
                 prev.filter((slot) => slot.id !== id),
             );
@@ -129,17 +130,19 @@ export function SetAvailabilityScreen() {
                 start_time: toSecondsFromWeekStart(selectedDate, startTime),
                 end_time: toSecondsFromWeekStart(selectedDate, endTime),
             };
-            const response = await apiFetch("/availability", {
+
+            const res = await apiFetch("/availability", {
                 method: "POST",
                 body: JSON.stringify(payload),
             });
-            if (!response.ok) {
-                const errorBody = await response.json().catch(() => null);
-                const message =
-                    errorBody?.message || `Server error: ${response.status}`;
-                throw new Error(message);
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => null);
+                throw new Error(err?.message || `Server error: ${res.status}`);
             }
-            const newSlot = await response.json();
+
+            const newSlot = await res.json();
+
             setCurrentAvailability((prev) => [...prev, newSlot]);
             showAlert("Success", "Availability has been set.");
             setMode(null);

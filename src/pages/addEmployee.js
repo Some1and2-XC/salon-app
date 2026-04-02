@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Button, Platform, Alert } from "react-native";
 import { apiFetch } from "../utils";
 import { sty } from "../styles";
+import { v7 as uuidv7 } from "uuid";
+import { Picker } from "@react-native-picker/picker";
 
-// alert function, maybe should move to utils
 function showAlert(title, message) {
     if (Platform.OS === "web") {
         window.alert(`${title}\n\n${message}`);
@@ -12,50 +13,82 @@ function showAlert(title, message) {
     }
 }
 
+const emptyForm = () => ({
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: "",
+    id: uuidv7(),
+});
+
 export function AddEmployeeScreen() {
-    const [form, setForm] = useState({
-        first_name: "",
-        last_name: "",
-        email: "",
-        phone: "",
-        id: "",
-    });
+    const [form, setForm] = useState(emptyForm());
+    const [mode, setMode] = useState("add");
+    const [employees, setEmployees] = useState([]);
+    const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
+
+    useEffect(() => {
+        apiFetch("/employees")
+            .then((r) => r.json())
+            .then((data) => {
+                const list = Array.isArray(data) ? data : data.employees || [];
+                setEmployees(list);
+            })
+            .catch(console.error);
+    }, []);
 
     function handleChange(field, value) {
         setForm((prev) => ({ ...prev, [field]: value }));
     }
 
+    async function handleRemove() {
+        if (!selectedEmployeeId) {
+            showAlert("Error", "Please select an employee.");
+            return;
+        }
+        try {
+            const res = await apiFetch(`/employees/${selectedEmployeeId}`, {
+                method: "DELETE",
+            });
+
+            if (!res.ok) {
+                throw new Error(`Failed: ${res.status}`);
+            }
+
+            showAlert("Success", "Employee removed.");
+            setEmployees((prev) =>
+                prev.filter((e) => String(e.id) !== selectedEmployeeId),
+            );
+            setSelectedEmployeeId("");
+        } catch (err) {
+            showAlert("Error", err.message || "Failed to remove employee.");
+        }
+    }
+
     async function handleSubmit() {
-        console.log(form);
-        if (!form.first_name || !form.last_name || !form.email || !form.id) {
+        if (!form.first_name || !form.last_name || !form.email) {
             showAlert(
                 "Missing fields",
-                "First name, last name, id, and email are required.",
+                "First name, last name, and email are required.",
             );
             return;
         }
         try {
-            const response = await apiFetch("/employees", {
+            const res = await apiFetch("/employees", {
                 method: "POST",
                 body: JSON.stringify(form),
             });
-            if (!response.ok) {
-                const errorBody = await response.json().catch(() => null);
-                const message =
-                    errorBody?.message || `Server error: ${response.status}`;
-                throw new Error(message);
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => null);
+                throw new Error(err?.message || `Server error: ${res.status}`);
             }
+
             showAlert(
                 "Success",
                 `${form.first_name} ${form.last_name} has been added.`,
             );
-            setForm({
-                first_name: "",
-                last_name: "",
-                email: "",
-                phone: "",
-                id: "",
-            });
+            setForm(emptyForm());
         } catch (err) {
             showAlert("Error", err.message || "Failed to add employee.");
         }
@@ -63,39 +96,62 @@ export function AddEmployeeScreen() {
 
     return (
         <View style={sty.container}>
-            <Text>First name</Text>
-            <TextInput
-                value={form.first_name}
-                onChangeText={(v) => handleChange("first_name", v)}
-            />
+            <View style={{ flexDirection: "row", marginBottom: 20 }}>
+                <Button title="Add" onPress={() => setMode("add")} />
+                <Button title="Remove" onPress={() => setMode("remove")} />
+            </View>
 
-            <Text>Last name</Text>
-            <TextInput
-                value={form.last_name}
-                onChangeText={(v) => handleChange("last_name", v)}
-            />
+            {mode === "add" && (
+                <>
+                    <Text>First name</Text>
+                    <TextInput
+                        value={form.first_name}
+                        onChangeText={(v) => handleChange("first_name", v)}
+                    />
 
-            <Text>Email</Text>
-            <TextInput
-                value={form.email}
-                onChangeText={(v) => handleChange("email", v)}
-                keyboardType="email-address"
-            />
+                    <Text>Last name</Text>
+                    <TextInput
+                        value={form.last_name}
+                        onChangeText={(v) => handleChange("last_name", v)}
+                    />
 
-            <Text>Phone</Text>
-            <TextInput
-                value={form.phone}
-                onChangeText={(v) => handleChange("phone", v)}
-                keyboardType="phone-pad"
-            />
+                    <Text>Email</Text>
+                    <TextInput
+                        value={form.email}
+                        onChangeText={(v) => handleChange("email", v)}
+                        keyboardType="email-address"
+                    />
 
-            <Text>Employee ID</Text>
-            <TextInput
-                value={form.id}
-                onChangeText={(v) => handleChange("id", v)}
-            />
+                    <Text>Phone</Text>
+                    <TextInput
+                        value={form.phone}
+                        onChangeText={(v) => handleChange("phone", v)}
+                        keyboardType="phone-pad"
+                    />
 
-            <Button title={"Add Employee"} onPress={handleSubmit} />
+                    <Button title="Add Employee" onPress={handleSubmit} />
+                </>
+            )}
+
+            {mode === "remove" && (
+                <>
+                    <Picker
+                        selectedValue={selectedEmployeeId}
+                        onValueChange={(v) => setSelectedEmployeeId(v)}
+                    >
+                        <Picker.Item label="Select employee..." value="" />
+                        {employees.map((emp) => (
+                            <Picker.Item
+                                key={emp.id}
+                                label={`${emp.first_name} ${emp.last_name}`}
+                                value={String(emp.id)}
+                            />
+                        ))}
+                    </Picker>
+
+                    <Button title="Remove Employee" onPress={handleRemove} />
+                </>
+            )}
         </View>
     );
 }
