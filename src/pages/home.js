@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
     StyleSheet,
     Text,
@@ -15,8 +15,8 @@ import {
 import { signOut } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { NAV_CHECKIN, NAV_BOOKING, NAV_LOGIN } from "../consts";
-import { commonUi } from "../styles";
-import { colorScheme } from "../colorScheme";
+import { useTheme } from "../styles";
+import { colorSchemeGreens } from "../colorScheme";
 
 function getGreeting() {
     const hour = new Date().getHours();
@@ -35,6 +35,11 @@ function getTodayLabel() {
 }
 
 export function HomeScreen({ navigation, route }) {
+
+    const commonUi = useTheme((state) => state.getCommonUi)();
+    const colorScheme = useTheme((state) => state.getScheme)() ?? colorSchemeGreens;
+    const styles = useMemo(() => makeStyles(colorScheme), [colorScheme]);
+
     const { width, height } = useWindowDimensions();
     const [loginToast, setLoginToast] = useState("");
 
@@ -127,376 +132,339 @@ export function HomeScreen({ navigation, route }) {
     const heroMinHeight = Math.max(240, Math.min(height * 0.33, 310));
 
     return (
-        <SafeAreaView
-            style={[styles.safeArea, Platform.OS === "web" && styles.safeAreaWeb]}
-        >
-            <StatusBar barStyle="dark-content" />
-            <ScrollView
-                style={[
-                    styles.scrollView,
-                    Platform.OS === "web" && styles.scrollViewWeb,
-                ]}
-                contentContainerStyle={[styles.scrollContent, { minHeight: height }]}
-                showsVerticalScrollIndicator={false}
-                bounces={true}
-                nestedScrollEnabled={true}
-                keyboardShouldPersistTaps="handled"
+        <ScrollView>
+            <Animated.View
+                style={[ commonUi.screen.pageMargins, {
+                    opacity: fadeIn,
+                    transform: [{ translateY: slideUp }],
+                }]}
             >
-                <Animated.View
-                    style={[
-                        styles.pageWrap,
-                        {
-                            minHeight: height,
-                            opacity: fadeIn,
-                            transform: [{ translateY: slideUp }],
-                        },
-                    ]}
-                >
-                    <View style={styles.screenInner}>
-                        {loginToast ? (
-                            <View style={styles.toastWrap}>
-                                <Text style={styles.toastText}>{loginToast}</Text>
-                            </View>
-                        ) : null}
 
-                        <View style={[styles.heroCard, { minHeight: heroMinHeight }]}>
-                            <Animated.View
-                                style={[
-                                    styles.blobOne,
-                                    { transform: [{ translateY: blob1Y }] },
-                                ]}
-                                />
-                            <Animated.View
-                                style={[
-                                    styles.blobTwo,
-                                    { transform: [{ translateY: blob2Y }] },
-                                ]}
-                                />
-                            <Animated.View
-                                style={[
-                                    styles.blobThree,
-                                    {
-                                        left: width * 0.56,
-                                        transform: [{ translateY: blob1Y }],
-                                    },
-                                ]}
-                                />
-
-                            <View style={styles.heroTopRow}>
-                                <Text style={styles.kicker}>{getGreeting()}</Text>
-                            </View>
-
-                            <View style={styles.heroTextBlock}>
-                                <Text style={styles.heroTitle}>Salon Studio</Text>
-                                <Text style={styles.heroTitleAccent}>Dashboard</Text>
-                                <Text style={styles.heroText}>
-                                    Manage check-ins and book appointments in one clean, smooth
-                                    workspace.
-                                </Text>
-                            </View>
-
-                            <View style={styles.metaRow}>
-                                <View style={styles.metaChip}>
-                                    <Text style={styles.metaChipText}>{getTodayLabel()}</Text>
-                                </View>
-                            </View>
-
-                            <View style={styles.heroFadeWrap}>
-                                <View style={styles.heroFadeMain} />
-                                <View style={styles.heroFadeSmall} />
-                            </View>
-                        </View>
-
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.primaryActionCard,
-                                pressed && styles.cardPressed,
-                            ]}
-                            onPress={() => navigation.navigate(NAV_CHECKIN)}
-                            >
-                            <View style={styles.cardGlow} />
-                            <View style={styles.cardHeaderRow}>
-                                <View style={styles.iconWrapLarge}>
-                                    <Text style={styles.iconLarge}>✦</Text>
-                                </View>
-                                <View style={styles.pillDark}>
-                                    <Text style={styles.pillDarkText}>Front Desk</Text>
-                                </View>
-                            </View>
-
-                        <Text style={styles.primaryTitle}>Customer Check In</Text>
-                        <Text style={styles.primaryDescription}>
-                            Quickly confirm a client’s arrival and keep the check-in
-                            experience fast and organized.
-                        </Text>
-
-                        <View style={styles.primaryFooter}>
-                            <Text style={styles.primaryFooterText}>Open check-in</Text>
-                            <Text style={styles.primaryArrow}>→</Text>
-                        </View>
-                        </Pressable>
-
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.secondaryActionCardFull,
-                                pressed && styles.cardPressed,
-                            ]}
-                            onPress={() => navigation.navigate(NAV_BOOKING)}
-                            >
-                            <View style={styles.smallTopRow}>
-                                <View style={styles.iconWrapSmall}>
-                                    <Text style={styles.iconSmall}>◎</Text>
-                                </View>
-                                <Text style={styles.cornerText}>Schedule</Text>
-                            </View>
-
-                            <Text style={styles.secondaryTitle}>Book Appointment</Text>
-                            <Text style={styles.secondaryDescription}>
-                                Create a new booking with a smoother scheduling flow.
-                            </Text>
-                        </Pressable>
-
-                        <View style={styles.bottomSpacer} />
-
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.logoutBar,
-                                pressed && styles.logoutBarPressed,
-                            ]}
-                            onPress={handleLogout}
-                        >
-                            <Text style={styles.logoutBarText}>Log Out</Text>
-                        </Pressable>
+                {/* TODO remove in favor of global indicator */}
+                {loginToast ? (
+                    <View style={styles.toastWrap}>
+                        <Text style={styles.toastText}>{loginToast}</Text>
                     </View>
-                </Animated.View>
-            </ScrollView>
-        </SafeAreaView>
+                ) : null}
+
+                <View style={ commonUi.hero.heroCard }>
+
+                    <Animated.View
+                        style={[
+                            commonUi.hero.blobOne,
+                            { transform: [{ translateY: blob1Y }] },
+                        ]}
+                        />
+                    <Animated.View
+                        style={[
+                            commonUi.hero.blobTwo,
+                            { transform: [{ translateY: blob2Y }] },
+                        ]}
+                        />
+                    <Animated.View
+                        style={[
+                            commonUi.hero.blobThree,
+                            {
+                                left: width * 0.56,
+                                transform: [{ translateY: blob1Y }],
+                            },
+                        ]}
+                        />
+
+                    <View style={commonUi.hero.heroTopRow}>
+                        <Text style={commonUi.hero.kicker}>{getGreeting()}</Text>
+                    </View>
+
+                    <View style={commonUi.hero.heroTextBlock}>
+                        <Text style={commonUi.hero.heroTitle}>Salon Studio</Text>
+                        <Text style={commonUi.hero.heroTitleAccent}>Dashboard</Text>
+                        <Text style={commonUi.hero.heroText}>
+                            Manage check-ins and book appointments in one clean, smooth
+                            workspace.
+                        </Text>
+                    </View>
+
+                    <View style={commonUi.hero.metaRow}>
+                        <View style={commonUi.hero.metaChip}>
+                            <Text style={commonUi.hero.metaChipText}>{getTodayLabel()}</Text>
+                        </View>
+                    </View>
+
+                    <View style={commonUi.hero.heroFadeWrap}>
+                        <View style={commonUi.hero.heroFadeMain} />
+                        <View style={commonUi.hero.heroFadeSmall} />
+                    </View>
+                </View>
+
+                <Pressable
+                    style={({ pressed }) => [
+                        styles.primaryActionCard,
+                        pressed && styles.cardPressed,
+                    ]}
+                    onPress={() => navigation.navigate(NAV_CHECKIN)}
+                    >
+                    <View style={styles.cardGlow} />
+                    <View style={styles.cardHeaderRow}>
+                        <View style={styles.iconWrapLarge}>
+                            <Text style={styles.iconLarge}>✦</Text>
+                        </View>
+                        <View style={styles.pillDark}>
+                            <Text style={styles.pillDarkText}>Front Desk</Text>
+                        </View>
+                    </View>
+                    <Text style={styles.primaryTitle}>Customer Check In</Text>
+                    <Text style={styles.primaryDescription}>
+                        Quickly confirm a client’s arrival and keep the check-in
+                        experience fast and organized.
+                    </Text>
+
+                    <View style={styles.primaryFooter}>
+                        <Text style={styles.primaryFooterText}>Open check-in</Text>
+                        <Text style={styles.primaryArrow}>→</Text>
+                    </View>
+
+                </Pressable>
+
+                <Pressable
+                    style={({ pressed }) => [
+                        styles.secondaryActionCardFull,
+                        pressed && styles.cardPressed,
+                    ]}
+                    onPress={() => navigation.navigate(NAV_BOOKING)}
+                    >
+                    <View style={styles.smallTopRow}>
+                        <View style={styles.iconWrapSmall}>
+                            <Text style={styles.iconSmall}>◎</Text>
+                        </View>
+                        <Text style={styles.cornerText}>Schedule</Text>
+                    </View>
+
+                    <Text style={styles.secondaryTitle}>Book Appointment</Text>
+                    <Text style={styles.secondaryDescription}>
+                        Create a new booking with a smoother scheduling flow.
+                    </Text>
+                </Pressable>
+
+                <View style={styles.bottomSpacer} />
+
+                <Pressable
+                    style={({ pressed }) => [
+                        styles.logoutBar,
+                        pressed && styles.logoutBarPressed,
+                    ]}
+                    onPress={handleLogout}
+                >
+                    <Text style={styles.logoutBarText}>Log Out</Text>
+                </Pressable>
+            </Animated.View>
+        </ScrollView>
     );
 }
 
-const styles = StyleSheet.create({
-    safeArea: commonUi.screen.safeArea,
-    safeAreaWeb: commonUi.screen.safeAreaWeb,
-    scrollView: commonUi.screen.scrollView,
-    scrollViewWeb: commonUi.screen.scrollViewWeb,
-    scrollContent: commonUi.screen.scrollContent,
-    pageWrap: commonUi.screen.pageWrapNarrow,
-    screenInner: commonUi.screen.screenInner,
-    toastWrap: {
-        alignSelf: "center",
-        marginBottom: 10,
-        backgroundColor: colorScheme.feedbackSuccess,
-        borderRadius: 999,
-        paddingHorizontal: 14,
-        paddingVertical: 8,
-    },
-    toastText: {
-        color: colorScheme.white,
-        fontSize: 12.5,
-        fontWeight: "700",
-    },
+function makeStyles(colorScheme) {
 
-    heroCard: commonUi.hero.heroCard,
-    heroTopRow: commonUi.hero.heroTopRow,
-    heroTextBlock: commonUi.hero.heroTextBlock,
-    heroFadeWrap: commonUi.hero.heroFadeWrap,
-    heroFadeMain: commonUi.hero.heroFadeMain,
-    heroFadeSmall: commonUi.hero.heroFadeSmall,
-    blobOne: commonUi.hero.blobOne,
-    blobTwo: commonUi.hero.blobTwo,
-    blobThree: commonUi.hero.blobThree,
-    kicker: commonUi.hero.kicker,
-    heroTitle: commonUi.hero.heroTitle,
-    heroTitleAccent: commonUi.hero.heroTitleAccent,
+    return StyleSheet.create({
 
-    heroText: {
-        fontSize: 15,
-        lineHeight: 22,
-        color: colorScheme.textSubtle,
-        maxWidth: "78%",
-    },
+        toastWrap: {
+            alignSelf: "center",
+            marginBottom: 10,
+            backgroundColor: colorScheme.feedbackSuccess,
+            borderRadius: 999,
+            paddingHorizontal: 14,
+            paddingVertical: 8,
+        },
+        toastText: {
+            color: colorScheme.white,
+            fontSize: 12.5,
+            fontWeight: "700",
+        },
 
-    metaRow: commonUi.hero.metaRow,
-    metaChip: commonUi.hero.metaChip,
-    metaChipText: commonUi.hero.metaChipText,
+        heroText: {
+            fontSize: 15,
+            lineHeight: 22,
+            color: colorScheme.textSubtle,
+            maxWidth: "78%",
+        },
 
-    primaryActionCard: {
-        position: "relative",
-        overflow: "hidden",
-        backgroundColor: colorScheme.darkSurface,
-        borderRadius: 28,
-        paddingHorizontal: 18,
-        paddingTop: 18,
-        paddingBottom: 18,
-        marginBottom: 14,
-        minHeight: 205,
-        width: "100%",
-    },
+        primaryActionCard: {
+            position: "relative",
+            overflow: "hidden",
+            backgroundColor: colorScheme.darkSurface,
+            borderRadius: 28,
+            paddingHorizontal: 18,
+            paddingTop: 18,
+            paddingBottom: 18,
+            marginBottom: 14,
+            minHeight: 205,
+            width: "100%",
+        },
 
-    cardGlow: {
-        position: "absolute",
-        width: 170,
-        height: 170,
-        borderRadius: 85,
-        backgroundColor: colorScheme.accentGlow,
-        top: -40,
-        right: -30,
-        opacity: 0.13,
-    },
+        cardGlow: {
+            position: "absolute",
+            width: 170,
+            height: 170,
+            borderRadius: 85,
+            backgroundColor: colorScheme.accentGlow,
+            top: -40,
+            right: -30,
+            opacity: 0.13,
+        },
 
-    cardHeaderRow: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginBottom: 18,
-    },
+        cardHeaderRow: {
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 18,
+        },
 
-    iconWrapLarge: {
-        width: 52,
-        height: 52,
-        borderRadius: 26,
-        backgroundColor: colorScheme.overlayWhiteSoft,
-        alignItems: "center",
-        justifyContent: "center",
-    },
+        iconWrapLarge: {
+            width: 52,
+            height: 52,
+            borderRadius: 26,
+            backgroundColor: colorScheme.overlayWhiteSoft,
+            alignItems: "center",
+            justifyContent: "center",
+        },
 
-    iconLarge: {
-        fontSize: 22,
-        color: colorScheme.accentHighlight,
-    },
+        iconLarge: {
+            fontSize: 22,
+            color: colorScheme.accentHighlight,
+        },
 
-    pillDark: {
-        backgroundColor: colorScheme.overlayAccentSoft,
-        borderRadius: 999,
-        paddingHorizontal: 11,
-        paddingVertical: 7,
-    },
+        pillDark: {
+            backgroundColor: colorScheme.overlayAccentSoft,
+            borderRadius: 999,
+            paddingHorizontal: 11,
+            paddingVertical: 7,
+        },
 
-    pillDarkText: {
-        color: colorScheme.accentHighlight,
-        fontSize: 12,
-        fontWeight: "700",
-    },
+        pillDarkText: {
+            color: colorScheme.accentHighlight,
+            fontSize: 12,
+            fontWeight: "700",
+        },
 
-    primaryTitle: {
-        fontSize: 26,
-        lineHeight: 31,
-        fontWeight: "800",
-        color: colorScheme.whiteWarm,
-        marginBottom: 9,
-        maxWidth: "82%",
-    },
+        primaryTitle: {
+            fontSize: 26,
+            lineHeight: 31,
+            fontWeight: "800",
+            color: colorScheme.whiteWarm,
+            marginBottom: 9,
+            maxWidth: "82%",
+        },
 
-    primaryDescription: {
-        fontSize: 14,
-        lineHeight: 21,
-        color: colorScheme.textOnDark,
-        maxWidth: "94%",
-        marginBottom: 18,
-    },
+        primaryDescription: {
+            fontSize: 14,
+            lineHeight: 21,
+            color: colorScheme.textOnDark,
+            maxWidth: "94%",
+            marginBottom: 18,
+        },
 
-    primaryFooter: {
-        marginTop: "auto",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-    },
+        primaryFooter: {
+            marginTop: "auto",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+        },
 
-    primaryFooterText: {
-        color: colorScheme.whiteWarm,
-        fontWeight: "700",
-        fontSize: 14.5,
-    },
+        primaryFooterText: {
+            color: colorScheme.whiteWarm,
+            fontWeight: "700",
+            fontSize: 14.5,
+        },
 
-    primaryArrow: {
-        color: colorScheme.accentHighlight,
-        fontSize: 22,
-        fontWeight: "700",
-    },
+        primaryArrow: {
+            color: colorScheme.accentHighlight,
+            fontSize: 22,
+            fontWeight: "700",
+        },
 
-    secondaryActionCardFull: {
-        backgroundColor: colorScheme.whiteWarmCard,
-        borderRadius: 28,
-        paddingHorizontal: 18,
-        paddingTop: 18,
-        paddingBottom: 18,
-        minHeight: 150,
-        borderWidth: 1,
-        borderColor: colorScheme.borderLight,
-        width: "100%",
-    },
+        secondaryActionCardFull: {
+            backgroundColor: colorScheme.whiteWarmCard,
+            borderRadius: 28,
+            paddingHorizontal: 18,
+            paddingTop: 18,
+            paddingBottom: 18,
+            minHeight: 150,
+            borderWidth: 1,
+            borderColor: colorScheme.borderLight,
+            width: "100%",
+        },
 
-    smallTopRow: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 12,
-    },
+        smallTopRow: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 12,
+        },
 
-    iconWrapSmall: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: colorScheme.panelBackgroundAlt,
-        alignItems: "center",
-        justifyContent: "center",
-    },
+        iconWrapSmall: {
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: colorScheme.panelBackgroundAlt,
+            alignItems: "center",
+            justifyContent: "center",
+        },
 
-    iconSmall: {
-        fontSize: 18,
-        color: colorScheme.textAccentSoft,
-    },
+        iconSmall: {
+            fontSize: 18,
+            color: colorScheme.textAccentSoft,
+        },
 
-    cornerText: {
-        fontSize: 12,
-        fontWeight: "700",
-        color: colorScheme.textLabel,
-    },
+        cornerText: {
+            fontSize: 12,
+            fontWeight: "700",
+            color: colorScheme.textLabel,
+        },
 
-    secondaryTitle: {
-        fontSize: 22,
-        lineHeight: 26,
-        fontWeight: "800",
-        color: colorScheme.textDark,
-        marginBottom: 6,
-    },
+        secondaryTitle: {
+            fontSize: 22,
+            lineHeight: 26,
+            fontWeight: "800",
+            color: colorScheme.textDark,
+            marginBottom: 6,
+        },
 
-    secondaryDescription: {
-        fontSize: 13.5,
-        lineHeight: 20,
-        color: colorScheme.textMuted,
-        maxWidth: "92%",
-    },
+        secondaryDescription: {
+            fontSize: 13.5,
+            lineHeight: 20,
+            color: colorScheme.textMuted,
+            maxWidth: "92%",
+        },
 
-    bottomSpacer: {
-        height: 10,
-    },
+        bottomSpacer: {
+            height: 10,
+        },
 
-    logoutBar: {
-        backgroundColor: colorScheme.accentButton,
-        borderRadius: 28,
-        paddingVertical: 16,
-        paddingHorizontal: 18,
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: 6,
-        width: "100%",
-    },
+        logoutBar: {
+            backgroundColor: colorScheme.accentButton,
+            borderRadius: 28,
+            paddingVertical: 16,
+            paddingHorizontal: 18,
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: 6,
+            width: "100%",
+        },
 
-    logoutBarPressed: {
-        opacity: 0.92,
-        transform: [{ scale: 0.99 }],
-    },
+        logoutBarPressed: {
+            opacity: 0.92,
+            transform: [{ scale: 0.99 }],
+        },
 
-    logoutBarText: {
-        fontSize: 15,
-        fontWeight: "800",
-        color: colorScheme.textDefault,
-        letterSpacing: 0.2,
-    },
+        logoutBarText: {
+            fontSize: 15,
+            fontWeight: "800",
+            color: colorScheme.textDefault,
+            letterSpacing: 0.2,
+        },
 
-    cardPressed: {
-        opacity: 0.93,
-        transform: [{ scale: 0.985 }],
-    },
-});
+        cardPressed: {
+            opacity: 0.93,
+            transform: [{ scale: 0.985 }],
+        },
+    });
+
+}

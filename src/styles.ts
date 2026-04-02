@@ -1,12 +1,14 @@
-import { StyleSheet } from 'react-native';
-import { colorScheme } from "./colorScheme";
+import { StyleSheet, Platform } from 'react-native';
+import { colorScheme, colorSchemeGreens, COLOR_SCHEME_BROWN, COLOR_SCHEME_GREENS, MAP_COLOR_SCHEME } from "./colorScheme";
+
+import { create } from "zustand";
 
 export const sty = StyleSheet.create({
 
     container: {
         flex: 1,
         padding: 16,
-        backgroundColor: colorScheme.pureWhite
+        backgroundColor: "white" 
     },
 
     containerCentered: {
@@ -29,7 +31,7 @@ export const sty = StyleSheet.create({
 
     text: {
         fontSize: 16,
-        color: colorScheme.screenText
+        color: "black",
     },
 
     textBold: {
@@ -44,275 +46,286 @@ export const sty = StyleSheet.create({
 
 });
 
-export const commonUi = {
-    screen: {
-        safeArea: {
-            flex: 1,
-            backgroundColor: colorScheme.pageBackground,
-        },
-        safeAreaWeb: {
-            height: "100vh",
-            maxHeight: "100vh",
-            overflow: "hidden",
-        },
-        scrollView: {
-            flex: 1,
-        },
-        scrollViewWeb: {
-            minHeight: 0,
-        },
-        scrollContent: {
-            flexGrow: 1,
-            paddingBottom: 18,
-        },
-        pageWrapNarrow: {
-            flex: 1,
-            paddingHorizontal: 14,
-            paddingTop: 10,
-            paddingBottom: 10,
-        },
-        pageWrapWide: {
-            flex: 1,
-            paddingHorizontal: 16,
-        },
-        screenInner: {
-            flex: 1,
-            minHeight: "100%",
-        },
-        centerWrap: {
-            flex: 1,
-            justifyContent: "center",
-        },
-        keyboardWrap: {
-            flex: 1,
-        },
-    },
-    auth: {
-        salonTitle: {
-            fontSize: 34,
-            fontWeight: "800",
-            textAlign: "center",
-            color: colorScheme.textDefault,
-            marginBottom: 28,
-            letterSpacing: 1,
-        },
-        formCard: {
-            backgroundColor: colorScheme.whiteWarmCard,
-            borderRadius: 26,
-            padding: 20,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLight,
-        },
-        formTitle: {
-            fontSize: 22,
-            fontWeight: "800",
-            color: colorScheme.textDark,
-            marginBottom: 6,
-        },
-        formDescription: {
-            fontSize: 13.5,
-            color: colorScheme.textMuted,
-            marginBottom: 16,
-        },
-        inputGroup: {
-            marginBottom: 14,
-        },
-        inputLabel: {
-            fontSize: 12,
-            fontWeight: "700",
-            color: colorScheme.textLabel,
-            marginBottom: 6,
-            textTransform: "uppercase",
-            letterSpacing: 0.8,
-        },
-        input: {
-            backgroundColor: colorScheme.panelBackground,
-            borderRadius: 18,
-            paddingHorizontal: 16,
-            paddingVertical: 15,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLightAlt,
-            fontSize: 15,
-            fontWeight: "600",
-            color: colorScheme.textDefault,
-        },
-        feedbackText: {
-            marginTop: 2,
-            marginBottom: 10,
-            fontSize: 13,
-            fontWeight: "700",
-        },
-        feedbackError: {
-            color: colorScheme.feedbackError,
-        },
-        feedbackSuccess: {
-            color: colorScheme.feedbackSuccess,
-        },
-        primaryButton: {
-            backgroundColor: colorScheme.darkSurface,
-            borderRadius: 24,
-            paddingVertical: 16,
-            alignItems: "center",
-            marginTop: 6,
-        },
-        primaryButtonText: {
-            color: colorScheme.whiteWarm,
-            fontSize: 15,
-            fontWeight: "800",
-        },
-        dividerWrap: {
-            flexDirection: "row",
-            alignItems: "center",
-            marginTop: 18,
-            marginBottom: 16,
-        },
-        dividerLine: {
-            flex: 1,
-            height: 1,
-            backgroundColor: colorScheme.borderMuted,
-        },
-        dividerText: {
-            marginHorizontal: 12,
-            fontSize: 12,
-            fontWeight: "700",
-            color: colorScheme.textLabel,
-            letterSpacing: 0.8,
-        },
-        cardPressed: {
-            opacity: 0.9,
-            transform: [{ scale: 0.98 }],
-        },
-        inlineCtaButton: {
-            backgroundColor: colorScheme.accentTint,
-            borderRadius: 999,
-            paddingVertical: 12,
-            paddingHorizontal: 18,
-            borderWidth: 1,
-            borderColor: colorScheme.borderAccentSoft,
-        },
-        inlineCtaButtonText: {
-            fontSize: 14,
-            fontWeight: "800",
-            color: colorScheme.textDefault,
-        },
-        inlineCtaPromptText: {
-            fontSize: 14,
-            color: colorScheme.textSubtle,
-            marginBottom: 10,
-        },
-    },
-    hero: {
-        heroCard: {
-            position: "relative",
-            overflow: "hidden",
-            borderRadius: 28,
-            paddingHorizontal: 20,
-            paddingTop: 24,
-            paddingBottom: 32,
-            backgroundColor: colorScheme.accentTint,
-            marginBottom: 14,
-            justifyContent: "space-between",
-            width: "100%",
-        },
-        heroTopRow: {
-            zIndex: 2,
-        },
-        heroTextBlock: {
-            zIndex: 2,
-            marginTop: 8,
-            marginBottom: 18,
-        },
-        heroFadeWrap: {
-            position: "absolute",
-            left: 0,
-            right: 0,
-            bottom: -2,
-            alignItems: "center",
-        },
-        heroFadeMain: {
-            width: "84%",
-            height: 26,
-            backgroundColor: colorScheme.panelBackground,
-            borderTopLeftRadius: 100,
-            borderTopRightRadius: 100,
-            opacity: 0.72,
-        },
-        heroFadeSmall: {
-            width: "56%",
-            height: 14,
-            backgroundColor: colorScheme.panelBackground,
-            marginTop: -4,
-            borderTopLeftRadius: 50,
-            borderTopRightRadius: 50,
-            opacity: 0.95,
-        },
-        blobOne: {
-            position: "absolute",
-            width: 220,
-            height: 220,
-            borderRadius: 110,
-            backgroundColor: colorScheme.accentBlob,
-            right: -55,
-            top: -45,
-            opacity: 0.35,
-        },
-        blobTwo: {
-            position: "absolute",
-            width: 140,
-            height: 140,
-            borderRadius: 70,
-            backgroundColor: colorScheme.accentCream,
-            right: 48,
-            bottom: -42,
-            opacity: 0.95,
-        },
-        blobThree: {
-            position: "absolute",
-            width: 90,
-            height: 90,
-            borderRadius: 45,
-            backgroundColor: colorScheme.accentBlobStrong,
-            top: 102,
-            opacity: 0.12,
-        },
-        kicker: {
-            fontSize: 12,
-            fontWeight: "700",
-            letterSpacing: 1.7,
-            textTransform: "uppercase",
-            color: colorScheme.textAccentSoft,
-        },
-        heroTitle: {
-            fontSize: 38,
-            fontWeight: "800",
-            lineHeight: 41,
-            color: colorScheme.textDarkest,
-        },
-        heroTitleAccent: {
-            fontSize: 38,
-            fontWeight: "800",
-            lineHeight: 41,
-            color: colorScheme.textAccent,
-            marginBottom: 12,
-        },
-        metaRow: {
-            zIndex: 2,
-            flexDirection: "row",
-            flexWrap: "wrap",
-        },
-        metaChip: {
-            backgroundColor: colorScheme.darkSurface,
-            paddingHorizontal: 14,
-            paddingVertical: 9,
-            borderRadius: 999,
-            alignSelf: "flex-start",
-        },
-        metaChipText: {
-            color: colorScheme.whiteSoft,
-            fontWeight: "700",
-            fontSize: 12.5,
-        },
-    },
-};
+export function useCommonUi(scheme) {
 
-// TODO Make a global color pallet.
+    return {
+        screen: {
+            safeArea: {
+                flex: 1,
+                // Fixed broken scrolling on web
+                backgroundColor: scheme.pageBackground,
+                ...(Platform.OS === "web" && {
+                    height: "100vh",
+                    overflow: "auto"
+                })
+            },
+            pageMargins: {
+                padding: 14,
+            },
+            scrollViewWeb: {
+                minHeight: 0,
+            },
+            scrollContent: {
+                flexGrow: 1,
+                paddingBottom: 18,
+            },
+            pageWrapNarrow: {
+                flex: 1,
+                paddingHorizontal: 14,
+                paddingTop: 10,
+                paddingBottom: 10,
+            },
+            pageWrapWide: {
+                flex: 1,
+                paddingHorizontal: 16,
+            },
+            screenInner: {
+                flex: 1,
+                minHeight: "100%",
+            },
+            centerWrap: {
+                flex: 1,
+                justifyContent: "center",
+            },
+            keyboardWrap: {
+                flex: 1,
+            },
+        },
+        auth: {
+            salonTitle: {
+                fontSize: 34,
+                fontWeight: "800",
+                textAlign: "center",
+                color: scheme.textDefault,
+                marginBottom: 28,
+                letterSpacing: 1,
+            },
+            formCard: {
+                backgroundColor: scheme.whiteWarmCard,
+                borderRadius: 26,
+                padding: 20,
+                borderWidth: 1,
+                borderColor: scheme.borderLight,
+            },
+            formTitle: {
+                fontSize: 22,
+                fontWeight: "800",
+                color: scheme.textDark,
+                marginBottom: 6,
+            },
+            formDescription: {
+                fontSize: 13.5,
+                color: scheme.textMuted,
+                marginBottom: 16,
+            },
+            inputGroup: {
+                marginBottom: 14,
+            },
+            inputLabel: {
+                fontSize: 12,
+                fontWeight: "700",
+                color: scheme.textLabel,
+                marginBottom: 6,
+                textTransform: "uppercase",
+                letterSpacing: 0.8,
+            },
+            input: {
+                backgroundColor: scheme.panelBackground,
+                borderRadius: 18,
+                paddingHorizontal: 16,
+                paddingVertical: 15,
+                borderWidth: 1,
+                borderColor: scheme.borderLightAlt,
+                fontSize: 15,
+                fontWeight: "600",
+                color: scheme.textDefault,
+            },
+            feedbackText: {
+                marginTop: 2,
+                marginBottom: 10,
+                fontSize: 13,
+                fontWeight: "700",
+            },
+            feedbackError: {
+                color: scheme.feedbackError,
+            },
+            feedbackSuccess: {
+                color: scheme.feedbackSuccess,
+            },
+            primaryButton: {
+                backgroundColor: scheme.darkSurface,
+                borderRadius: 24,
+                paddingVertical: 16,
+                alignItems: "center",
+                marginTop: 6,
+            },
+            primaryButtonText: {
+                color: scheme.whiteWarm,
+                fontSize: 15,
+                fontWeight: "800",
+            },
+            dividerWrap: {
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: 18,
+                marginBottom: 16,
+            },
+            dividerLine: {
+                flex: 1,
+                height: 1,
+                backgroundColor: scheme.borderMuted,
+            },
+            dividerText: {
+                marginHorizontal: 12,
+                fontSize: 12,
+                fontWeight: "700",
+                color: scheme.textLabel,
+                letterSpacing: 0.8,
+            },
+            cardPressed: {
+                opacity: 0.9,
+                transform: [{ scale: 0.98 }],
+            },
+            inlineCtaButton: {
+                backgroundColor: scheme.accentTint,
+                borderRadius: 999,
+                paddingVertical: 12,
+                paddingHorizontal: 18,
+                borderWidth: 1,
+                borderColor: scheme.borderAccentSoft,
+            },
+            inlineCtaButtonText: {
+                fontSize: 14,
+                fontWeight: "800",
+                color: scheme.textDefault,
+            },
+            inlineCtaPromptText: {
+                fontSize: 14,
+                color: scheme.textSubtle,
+                marginBottom: 10,
+            },
+        },
+        hero: {
+            heroCard: {
+                position: "relative",
+                overflow: "hidden",
+                borderRadius: 28,
+                paddingHorizontal: 20,
+                paddingTop: 24,
+                paddingBottom: 32,
+                backgroundColor: scheme.accentTint,
+                marginBottom: 14,
+                justifyContent: "space-between",
+                width: "100%",
+            },
+            heroTopRow: {
+                zIndex: 2,
+            },
+            heroTextBlock: {
+                zIndex: 2,
+                marginTop: 8,
+                marginBottom: 18,
+            },
+            heroFadeWrap: {
+                position: "absolute",
+                left: 0,
+                right: 0,
+                bottom: -2,
+                alignItems: "center",
+            },
+            heroFadeMain: {
+                width: "84%",
+                height: 26,
+                backgroundColor: scheme.panelBackground,
+                borderTopLeftRadius: 100,
+                borderTopRightRadius: 100,
+                opacity: 0.72,
+            },
+            heroFadeSmall: {
+                width: "56%",
+                height: 14,
+                backgroundColor: scheme.panelBackground,
+                marginTop: -4,
+                borderTopLeftRadius: 50,
+                borderTopRightRadius: 50,
+                opacity: 0.95,
+            },
+            blobOne: {
+                position: "absolute",
+                width: 220,
+                height: 220,
+                borderRadius: 110,
+                backgroundColor: scheme.accentBlob,
+                right: -55,
+                top: -45,
+                opacity: 0.35,
+            },
+            blobTwo: {
+                position: "absolute",
+                width: 140,
+                height: 140,
+                borderRadius: 70,
+                backgroundColor: scheme.accentCream,
+                right: 48,
+                bottom: -42,
+                opacity: 0.95,
+            },
+            blobThree: {
+                position: "absolute",
+                width: 90,
+                height: 90,
+                borderRadius: 45,
+                backgroundColor: scheme.accentBlobStrong,
+                top: 102,
+                opacity: 0.12,
+            },
+            kicker: {
+                fontSize: 12,
+                fontWeight: "700",
+                letterSpacing: 1.7,
+                textTransform: "uppercase",
+                color: scheme.textAccentSoft,
+            },
+            heroTitle: {
+                fontSize: 38,
+                fontWeight: "800",
+                lineHeight: 41,
+                color: scheme.textDarkest,
+            },
+            heroTitleAccent: {
+                fontSize: 38,
+                fontWeight: "800",
+                lineHeight: 41,
+                color: scheme.textAccent,
+                marginBottom: 12,
+            },
+            metaRow: {
+                zIndex: 2,
+                flexDirection: "row",
+                flexWrap: "wrap",
+            },
+            metaChip: {
+                backgroundColor: scheme.darkSurface,
+                paddingHorizontal: 14,
+                paddingVertical: 9,
+                borderRadius: 999,
+                alignSelf: "flex-start",
+            },
+            metaChipText: {
+                color: scheme.whiteSoft,
+                fontWeight: "700",
+                fontSize: 12.5,
+            },
+        },
+    };
+
+}
+
+// A global color scheme
+export const useTheme = create((set, get) => ({
+    scheme: COLOR_SCHEME_BROWN,
+    reset: () => set((state) => ({ scheme: COLOR_SCHEME_BROWN })),
+    set: (scheme: string) => set({ scheme }),
+    getScheme: () => { return MAP_COLOR_SCHEME[get().scheme] ?? colorSchemeBrown; },
+    getCommonUi: () => useCommonUi(get().getScheme()),
+}))
