@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Calendar } from "react-native-calendars";
-import { apiFetch } from "../utils";
+import { apiFetch, assertFetchSuccessful } from "../utils";
 import { sty } from "../styles";
 
 function showAlert(title, message) {
@@ -63,8 +63,8 @@ function fromSecondsFromWeekStart(seconds) {
 
 export function SetAvailabilityScreen() {
     const [employees, setEmployees] = useState([]);
-    const [selectedEmployee, setSelectedEmployee] = useState(null);
-    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedEmployee, setSelectedEmployee] = useState("");
+    const [selectedDate, setSelectedDate] = useState("");
     const [showCalendar, setShowCalendar] = useState(false);
     const [currentAvailability, setCurrentAvailability] = useState([]);
     const [mode, setMode] = useState(null);
@@ -98,22 +98,15 @@ export function SetAvailabilityScreen() {
     }, [selectedEmployee]);
 
     async function handleRemoveAvailability(id) {
-        try {
-            const res = await apiFetch(`/availability/${id}`, {
+
+        apiFetch(`/availability/${id}`, {
                 method: "DELETE",
-            });
+            })
+            .then(assertFetchSuccessful)
+            .then(() => setCurrentAvailability(currentAvailability.filter((slot) => slot.id !== id)))
+            .catch((err) => showAlert("Error", err.message || "Failed to remove availability."))
+            ;
 
-            if (!res.ok) {
-                const err = await res.json().catch(() => null);
-                throw new Error(err?.message || `Server error: ${res.status}`);
-            }
-
-            setCurrentAvailability((prev) =>
-                prev.filter((slot) => slot.id !== id),
-            );
-        } catch (err) {
-            showAlert("Error", err.message || "Failed to remove availability.");
-        }
     }
 
     async function handleSubmit() {
@@ -124,33 +117,32 @@ export function SetAvailabilityScreen() {
             );
             return;
         }
-        try {
-            const payload = {
-                employee_id: selectedEmployee,
-                start_time: toSecondsFromWeekStart(selectedDate, startTime),
-                end_time: toSecondsFromWeekStart(selectedDate, endTime),
-            };
 
-            const res = await apiFetch("/availability", {
+        const payload = {
+            employee_id: selectedEmployee,
+            start_time: toSecondsFromWeekStart(selectedDate, startTime),
+            end_time: toSecondsFromWeekStart(selectedDate, endTime),
+        };
+
+        apiFetch("/availability", {
                 method: "POST",
                 body: JSON.stringify(payload),
-            });
+            })
+            .then(assertFetchSuccessful)
+            .then((res) => res.json())
+            .then((res) => {
+                setCurrentAvailability([...currentAvailability, res]);
+                setMode(null);
+                setStartTime("");
+                setEndTime("");
+                showAlert("Success", "Availability has been set.");
+            })
+            .catch((err) => {
+                showAlert("Error", err.message || "Failed to set availability.");
+                throw err;
+            })
+            ;
 
-            if (!res.ok) {
-                const err = await res.json().catch(() => null);
-                throw new Error(err?.message || `Server error: ${res.status}`);
-            }
-
-            const newSlot = await res.json();
-
-            setCurrentAvailability((prev) => [...prev, newSlot]);
-            showAlert("Success", "Availability has been set.");
-            setMode(null);
-            setStartTime("");
-            setEndTime("");
-        } catch (err) {
-            showAlert("Error", err.message || "Failed to set availability.");
-        }
     }
 
     const selectedEmployeeName = employees.find(
@@ -179,7 +171,7 @@ export function SetAvailabilityScreen() {
                 ))}
             </Picker>
 
-            {selectedEmployee !== "" && (
+            {selectedEmployee && (
                 <>
                     <Text>
                         Current availability for{" "}
