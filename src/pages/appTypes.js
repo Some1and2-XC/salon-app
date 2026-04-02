@@ -241,7 +241,7 @@ export function AdminAppointmentTypesScreen() {
         return (
             <View style={styles.taskCard}>
                 <View style={styles.taskCardTop}>
-                    <View style={styles.taskHeaderLeft}>
+                    <View>
                         <Text style={styles.taskName}>{item.name}</Text>
                         <View style={styles.categoryChip}>
                             <Text style={styles.categoryChipText}>{categoryName}</Text>
@@ -253,6 +253,7 @@ export function AdminAppointmentTypesScreen() {
                             ${(item.price_cad_cent / 100).toFixed(2)}
                         </Text>
                     </View>
+
                 </View>
 
                 <View style={styles.detailRow}>
@@ -304,47 +305,49 @@ export function AdminAppointmentTypesScreen() {
     };
 
     return (
-        <ScrollView>
+        <ScrollView style={commonUi.screen.pageMargins}>
+
+            <View style={commonUi.hero.heroCard}>
+                <View style={commonUi.hero.blobOne} />
+                <View style={commonUi.hero.blobTwo} />
+
+                <View style={commonUi.hero.heroTopRow}>
+                    <Text style={commonUi.hero.kicker}>Admin Dashboard</Text>
+                </View>
+
+                <View style={commonUi.hero.heroTextBlock}>
+                    <Text style={commonUi.hero.heroTitle}>Appointment Types</Text>
+                    <Text style={commonUi.hero.heroText}>
+                        Create, update, and organize salon services.
+                    </Text>
+                </View>
+
+                <View style={commonUi.hero.metaRow}>
+                    <View style={commonUi.hero.metaChip}>
+                        <Text style={commonUi.hero.metaChipText}>
+                            {tasks.length} Service{tasks.length === 1 ? "" : "s"} Provided
+                        </Text>
+                    </View>
+                </View>
+
+                <Pressable
+                    style={({ pressed }) => [
+                        commonUi.auth.primaryButton,
+                        commonUi.auth.heroButton,
+                        pressed && commonUi.auth.cardPressed,
+                    ]}
+                    onPress={openCreateModal}
+                >
+                    <Text style={commonUi.auth.primaryButtonText}>Add New Service</Text>
+                </Pressable>
+
+            </View>
+
+            <Text style={styles.sectionTitle}>All Services</Text>
+
             <FlatList
-                contentContainerStyle={commonUi.screen.pageMargins}
                 data={tasks}
-                keyExtractor={(item) => item.id.toString()}
-                showsVerticalScrollIndicator={false}
-                ListHeaderComponent={
-                    <>
-                        <View style={commonUi.hero.heroCard}>
-                            <View style={commonUi.hero.blobOne} />
-                            <View style={commonUi.hero.blobTwo} />
-
-                            <Text style={commonUi.hero.kicker}>Admin Dashboard</Text>
-                            <Text style={commonUi.hero.heroTitle}>Appointment Types</Text>
-                            <Text style={commonUi.hero.kicker}>
-                                Create, update, and organize salon services.
-                            </Text>
-
-                            <View style={commonUi.hero.heroMetaRow}>
-                                <View style={commonUi.hero.metaChip}>
-                                    <Text style={commonUi.hero.metaChipText}>
-                                        {tasks.length} Service{tasks.length === 1 ? "" : "s"} Provided
-                                    </Text>
-                                </View>
-                            </View>
-
-                            <Pressable
-                                style={({ pressed }) => [
-                                    commonUi.auth.primaryButton,
-                                    commonUi.auth.heroButton,
-                                    pressed && commonUi.auth.cardPressed,
-                                ]}
-                                onPress={openCreateModal}
-                            >
-                                <Text style={commonUi.auth.primaryButtonText}>Add New Service</Text>
-                            </Pressable>
-                        </View>
-
-                        <Text style={styles.sectionTitle}>All Services</Text>
-                    </>
-                }
+                keyExtractor={(item) => item.id}
                 renderItem={renderTaskCard}
                 ListEmptyComponent={
                     <View style={styles.emptyWrap}>
@@ -370,56 +373,53 @@ export function AdminAppointmentTypesScreen() {
             <Modal visible={modalVisible} animationType="slide" transparent>
                 <View style={styles.formModalBackdrop}>
                     <View style={styles.modalCard}>
-                        <Text style={styles.formTitle}>
+                        <Text style={commonUi.auth.formTitle}>
                             {editingTask ? "Edit Appointment Type" : "Create Appointment Type"}
                         </Text>
-                        <Text style={styles.formDescription}>
+                        <Text style={commonUi.auth.formDescription}>
                             Enter the service name, category, duration, and price.
                         </Text>
 
-                        <ScrollView
-                            contentContainerStyle={styles.modalFormWrap}
-                            showsVerticalScrollIndicator={false}
-                        >
-                            <View style={styles.inputGroup}>
-                                <Text style={styles.inputLabel}>Service Name</Text>
+                        <ScrollView>
+                            <View style={commonUi.auth.inputGroup}>
+                                <Text style={commonUi.auth.inputLabel}>Service Name</Text>
                                 <TextInput
                                     placeholder="e.g. Acrylic Refill"
                                     placeholderTextColor={colorScheme.placeholder}
                                     value={name}
                                     onChangeText={setName}
-                                    style={styles.input}
+                                    style={commonUi.auth.input}
                                 />
                             </View>
 
                             <View style={styles.rowInputs}>
-                                <View style={[styles.inputGroup, styles.halfInput]}>
-                                    <Text style={styles.inputLabel}>Price (CAD)</Text>
+                                <View style={commonUi.auth.inputGroup}>
+                                    <Text style={commonUi.auth.inputLabel}>Price (CAD)</Text>
                                     <TextInput
                                         placeholder="e.g. 45"
                                         placeholderTextColor={colorScheme.placeholder}
                                         value={price}
                                         onChangeText={setPrice}
                                         keyboardType="numeric"
-                                        style={styles.input}
+                                        style={commonUi.auth.input}
                                     />
                                 </View>
 
-                                <View style={[styles.inputGroup, styles.halfInput]}>
-                                    <Text style={styles.inputLabel}>Duration (Minutes)</Text>
+                                <View style={commonUi.auth.inputGroup}>
+                                    <Text style={commonUi.auth.inputLabel}>Duration (Minutes)</Text>
                                     <TextInput
                                         placeholder="e.g. 60"
                                         placeholderTextColor={colorScheme.placeholder}
                                         value={time}
                                         onChangeText={setTime}
                                         keyboardType="numeric"
-                                        style={styles.input}
+                                        style={commonUi.auth.input}
                                     />
                                 </View>
                             </View>
 
-                            <View style={styles.inputGroup}>
-                                <Text style={styles.inputLabel}>Category</Text>
+                            <View style={commonUi.auth.inputGroup}>
+                                <Text style={commonUi.auth.inputLabel}>Category</Text>
                                 <Pressable
                                     style={({ pressed }) => [
                                         styles.selectButton,
@@ -581,9 +581,6 @@ function makeStyles(colorScheme) {
             gap: 10,
             marginBottom: 12,
         },
-        taskHeaderLeft: {
-            flex: 1,
-        },
         taskName: {
             fontSize: 18,
             fontWeight: "800",
@@ -700,16 +697,10 @@ function makeStyles(colorScheme) {
             marginBottom: 14,
         },
 
-        modalFormWrap: {
-            paddingTop: 4,
-            paddingBottom: 8,
-        },
         rowInputs: {
+            overflow: "visible",
             flexDirection: "row",
             gap: 10,
-        },
-        halfInput: {
-            flex: 1,
         },
 
         selectButton: {
