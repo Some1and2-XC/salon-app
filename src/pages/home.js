@@ -14,7 +14,7 @@ import {
 
 import { signOut } from "firebase/auth";
 import { auth } from "../firebaseConfig";
-import { NAV_CHECKIN, NAV_BOOKING, NAV_LOGIN } from "../consts";
+import { NAV_BOOKING, NAV_CHECKIN, NAV_LOGIN, NAV_SET_THEME } from "../consts";
 import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
 
@@ -252,10 +252,23 @@ export function HomeScreen({ navigation, route }) {
                         styles.logoutBar,
                         pressed && styles.logoutBarPressed,
                     ]}
+                    onPress={() => navigation.navigate(NAV_SET_THEME) }
+                >
+                    <Text style={styles.logoutBarText}>Set Theme &#x1F3A8;</Text>
+                </Pressable>
+
+                <View style={styles.bottomSpacer} />
+
+                <Pressable
+                    style={({ pressed }) => [
+                        styles.logoutBar,
+                        pressed && styles.logoutBarPressed,
+                    ]}
                     onPress={handleLogout}
                 >
                     <Text style={styles.logoutBarText}>Log Out</Text>
                 </Pressable>
+
             </Animated.View>
         </ScrollView>
     );

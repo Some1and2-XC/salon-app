@@ -3,12 +3,14 @@ import { colorScheme, colorSchemeGreens, COLOR_SCHEME_BROWN, COLOR_SCHEME_GREENS
 
 import { create } from "zustand";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 export const sty = StyleSheet.create({
 
     container: {
         flex: 1,
         padding: 16,
-        backgroundColor: "white" 
+        backgroundColor: "white"
     },
 
     containerCentered: {
@@ -53,7 +55,6 @@ export function useCommonUi(scheme) {
             safeArea: {
                 flex: 1,
                 // Fixed broken scrolling on web
-                backgroundColor: scheme.pageBackground,
                 ...(Platform.OS === "web" && {
                     height: "100vh",
                     overflow: "auto"
@@ -321,11 +322,23 @@ export function useCommonUi(scheme) {
 
 }
 
+export const ASYNC_STORAGE_KEY_COLOR_SCHEME: string = "color-scheme";
+
 // A global color scheme
 export const useTheme = create((set, get) => ({
-    scheme: COLOR_SCHEME_BROWN,
-    reset: () => set((state) => ({ scheme: COLOR_SCHEME_BROWN })),
-    set: (scheme: string) => set({ scheme }),
-    getScheme: () => { return MAP_COLOR_SCHEME[get().scheme] ?? colorSchemeBrown; },
-    getCommonUi: () => useCommonUi(get().getScheme()),
-}))
+        scheme: COLOR_SCHEME_BROWN,
+        reset: () => set((state) => ({ scheme: COLOR_SCHEME_BROWN })),
+        setScheme: async (scheme: string) => {
+            set({ scheme });
+            await AsyncStorage.setItem(ASYNC_STORAGE_KEY_COLOR_SCHEME, JSON.stringify({ scheme: scheme }));
+        },
+        getScheme: () => { return MAP_COLOR_SCHEME[get().scheme] ?? colorSchemeBrown; },
+        getCommonUi: () => useCommonUi(get().getScheme()),
+        loadScheme: async () => {
+            const stored = await AsyncStorage.getItem(ASYNC_STORAGE_KEY_COLOR_SCHEME);
+            if (stored) {
+                set(JSON.parse(stored));
+            }
+        },
+    }),
+)

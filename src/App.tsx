@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 import { StatusBar } from 'expo-status-bar';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { Platform } from "react-native";
@@ -28,6 +28,7 @@ import { AdminAppointmentTypesScreen } from "./pages/appTypes";
 import { BarcodeScannerScreen } from "./pages/barcodeScanner";
 import { QRScreen } from './pages/qrGenerator';
 import { AdminHomepageScreen } from './pages/adminHomepage';
+import { SetThemeScreen } from './pages/setTheme';
 
 const Stack = createStackNavigator();
 
@@ -44,12 +45,22 @@ import {
         NAV_APP_TYPES,
         NAV_QR,
         NAV_BARCODE_SCANNER,
-        NAV_ADMIN_HOMEPAGE
+        NAV_ADMIN_HOMEPAGE,
+        NAV_SET_THEME,
 } from "./consts";
+
+import { MAP_COLOR_SCHEME } from "./colorScheme";
 
 export default function App() {
 
+    // Inits scheme from storage
+    useEffect(() => {
+        useTheme.getState().loadScheme();
+    }, [useTheme]);
+
     const commonUi = useTheme((state) => state.getCommonUi)();
+    const scheme = useTheme((state) => state.scheme);
+    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeBrown;
 
     const [user, setUser] = useState<FBUser | null>(null);
     const [authReady, setAuthReady] = useState(false);
@@ -73,12 +84,19 @@ export default function App() {
     // May be replaced with a spinner in the future.
     if (!authReady) return null;
 
+    const navTheme = {
+        ...DefaultTheme,
+        colors: {
+            ...DefaultTheme.colors,
+            background: colorScheme.pageBackground,
+        }
+    };
+
     return (<SafeAreaProvider>
-        {/* <SafeAreaView style={commonUi.screen.scrollView} edges={["left", "right"]}> */}
         <SafeAreaView style={commonUi.screen.safeArea} edges={["left", "right"]}>
             <StatusBar translucent backgroundColor="transparent" />
 
-            <NavigationContainer>
+            <NavigationContainer theme={navTheme}>
                 <Stack.Navigator initialRouteName={ initialRoute }
                     screenOptions={{ headerShown: false }}
                 >
@@ -100,6 +118,7 @@ export default function App() {
                     <Stack.Screen name={ NAV_QR } component={ QRScreen} />
                     <Stack.Screen name={ NAV_BARCODE_SCANNER } component={BarcodeScannerScreen} />
                     <Stack.Screen name={ NAV_ADMIN_HOMEPAGE } component={AdminHomepageScreen} />
+                    <Stack.Screen name={ NAV_SET_THEME } component={SetThemeScreen} />
 
                     {/*
 
