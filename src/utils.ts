@@ -26,9 +26,5 @@ export function showAppToast(type: number, title: string, message: string) {
         type: toastType,
         text1: title,
         text2: message,
-        position: "top",
-        visibilityTime: 3000,
-        autoHide: true,
-        topOffset: 60
     });
 }

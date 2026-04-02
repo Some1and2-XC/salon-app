@@ -122,6 +122,7 @@ export default function App() {
                         />
                     </Stack.Navigator>
 
+                    <Toast />
                 </NavigationContainer>
             </SafeAreaView>
         </SafeAreaProvider>

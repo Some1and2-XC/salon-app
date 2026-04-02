@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Text, View, Button } from "react-native";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-import { apiFetch } from "../utils";
+import { apiFetch, showAppToast } from "../utils";
 
 import {
     NAV_QR,
