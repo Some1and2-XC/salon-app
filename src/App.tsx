@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
@@ -49,15 +49,18 @@ import {
         NAV_SET_THEME,
 } from "./consts";
 
+import { MAP_COLOR_SCHEME } from "./colorScheme";
+
 export default function App() {
 
     // Inits scheme from storage
     useEffect(() => {
         useTheme.getState().loadScheme();
-    }, []);
+    }, [useTheme]);
 
     const commonUi = useTheme((state) => state.getCommonUi)();
-    const colorScheme = useTheme((state) => state.getScheme)();
+    const scheme = useTheme((state) => state.scheme);
+    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeBrown;
 
     const [user, setUser] = useState<FBUser | null>(null);
     const [authReady, setAuthReady] = useState(false);
@@ -81,15 +84,19 @@ export default function App() {
     // May be replaced with a spinner in the future.
     if (!authReady) return null;
 
+    const navTheme = {
+        ...DefaultTheme,
+        colors: {
+            ...DefaultTheme.colors,
+            background: colorScheme.pageBackground,
+        }
+    };
+
     return (<SafeAreaProvider>
-        {/* <SafeAreaView style={commonUi.screen.scrollView} edges={["left", "right"]}> */}
         <SafeAreaView style={commonUi.screen.safeArea} edges={["left", "right"]}>
             <StatusBar translucent backgroundColor="transparent" />
 
-            <NavigationContainer theme={{ ...DefaultTheme,
-                colors: { ...DefaultTheme.colors,
-                    background: colorScheme.pageBackground,
-            }}}>
+            <NavigationContainer theme={navTheme}>
                 <Stack.Navigator initialRouteName={ initialRoute }
                     screenOptions={{ headerShown: false }}
                 >
