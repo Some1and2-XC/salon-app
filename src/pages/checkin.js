@@ -45,7 +45,6 @@ export function CheckinScreen({ navigation }) {
     return (
         <View style={sty.container}>
             <Text style={sty.h1}>Check In</Text>
-            <Button style={sty.button} title={"HOME"} onPress={returnToHomePage} />
             {/* TODO make this a list of user appointments */}
             <Button style={sty.button} title={"QR Code"} onPress={handleGenerateQR} />
         </View>
