@@ -17,7 +17,7 @@ import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "fir
 import { auth } from "../firebaseConfig";
 import { apiFetch } from "../utils";
 import { commonUi } from "../styles";
-import { NAV_HOME, NAV_SIGNUP } from "../consts";
+import { NAV_HOME, NAV_SIGNUP, NAV_ADMIN_HOMEPAGE } from "../consts";
 
 function getLoginErrorMessage(code) {
     switch (code) {
@@ -72,7 +72,15 @@ export function LoginScreen({ navigation }) {
             const res = await apiFetch("/users/me");
             if (!res.ok) throw new Error("User not found in backend!");
 
-            navigation.navigate(NAV_HOME, { loggedInAs: trimmedEmail });
+            const userData = await res.json();
+
+            // Split between Customer and Admin
+            if (userData.admin === true) {
+                navigation.navigate(NAV_ADMIN_HOMEPAGE);
+            } else {
+                navigation.navigate(NAV_HOME);
+            }
+
         } catch (error) {
             console.error("Login Failed", error);
             setFeedbackMessage(getLoginErrorMessage(error.code));

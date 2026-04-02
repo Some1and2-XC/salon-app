@@ -26,6 +26,7 @@ import { SignupScreen } from "./pages/signup";
 import { AdminAppointmentTypesScreen } from "./pages/appTypes";
 import { BarcodeScannerScreen } from "./pages/barcodeScanner";
 import { QRScreen } from './pages/qrGenerator';
+import { AdminHomepageScreen } from './pages/adminHomepage';
 
 const Stack = createStackNavigator();
 
@@ -41,7 +42,8 @@ import {
         NAV_SIGNUP,
         NAV_APP_TYPES,
         NAV_QR,
-        NAV_BARCODE_SCANNER
+        NAV_BARCODE_SCANNER,
+        NAV_ADMIN_HOMEPAGE
 } from "./consts";
 
 export default function App() {
@@ -92,6 +94,7 @@ export default function App() {
                     <Stack.Screen name={ NAV_APP_TYPES } component={ AdminAppointmentTypesScreen } />
                     <Stack.Screen name={ NAV_QR } component={ QRScreen} />
                     <Stack.Screen name={ NAV_BARCODE_SCANNER } component={BarcodeScannerScreen} />
+                    <Stack.Screen name={ NAV_ADMIN_HOMEPAGE } component={AdminHomepageScreen} />
 
                     {/*
 

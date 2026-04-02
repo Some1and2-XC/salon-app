@@ -12,6 +12,7 @@ export const NAV_LOGIN: string = "login";
 export const NAV_SIGNUP: string = "signup";
 export const NAV_APP_TYPES: string = "app-types";
 export const NAV_BARCODE_SCANNER: string = "barcode-scanner";
+export const NAV_ADMIN_HOMEPAGE: string = "adminHomepage";
 
 export const APPOINTMENT_STATE_UNCONFIRMED : int = 0
 export const APPOINTMENT_STATE_ACCEPTED    : int = 1;
