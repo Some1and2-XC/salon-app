@@ -14,7 +14,8 @@ import {
     NAV_SIGNUP,
     NAV_APP_TYPES,
     NAV_BARCODE_SCANNER,
-    NAV_ADMIN_HOMEPAGE
+    NAV_ADMIN_HOMEPAGE,
+    NAV_ADD_EMPLOYEE
 } from "../consts";
 
 export function ExampleHome({ navigation }: any ): React.JSX.Element {
@@ -30,7 +31,8 @@ export function ExampleHome({ navigation }: any ): React.JSX.Element {
         NAV_SIGNUP,
         NAV_APP_TYPES,
         NAV_BARCODE_SCANNER,
-        NAV_ADMIN_HOMEPAGE
+        NAV_ADMIN_HOMEPAGE,
+        NAV_ADD_EMPLOYEE
     ];
 
     return (
