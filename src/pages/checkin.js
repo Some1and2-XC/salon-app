@@ -7,7 +7,6 @@ import Toast from 'react-native-toast-message';
 import {
     NAV_QR,
     NAV_LOGIN,
-    NAV_EXAMPLE_HOME
 } from "../consts";
 
 import { sty } from "../styles";
@@ -59,13 +58,17 @@ export function CheckinScreen({ navigation }) {
     }, []);
 
     const renderItem = ({ item }) => {
+        const formattedDate = new Date(item.start_time * 1000).toLocaleString(undefined, {
+            dateStyle: 'medium',
+            timeStyle: 'short'
+        })
         return (
             <TouchableOpacity
                 style={styles.button}
                 onPress={() => navigation.navigate(NAV_QR, { appointment: item })}
             >
-                <Text>{item.title || "Appointment"}</Text>
-                <Text>{item.date}</Text>
+                <Text>{"Appointment"}</Text>
+                <Text>{formattedDate}</Text>
             </TouchableOpacity>
         );
     }
