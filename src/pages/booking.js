@@ -15,7 +15,7 @@ import {
     useWindowDimensions,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
-import { apiFetch } from "../utils";
+import { apiFetch, assertFetchSuccessful } from "../utils";
 import { NAV_HOME } from "../consts";
 import { useTheme } from "../styles";
 import { colorScheme } from "../colorScheme";
@@ -33,40 +33,59 @@ function showAlert(title, message) {
     }
 }
 
-async function createAppointmentRequest(appointment) {
-    const response = await apiFetch("/appointments", {
-        method: "POST",
-        body: JSON.stringify(appointment),
-    });
-
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => null);
-        const message = errorBody?.message || `Server error: ${response.status}`;
-        throw new Error(message);
-    }
-
-    return await response.json();
-}
-
 function getAvailableTimesForDay(day, availabilities, appointmentLength) {
     const slots = [];
 
     for (const slot of availabilities) {
-        const start = new Date(slot.start_time * 1000);
-        const end = new Date(slot.end_time * 1000);
+        const slotDay = Math.floor(slot.start_time / (24 * 60 * 60));
+        if (slotDay !== day) continue;
 
-        if (start.getDay() !== day) continue;
+        const startSeconds = slot.start_time % (24 * 60 * 60);
+        const endSeconds = slot.end_time % (24 * 60 * 60);
 
-        let current = start.getTime();
+        let current = startSeconds;
 
-        while (current + appointmentLength * 60 * 1000 <= end.getTime()) {
-            const d = new Date(current);
-            slots.push(formatTime(d.getHours() * 60 + d.getMinutes()));
-            current += appointmentLength * 60 * 1000;
+        const step = 30 * 60; // 30-minute increments
+        const appointmentSeconds = appointmentLength * 60;
+
+        while (current + appointmentSeconds <= endSeconds) {
+            const hours = Math.floor(current / 3600);
+            const minutes = Math.floor((current % 3600) / 60);
+
+            slots.push(formatTime(hours * 60 + minutes));
+
+            current += step;
         }
     }
 
     return slots;
+}
+
+function findAvailableEmployeeForSlot(
+    day,
+    timeString,
+    availabilities,
+    appointmentLength,
+) {
+    const [hours, minutes] = timeString.split(":").map(Number);
+    const timeInSeconds = hours * 3600 + minutes * 60;
+
+    for (const slot of availabilities) {
+        const slotDay = Math.floor(slot.start_time / (24 * 60 * 60));
+        if (slotDay !== day) continue;
+
+        const startSeconds = slot.start_time % (24 * 60 * 60);
+        const endSeconds = slot.end_time % (24 * 60 * 60);
+
+        if (
+            timeInSeconds >= startSeconds &&
+            timeInSeconds + appointmentLength * 60 <= endSeconds
+        ) {
+            return slot.employee_id;
+        }
+    }
+
+    return null;
 }
 
 function buildAppointment(
@@ -75,7 +94,7 @@ function buildAppointment(
     taskId,
     employeePreference,
     employeeId,
-    appointmentLength
+    appointmentLength,
 ) {
     const [hours, minutes] = time.split(":").map(Number);
     const startDate = new Date(date + "T00:00:00");
@@ -150,17 +169,21 @@ export function OptionModal({
                         nestedScrollEnabled={true}
                     >
                         {options.length === 0 ? (
-                            <Text style={styles.emptyOptionText}>{emptyText}</Text>
+                            <Text style={styles.emptyOptionText}>
+                                {emptyText}
+                            </Text>
                         ) : (
                             options.map((option) => {
-                                const isSelected = option.value === selectedValue;
+                                const isSelected =
+                                    option.value === selectedValue;
 
                                 return (
                                     <Pressable
                                         key={String(option.value)}
                                         style={({ pressed }) => [
                                             styles.optionRow,
-                                            isSelected && styles.optionRowSelected,
+                                            isSelected &&
+                                                styles.optionRowSelected,
                                             pressed && styles.optionRowPressed,
                                         ]}
                                         onPress={() => {
@@ -172,7 +195,8 @@ export function OptionModal({
                                             <Text
                                                 style={[
                                                     styles.optionLabel,
-                                                    isSelected && styles.optionLabelSelected,
+                                                    isSelected &&
+                                                        styles.optionLabelSelected,
                                                 ]}
                                             >
                                                 {option.label}
@@ -192,7 +216,9 @@ export function OptionModal({
                                         </View>
 
                                         {isSelected && (
-                                            <Text style={styles.optionCheck}>✓</Text>
+                                            <Text style={styles.optionCheck}>
+                                                ✓
+                                            </Text>
                                         )}
                                     </Pressable>
                                 );
@@ -251,7 +277,6 @@ function InfoSelectCard({
 }
 
 export function BookingScreen({ navigation }) {
-
     const commonUi = useTheme((state) => state.getCommonUi)();
     const colorScheme = useTheme((state) => state.getScheme)();
     const styles = useMemo(() => makeStyles(colorScheme), [colorScheme]);
@@ -273,28 +298,42 @@ export function BookingScreen({ navigation }) {
     const [showCalendar, setShowCalendar] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [employeePreference, setEmployeePreference] = useState(
-        EMPLOYEE_OPTIONS.ANY
+        EMPLOYEE_OPTIONS.ANY,
     );
 
     const [showTaskModal, setShowTaskModal] = useState(false);
     const [showEmployeeModal, setShowEmployeeModal] = useState(false);
     const [showTimeModal, setShowTimeModal] = useState(false);
 
-    const selectedTask = tasks.find((t) => String(t.id) === String(selectedTaskId));
+    const selectedTask = tasks.find(
+        (t) => String(t.id) === String(selectedTaskId),
+    );
     const selectedEmployee = employees.find(
-        (e) => String(e.id) === String(selectedEmployeeId)
+        (e) => String(e.id) === String(selectedEmployeeId),
     );
     const appointmentLength = (selectedTask?.time_for_booking || 900) / 60;
+
+    const filteredAvailabilities = useMemo(() => {
+        if (employeePreference === EMPLOYEE_OPTIONS.ANY) {
+            return availabilities;
+        }
+
+        if (!selectedEmployeeId) return [];
+
+        return availabilities.filter(
+            (a) => String(a.employee_id) === String(selectedEmployeeId),
+        );
+    }, [availabilities, employeePreference, selectedEmployeeId]);
 
     const availableTimes = useMemo(() => {
         if (!selectedDate) return [];
 
         return getAvailableTimesForDay(
             new Date(selectedDate + "T12:00:00").getDay(),
-            availabilities,
-            appointmentLength
+            filteredAvailabilities,
+            appointmentLength,
         );
-    }, [selectedDate, availabilities, appointmentLength]);
+    }, [selectedDate, filteredAvailabilities, appointmentLength]);
 
     useEffect(() => {
         Animated.parallel([
@@ -322,7 +361,7 @@ export function BookingScreen({ navigation }) {
                     duration: 3600,
                     useNativeDriver: true,
                 }),
-            ])
+            ]),
         ).start();
 
         Animated.loop(
@@ -337,13 +376,9 @@ export function BookingScreen({ navigation }) {
                     duration: 4300,
                     useNativeDriver: true,
                 }),
-            ])
+            ]),
         ).start();
     }, [fadeIn, slideUp, float1, float2]);
-
-    useEffect(() => {
-        setSelectedTime(availableTimes.length > 0 ? availableTimes[0] : "");
-    }, [availableTimes]);
 
     useEffect(() => {
         Promise.all([
@@ -371,11 +406,30 @@ export function BookingScreen({ navigation }) {
             .finally(() => setIsLoading(false));
     }, []);
 
+    useEffect(() => {
+        setSelectedDate(null);
+        setSelectedTime("");
+    }, [selectedTaskId]);
+
+    useEffect(() => {
+        setSelectedTime("");
+    }, [selectedDate]);
+
+    useEffect(() => {
+        setSelectedEmployeeId("");
+        setSelectedDate(null);
+        setSelectedTime("");
+    }, [employeePreference]);
+
+    useEffect(() => {
+        setSelectedTime("");
+    }, [availableTimes]);
+
     const handleDayChange = (weekday) => {
         const nextTimes = getAvailableTimesForDay(
             weekday,
             availabilities,
-            appointmentLength
+            appointmentLength,
         );
 
         setSelectedTime(nextTimes.length > 0 ? nextTimes[0] : "");
@@ -384,17 +438,6 @@ export function BookingScreen({ navigation }) {
     const handleCreateAppointment = async () => {
         if (!selectedTaskId) {
             showAlert("No task selected", "Please select a task.");
-            return;
-        }
-
-        if (
-            employeePreference === EMPLOYEE_OPTIONS.SPECIFIC &&
-            !selectedEmployeeId
-        ) {
-            showAlert(
-                "No employee selected",
-                "Please select an employee or choose any."
-            );
             return;
         }
 
@@ -408,29 +451,59 @@ export function BookingScreen({ navigation }) {
             return;
         }
 
+        let employeeId = selectedEmployeeId;
+
+        if (employeePreference === EMPLOYEE_OPTIONS.ANY) {
+            const day = new Date(selectedDate + "T12:00:00").getDay();
+            employeeId = findAvailableEmployeeForSlot(
+                day,
+                selectedTime,
+                availabilities,
+                appointmentLength,
+            );
+
+            if (!employeeId) {
+                showAlert(
+                    "No employee available",
+                    "No employee is available for that time.",
+                );
+                return;
+            }
+        } else if (
+            employeePreference === EMPLOYEE_OPTIONS.SPECIFIC &&
+            !selectedEmployeeId
+        ) {
+            showAlert(
+                "No employee selected",
+                "Please select an employee or choose any.",
+            );
+            return;
+        }
+
         const appointment = buildAppointment(
             selectedDate,
             selectedTime,
             Number(selectedTaskId),
-            employeePreference,
-            selectedEmployeeId,
-            appointmentLength
+            EMPLOYEE_OPTIONS.SPECIFIC,
+            employeeId,
+            appointmentLength,
         );
 
-        try {
-            await createAppointmentRequest(appointment);
-            showAlert("Success", "Your appointment has been booked.");
-        } catch (err) {
-            console.error(err);
-
-            if (err.message.includes("401") || err.message.includes("403")) {
-                showAlert("Session Expired", "Please log in again.");
-            } else if (err.message.includes("Network request failed")) {
-                showAlert("No Connection", "Check your internet and try again.");
-            } else {
-                showAlert("Error", err.message || "Failed to create appointment.");
-            }
-        }
+        apiFetch("/appointments", {
+            method: "POST",
+            body: JSON.stringify(appointment),
+        })
+            .then((res) => res.json())
+            .then(assertFetchSuccessful)
+            .then(() =>
+                showAlert("Success", "Your appointment has been booked."),
+            )
+            .catch((err) =>
+                showAlert(
+                    "Server Error",
+                    errorBody?.message || `Server error: ${response.status}`,
+                ),
+            );
     };
 
     const isFormComplete =
@@ -462,10 +535,11 @@ export function BookingScreen({ navigation }) {
         employeePreference === EMPLOYEE_OPTIONS.ANY
             ? "Any employee"
             : selectedEmployee
-            ? selectedEmployee.first_name && selectedEmployee.last_name
-                ? `${selectedEmployee.first_name} ${selectedEmployee.last_name}`
-                : selectedEmployee.first_name || `Employee ${selectedEmployee.id}`
-            : "Not selected";
+              ? selectedEmployee.first_name && selectedEmployee.last_name
+                  ? `${selectedEmployee.first_name} ${selectedEmployee.last_name}`
+                  : selectedEmployee.first_name ||
+                    `Employee ${selectedEmployee.id}`
+              : "Not selected";
 
     const blob1Y = float1.interpolate({
         inputRange: [0, 1],
@@ -485,8 +559,10 @@ export function BookingScreen({ navigation }) {
                 <StatusBar barStyle="dark-content" />
                 <View style={styles.loadingWrap}>
                     <View style={styles.loadingCard}>
-                        <ActivityIndicator size="large" color={colorScheme.textAccent} />
-                        <Text style={styles.loadingTitle}>Preparing Booking</Text>
+                        <ActivityIndicator size="large" color="#9b664d" />
+                        <Text style={styles.loadingTitle}>
+                            Preparing Booking
+                        </Text>
                         <Text style={styles.loadingText}>
                             Loading services, employees, and available times...
                         </Text>
@@ -496,365 +572,377 @@ export function BookingScreen({ navigation }) {
         );
     }
 
-    return (<ScrollView style={commonUi.screen.pageMargins}>
-        <Animated.View style={{
+    return (
+        <ScrollView style={commonUi.screen.pageMargins}>
+            <Animated.View
+                style={{
                     minHeight: height,
                     opacity: fadeIn,
                     transform: [{ translateY: slideUp }],
-        }}>
-            <Pressable
-                style={({ pressed }) => [
-                    styles.backButton,
-                    pressed && styles.cardPressed,
-                ]}
-                onPress={() => navigation.navigate(NAV_HOME)}
-            >
-                <Text style={styles.backButtonArrow}>←</Text>
-                <Text style={styles.backButtonText}>Back to Home</Text>
-            </Pressable>
-
-            <View style={[commonUi.hero.heroCard, { minHeight: heroMinHeight }]}>
-                <Animated.View
-                    style={[
-                        commonUi.hero.blobOne,
-                        { transform: [{ translateY: blob1Y }] },
-                    ]}
-                />
-                <Animated.View
-                    style={[
-                        commonUi.hero.blobTwo,
-                        { transform: [{ translateY: blob2Y }] },
-                    ]}
-                />
-                <Animated.View
-                    style={[
-                        commonUi.hero.blobThree,
-                        {
-                            left: width * 0.56,
-                            transform: [{ translateY: blob1Y }],
-                        },
-                    ]}
-                />
-
-                <View style={commonUi.hero.heroTopRow}>
-                    <Text style={commonUi.hero.kicker}>BOOK APPOINTMENT</Text>
-                </View>
-
-                <View style={commonUi.hero.heroTextBlock}>
-                    <Text style={commonUi.hero.heroTitle}>Create Your</Text>
-                    <Text style={commonUi.hero.heroTitleAccent}>Booking</Text>
-                    <Text style={commonUi.hero.heroText}>
-                        Choose a service, pick your stylist, and reserve a
-                        time that works best for you.
-                    </Text>
-                </View>
-
-                <View style={commonUi.hero.metaRow}>
-                    <View style={commonUi.hero.metaChip}>
-                        <Text style={commonUi.hero.metaChipText}>
-                            {selectedDate
-                                ? formatDisplayDate(selectedDate)
-                                : "Select your details below"}
-                        </Text>
-                    </View>
-                </View>
-
-                <View style={commonUi.hero.heroFadeWrap}>
-                    <View style={commonUi.hero.heroFadeMain} />
-                    <View style={commonUi.hero.heroFadeSmall} />
-                </View>
-            </View>
-
-            <InfoSelectCard
-                step="01"
-                title="Choose Service"
-                label="Select the service you want to book."
-                value={selectedTask?.name || "Choose a task"}
-                meta={
-                    selectedTask ? `${appointmentLength} min` : "Service"
-                }
-                onPress={() => setShowTaskModal(true)}
-                styles={styles}
-            />
-
-            <View style={styles.secondaryActionCardFull}>
-                <View style={styles.smallTopRow}>
-                    <View style={styles.iconWrapSmall}>
-                        <Text style={styles.iconSmall}>02</Text>
-                    </View>
-                    <Text style={styles.cornerText}>Preference</Text>
-                </View>
-
-                <Text style={styles.secondaryTitle}>Employee Choice</Text>
-                <Text style={styles.secondaryDescription}>
-                    Pick any available employee or choose someone specific.
-                </Text>
-
-                <View style={styles.preferenceRow}>
-                    <Pressable
-                        style={({ pressed }) => [
-                            styles.preferenceChip,
-                            employeePreference === EMPLOYEE_OPTIONS.ANY &&
-                                styles.preferenceChipActive,
-                            pressed && styles.cardPressed,
-                        ]}
-                        onPress={() =>
-                            setEmployeePreference(EMPLOYEE_OPTIONS.ANY)
-                        }
-                    >
-                        <Text
-                            style={[
-                                styles.preferenceChipText,
-                                employeePreference === EMPLOYEE_OPTIONS.ANY &&
-                                    styles.preferenceChipTextActive,
-                            ]}
-                        >
-                            Any employee
-                        </Text>
-                    </Pressable>
-
-                    <Pressable
-                        style={({ pressed }) => [
-                            styles.preferenceChip,
-                            employeePreference ===
-                                EMPLOYEE_OPTIONS.SPECIFIC &&
-                                styles.preferenceChipActive,
-                            pressed && styles.cardPressed,
-                        ]}
-                        onPress={() =>
-                            setEmployeePreference(
-                                EMPLOYEE_OPTIONS.SPECIFIC
-                            )
-                        }
-                    >
-                        <Text
-                            style={[
-                                styles.preferenceChipText,
-                                employeePreference ===
-                                    EMPLOYEE_OPTIONS.SPECIFIC &&
-                                    styles.preferenceChipTextActive,
-                            ]}
-                        >
-                            Specific employee
-                        </Text>
-                    </Pressable>
-                </View>
-
-                {employeePreference === EMPLOYEE_OPTIONS.SPECIFIC && (
-                    <Pressable
-                        style={({ pressed }) => [
-                            styles.selectButton,
-                            styles.employeeSelectButton,
-                            pressed && styles.cardPressed,
-                        ]}
-                        onPress={() => setShowEmployeeModal(true)}
-                    >
-                        <Text style={styles.selectValue}>
-                            {summaryEmployee === "Not selected"
-                                ? "Choose an employee"
-                                : summaryEmployee}
-                        </Text>
-                        <Text style={styles.selectChevron}>⌄</Text>
-                    </Pressable>
-                )}
-            </View>
-
-            <InfoSelectCard
-                step="03"
-                title="Choose Date"
-                label="Select the day for your appointment."
-                value={formatDisplayDate(selectedDate)}
-                meta="Calendar"
-                onPress={() => setShowCalendar(true)}
-                styles={styles}
-            />
-
-            <InfoSelectCard
-                step="04"
-                title="Choose Time"
-                label="Pick from the available times for that day."
-                value={
-                    selectedTime ||
-                    (availableTimes.length === 0
-                        ? "No times available"
-                        : "Choose a time")
-                }
-                meta="Time"
-                onPress={() => {
-                    if (availableTimes.length > 0) {
-                        setShowTimeModal(true);
-                    }
                 }}
-                disabled={availableTimes.length === 0}
-                styles={styles}
-            />
+            >
+                <Pressable
+                    style={({ pressed }) => [
+                        styles.backButton,
+                        pressed && styles.cardPressed,
+                    ]}
+                    onPress={() => navigation.navigate(NAV_HOME)}
+                >
+                    <Text style={styles.backButtonArrow}>←</Text>
+                    <Text style={styles.backButtonText}>Back to Home</Text>
+                </Pressable>
 
-            <View style={styles.primaryActionCard}>
-                <View style={styles.cardGlow} />
+                <View
+                    style={[
+                        commonUi.hero.heroCard,
+                        { minHeight: heroMinHeight },
+                    ]}
+                >
+                    <Animated.View
+                        style={[
+                            commonUi.hero.blobOne,
+                            { transform: [{ translateY: blob1Y }] },
+                        ]}
+                    />
+                    <Animated.View
+                        style={[
+                            commonUi.hero.blobTwo,
+                            { transform: [{ translateY: blob2Y }] },
+                        ]}
+                    />
+                    <Animated.View
+                        style={[
+                            commonUi.hero.blobThree,
+                            {
+                                left: width * 0.56,
+                                transform: [{ translateY: blob1Y }],
+                            },
+                        ]}
+                    />
 
-                <View style={styles.cardHeaderRow}>
-                    <View style={styles.iconWrapLarge}>
-                        <Text style={styles.iconLarge}>✦</Text>
-                    </View>
-
-                    <View style={styles.pillDark}>
-                        <Text style={styles.pillDarkText}>
-                            Booking Summary
-                        </Text>
-                    </View>
-                </View>
-
-                <Text style={styles.primaryTitle}>Review Details</Text>
-                <Text style={styles.primaryDescription}>
-                    Double-check your booking information before creating
-                    the appointment.
-                </Text>
-
-                <View style={styles.summaryGrid}>
-                    <View style={styles.summaryRow}>
-                        <Text style={styles.summaryKey}>Task</Text>
-                        <Text style={styles.summaryValue}>
-                            {selectedTask?.name || "Not selected"}
-                        </Text>
-                    </View>
-
-                    <View style={styles.summaryRow}>
-                        <Text style={styles.summaryKey}>Employee</Text>
-                        <Text style={styles.summaryValue}>
-                            {summaryEmployee}
-                        </Text>
-                    </View>
-
-                    <View style={styles.summaryRow}>
-                        <Text style={styles.summaryKey}>Date</Text>
-                        <Text style={styles.summaryValue}>
-                            {selectedDate
-                                ? formatDisplayDate(selectedDate)
-                                : "Not selected"}
+                    <View style={commonUi.hero.heroTopRow}>
+                        <Text style={commonUi.hero.kicker}>
+                            BOOK APPOINTMENT
                         </Text>
                     </View>
 
-                    <View style={styles.summaryRow}>
-                        <Text style={styles.summaryKey}>Time</Text>
-                        <Text style={styles.summaryValue}>
-                            {selectedTime || "Not selected"}
+                    <View style={commonUi.hero.heroTextBlock}>
+                        <Text style={commonUi.hero.heroTitle}>Create Your</Text>
+                        <Text style={commonUi.hero.heroTitleAccent}>
+                            Booking
+                        </Text>
+                        <Text style={commonUi.hero.heroText}>
+                            Choose a service, pick your stylist, and reserve a
+                            time that works best for you.
                         </Text>
                     </View>
 
-                    {!!selectedTask && (
-                        <View style={styles.summaryRow}>
-                            <Text style={styles.summaryKey}>Duration</Text>
-                            <Text style={styles.summaryValue}>
-                                {appointmentLength} min
+                    <View style={commonUi.hero.metaRow}>
+                        <View style={commonUi.hero.metaChip}>
+                            <Text style={commonUi.hero.metaChipText}>
+                                {selectedDate
+                                    ? formatDisplayDate(selectedDate)
+                                    : "Select your details below"}
                             </Text>
                         </View>
+                    </View>
+
+                    <View style={commonUi.hero.heroFadeWrap}>
+                        <View style={commonUi.hero.heroFadeMain} />
+                        <View style={commonUi.hero.heroFadeSmall} />
+                    </View>
+                </View>
+
+                <InfoSelectCard
+                    step="01"
+                    title="Choose Service"
+                    label="Select the service you want to book."
+                    value={selectedTask?.name || "Choose a task"}
+                    meta={selectedTask ? `${appointmentLength} min` : "Service"}
+                    onPress={() => setShowTaskModal(true)}
+                    styles={styles}
+                />
+
+                <View style={styles.secondaryActionCardFull}>
+                    <View style={styles.smallTopRow}>
+                        <View style={styles.iconWrapSmall}>
+                            <Text style={styles.iconSmall}>02</Text>
+                        </View>
+                        <Text style={styles.cornerText}>Preference</Text>
+                    </View>
+
+                    <Text style={styles.secondaryTitle}>Employee Choice</Text>
+                    <Text style={styles.secondaryDescription}>
+                        Pick any available employee or choose someone specific.
+                    </Text>
+
+                    <View style={styles.preferenceRow}>
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.preferenceChip,
+                                employeePreference === EMPLOYEE_OPTIONS.ANY &&
+                                    styles.preferenceChipActive,
+                                pressed && styles.cardPressed,
+                            ]}
+                            onPress={() =>
+                                setEmployeePreference(EMPLOYEE_OPTIONS.ANY)
+                            }
+                        >
+                            <Text
+                                style={[
+                                    styles.preferenceChipText,
+                                    employeePreference ===
+                                        EMPLOYEE_OPTIONS.ANY &&
+                                        styles.preferenceChipTextActive,
+                                ]}
+                            >
+                                Any employee
+                            </Text>
+                        </Pressable>
+
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.preferenceChip,
+                                employeePreference ===
+                                    EMPLOYEE_OPTIONS.SPECIFIC &&
+                                    styles.preferenceChipActive,
+                                pressed && styles.cardPressed,
+                            ]}
+                            onPress={() =>
+                                setEmployeePreference(EMPLOYEE_OPTIONS.SPECIFIC)
+                            }
+                        >
+                            <Text
+                                style={[
+                                    styles.preferenceChipText,
+                                    employeePreference ===
+                                        EMPLOYEE_OPTIONS.SPECIFIC &&
+                                        styles.preferenceChipTextActive,
+                                ]}
+                            >
+                                Specific employee
+                            </Text>
+                        </Pressable>
+                    </View>
+
+                    {employeePreference === EMPLOYEE_OPTIONS.SPECIFIC && (
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.selectButton,
+                                styles.employeeSelectButton,
+                                pressed && styles.cardPressed,
+                            ]}
+                            onPress={() => setShowEmployeeModal(true)}
+                        >
+                            <Text style={styles.selectValue}>
+                                {summaryEmployee === "Not selected"
+                                    ? "Choose an employee"
+                                    : summaryEmployee}
+                            </Text>
+                            <Text style={styles.selectChevron}>⌄</Text>
+                        </Pressable>
                     )}
                 </View>
 
-                <Pressable
-                    style={({ pressed }) => [
-                        styles.innerCreateButton,
-                        !isFormComplete && styles.createButtonDisabled,
-                        pressed && isFormComplete && styles.cardPressed,
-                    ]}
-                    onPress={handleCreateAppointment}
-                >
-                    <Text style={styles.innerCreateButtonText}>
-                        Create Appointment
-                    </Text>
-                </Pressable>
-            </View>
-        </Animated.View>
-
-        <Modal
-            visible={showCalendar}
-            transparent={true}
-            animationType="fade"
-            onRequestClose={() => setShowCalendar(false)}
-        >
-            <View style={styles.modalOverlay}>
-                <Pressable
-                    style={styles.modalBackdrop}
-                    onPress={() => setShowCalendar(false)}
+                <InfoSelectCard
+                    step="03"
+                    title="Choose Date"
+                    label="Select the day for your appointment."
+                    value={formatDisplayDate(selectedDate)}
+                    meta="Calendar"
+                    onPress={() => setShowCalendar(true)}
+                    styles={styles}
                 />
 
-                <View style={styles.calendarCard}>
-                    <Text style={styles.calendarTitle}>Choose a Date</Text>
-
-                    <Calendar
-                        onDayPress={(day) => {
-                            setSelectedDate(day.dateString);
-                            handleDayChange(
-                                new Date(day.dateString + "T12:00:00").getDay()
-                            );
-                            setShowCalendar(false);
-                        }}
-                        markedDates={
-                            selectedDate
-                                ? {
-                                      [selectedDate]: {
-                                          selected: true,
-                                          selectedColor: colorScheme.textAccent,
-                                      },
-                                  }
-                                : {}
+                <InfoSelectCard
+                    step="04"
+                    title="Choose Time"
+                    label="Pick from the available times for that day."
+                    value={
+                        selectedTime ||
+                        (availableTimes.length === 0
+                            ? "No times available"
+                            : "Choose a time")
+                    }
+                    meta="Time"
+                    onPress={() => {
+                        if (availableTimes.length > 0) {
+                            setShowTimeModal(true);
                         }
-                        minDate={new Date().toISOString().split("T")[0]}
-                        theme={{
-                            backgroundColor: colorScheme.whiteWarmCard,
-                            calendarBackground: colorScheme.whiteWarmCard,
-                            textSectionTitleColor: colorScheme.textAccentSoft,
-                            selectedDayBackgroundColor: colorScheme.textAccent,
-                            selectedDayTextColor: colorScheme.whiteSoft,
-                            todayTextColor: colorScheme.textAccent,
-                            dayTextColor: colorScheme.textDefault,
-                            textDisabledColor: colorScheme.textDisabled,
-                            monthTextColor: colorScheme.textDefault,
-                            arrowColor: colorScheme.textAccent,
-                        }}
-                    />
+                    }}
+                    disabled={availableTimes.length === 0}
+                    styles={styles}
+                />
+
+                <View style={styles.primaryActionCard}>
+                    <View style={styles.cardGlow} />
+
+                    <View style={styles.cardHeaderRow}>
+                        <View style={styles.iconWrapLarge}>
+                            <Text style={styles.iconLarge}>✦</Text>
+                        </View>
+
+                        <View style={styles.pillDark}>
+                            <Text style={styles.pillDarkText}>
+                                Booking Summary
+                            </Text>
+                        </View>
+                    </View>
+
+                    <Text style={styles.primaryTitle}>Review Details</Text>
+                    <Text style={styles.primaryDescription}>
+                        Double-check your booking information before creating
+                        the appointment.
+                    </Text>
+
+                    <View style={styles.summaryGrid}>
+                        <View style={styles.summaryRow}>
+                            <Text style={styles.summaryKey}>Task</Text>
+                            <Text style={styles.summaryValue}>
+                                {selectedTask?.name || "Not selected"}
+                            </Text>
+                        </View>
+
+                        <View style={styles.summaryRow}>
+                            <Text style={styles.summaryKey}>Employee</Text>
+                            <Text style={styles.summaryValue}>
+                                {summaryEmployee}
+                            </Text>
+                        </View>
+
+                        <View style={styles.summaryRow}>
+                            <Text style={styles.summaryKey}>Date</Text>
+                            <Text style={styles.summaryValue}>
+                                {selectedDate
+                                    ? formatDisplayDate(selectedDate)
+                                    : "Not selected"}
+                            </Text>
+                        </View>
+
+                        <View style={styles.summaryRow}>
+                            <Text style={styles.summaryKey}>Time</Text>
+                            <Text style={styles.summaryValue}>
+                                {selectedTime || "Not selected"}
+                            </Text>
+                        </View>
+
+                        {!!selectedTask && (
+                            <View style={styles.summaryRow}>
+                                <Text style={styles.summaryKey}>Duration</Text>
+                                <Text style={styles.summaryValue}>
+                                    {appointmentLength} min
+                                </Text>
+                            </View>
+                        )}
+                    </View>
+
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.innerCreateButton,
+                            !isFormComplete && styles.createButtonDisabled,
+                            pressed && isFormComplete && styles.cardPressed,
+                        ]}
+                        onPress={handleCreateAppointment}
+                    >
+                        <Text style={styles.innerCreateButtonText}>
+                            Create Appointment
+                        </Text>
+                    </Pressable>
                 </View>
-            </View>
-        </Modal>
+            </Animated.View>
 
-        <OptionModal
-            visible={showTaskModal}
-            title="Choose a Task"
-            options={taskOptions}
-            selectedValue={selectedTaskId}
-            onSelect={setSelectedTaskId}
-            onClose={() => setShowTaskModal(false)}
-            styles={styles}
-        />
+            <Modal
+                visible={showCalendar}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={() => setShowCalendar(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <Pressable
+                        style={styles.modalBackdrop}
+                        onPress={() => setShowCalendar(false)}
+                    />
 
-        <OptionModal
-            visible={showEmployeeModal}
-            title="Choose an Employee"
-            options={employeeOptions}
-            selectedValue={selectedEmployeeId}
-            onSelect={setSelectedEmployeeId}
-            onClose={() => setShowEmployeeModal(false)}
-            styles={styles}
-        />
+                    <View style={styles.calendarCard}>
+                        <Text style={styles.calendarTitle}>Choose a Date</Text>
 
-        <OptionModal
-            visible={showTimeModal}
-            title="Choose a Time"
-            options={timeOptions}
-            selectedValue={selectedTime}
-            onSelect={setSelectedTime}
-            onClose={() => setShowTimeModal(false)}
-            emptyText="No times available for this date"
-            styles={styles}
-        />
-    </ScrollView>);
+                        <Calendar
+                            onDayPress={(day) => {
+                                setSelectedDate(day.dateString);
+                                handleDayChange(
+                                    new Date(
+                                        day.dateString + "T12:00:00",
+                                    ).getDay(),
+                                );
+                                setShowCalendar(false);
+                            }}
+                            markedDates={
+                                selectedDate
+                                    ? {
+                                          [selectedDate]: {
+                                              selected: true,
+                                              selectedColor:
+                                                  colorScheme.textAccent,
+                                          },
+                                      }
+                                    : {}
+                            }
+                            minDate={new Date().toISOString().split("T")[0]}
+                            theme={{
+                                backgroundColor: colorScheme.whiteWarmCard,
+                                calendarBackground: colorScheme.whiteWarmCard,
+                                textSectionTitleColor:
+                                    colorScheme.textAccentSoft,
+                                selectedDayBackgroundColor:
+                                    colorScheme.textAccent,
+                                selectedDayTextColor: colorScheme.whiteSoft,
+                                todayTextColor: colorScheme.textAccent,
+                                dayTextColor: colorScheme.textDefault,
+                                textDisabledColor: colorScheme.textDisabled,
+                                monthTextColor: colorScheme.textDefault,
+                                arrowColor: colorScheme.textAccent,
+                            }}
+                        />
+                    </View>
+                </View>
+            </Modal>
+
+            <OptionModal
+                visible={showTaskModal}
+                title="Choose a Task"
+                options={taskOptions}
+                selectedValue={selectedTaskId}
+                onSelect={setSelectedTaskId}
+                onClose={() => setShowTaskModal(false)}
+                styles={styles}
+            />
+
+            <OptionModal
+                visible={showEmployeeModal}
+                title="Choose an Employee"
+                options={employeeOptions}
+                selectedValue={selectedEmployeeId}
+                onSelect={setSelectedEmployeeId}
+                onClose={() => setShowEmployeeModal(false)}
+                styles={styles}
+            />
+
+            <OptionModal
+                visible={showTimeModal}
+                title="Choose a Time"
+                options={timeOptions}
+                selectedValue={selectedTime}
+                onSelect={setSelectedTime}
+                onClose={() => setShowTimeModal(false)}
+                emptyText="No times available for this date"
+                styles={styles}
+            />
+        </ScrollView>
+    );
 }
 
-
 export function makeStyles(colorScheme) {
-
     return StyleSheet.create({
-
         backButton: {
             flexDirection: "row",
             alignItems: "center",
