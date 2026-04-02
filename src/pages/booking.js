@@ -60,11 +60,17 @@ function getAvailableTimesForDay(day, availabilities, appointmentLength) {
         const endSeconds = slot.end_time % (24 * 60 * 60);
 
         let current = startSeconds;
-        while (current + appointmentLength * 60 <= endSeconds) {
+
+        const step = 30 * 60; // 30-minute increments
+        const appointmentSeconds = appointmentLength * 60;
+
+        while (current + appointmentSeconds <= endSeconds) {
             const hours = Math.floor(current / 3600);
             const minutes = Math.floor((current % 3600) / 60);
+
             slots.push(formatTime(hours * 60 + minutes));
-            current += appointmentLength * 60;
+
+            current += step;
         }
     }
 
