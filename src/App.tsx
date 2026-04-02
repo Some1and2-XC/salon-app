@@ -101,16 +101,7 @@ export default function App() {
                 <Stack.Navigator initialRouteName={ initialRoute }
                     screenOptions={{ headerShown: false }}
                 >
-
-                <NavigationContainer>
-                    <Stack.Navigator
-                        initialRouteName={initialRoute}
-                        screenOptions={{ headerShown: false }}
-                    >
-                        <Stack.Screen
-                            name={NAV_EXAMPLE_HOME}
-                            component={ExampleHome}
-                        />
+                    <Stack.Screen name={ NAV_EXAMPLE_HOME } component={ExampleHome} />
                     <Stack.Screen name={ NAV_BOOKING } component={ BookingScreen } />
                     <Stack.Screen name={ NAV_CHECKIN } component={ CheckinScreen } />
                     <Stack.Screen name={ NAV_CHECKINCONFIRM } component={ CheckinConfirmScreen } />
@@ -125,9 +116,9 @@ export default function App() {
                     <Stack.Screen name={ NAV_ADMIN_HOMEPAGE } component={AdminHomepageScreen} />
                     <Stack.Screen name={ NAV_SET_THEME } component={SetThemeScreen} />
 
-                    <Toast />
-                </NavigationContainer>
-            </SafeAreaView>
-        </SafeAreaProvider>
-    );
+                </Stack.Navigator>
+                <Toast />
+            </NavigationContainer>
+        </SafeAreaView>
+    </SafeAreaProvider>);
 }
