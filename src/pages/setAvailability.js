@@ -85,7 +85,7 @@ export function SetAvailabilityScreen() {
     }, []);
 
     useEffect(() => {
-        if (!selectedEmployee || !selectedDate) return;
+        if (!selectedEmployee) return;
         apiFetch("/availability")
             .then((res) => res.json())
             .then((data) => {
@@ -98,7 +98,7 @@ export function SetAvailabilityScreen() {
         setMode(null);
         setStartTime("");
         setEndTime("");
-    }, [selectedEmployee, selectedDate]);
+    }, [selectedEmployee]);
 
     async function handleRemoveAvailability(id) {
         try {
@@ -160,7 +160,6 @@ export function SetAvailabilityScreen() {
 
     return (
         <View style={sty.container}>
-            {/* Step 1: Select Employee */}
             <Text>Employee</Text>
             <Picker
                 selectedValue={selectedEmployee}
@@ -181,9 +180,29 @@ export function SetAvailabilityScreen() {
                 ))}
             </Picker>
 
-            {/* Step 2: Select Date */}
             {selectedEmployee !== "" && (
                 <>
+                    <Text>
+                        Current availability for{" "}
+                        {selectedEmployeeName
+                            ? `${selectedEmployeeName.first_name} ${selectedEmployeeName.last_name}`
+                            : selectedEmployee}
+                        :
+                    </Text>
+
+                    {currentAvailability.length === 0 ? (
+                        <Text>No availability set.</Text>
+                    ) : (
+                        currentAvailability.map((slot) => (
+                            <View key={slot.id}>
+                                <Text>
+                                    {fromSecondsFromWeekStart(slot.start_time)}{" "}
+                                    — {fromSecondsFromWeekStart(slot.end_time)}
+                                </Text>
+                            </View>
+                        ))
+                    )}
+
                     <Text>Date</Text>
                     <TouchableOpacity onPress={() => setShowCalendar(true)}>
                         <Text>{selectedDate || "Tap to select a date"}</Text>
@@ -221,30 +240,8 @@ export function SetAvailabilityScreen() {
                 </>
             )}
 
-            {/* Step 3: Show availability + add/remove options */}
             {selectedEmployee !== "" && selectedDate !== "" && (
                 <>
-                    <Text>
-                        Current availability for{" "}
-                        {selectedEmployeeName
-                            ? `${selectedEmployeeName.first_name} ${selectedEmployeeName.last_name}`
-                            : selectedEmployee}
-                        :
-                    </Text>
-
-                    {currentAvailability.length === 0 ? (
-                        <Text>No availability set.</Text>
-                    ) : (
-                        currentAvailability.map((slot) => (
-                            <View key={slot.id}>
-                                <Text>
-                                    {fromSecondsFromWeekStart(slot.start_time)}{" "}
-                                    — {fromSecondsFromWeekStart(slot.end_time)}
-                                </Text>
-                            </View>
-                        ))
-                    )}
-
                     <Button
                         title="Add Availability"
                         onPress={() => setMode("add")}
@@ -256,7 +253,6 @@ export function SetAvailabilityScreen() {
                 </>
             )}
 
-            {/* Step 4a: Add mode - pick times and submit */}
             {mode === "add" && (
                 <>
                     <Text>Start Time</Text>
@@ -286,7 +282,6 @@ export function SetAvailabilityScreen() {
                 </>
             )}
 
-            {/* Step 4b: Remove mode - show slots with remove buttons */}
             {mode === "remove" && (
                 <>
                     {currentAvailability.length === 0 ? (
