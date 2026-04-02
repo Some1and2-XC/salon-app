@@ -150,19 +150,19 @@ export function LoginScreen({ navigation }) {
                         <View style={commonUi.auth.dividerLine} />
                     </View>
 
-                    <View style={commonUi.auth.signupInlineWrap}>
-                        <Text style={commonUi.auth.signupText}>
+                    <View style={{ alignItems: "center" }}>
+                        <Text style={commonUi.auth.inlineCtaPromptText}>
                             Don&apos;t have an account?
                         </Text>
 
                         <Pressable
                             style={({ pressed }) => [
-                                commonUi.auth.signupButton,
+                                commonUi.auth.inlineCtaButton,
                                 pressed && commonUi.auth.cardPressed,
                             ]}
                             onPress={() => navigation.navigate(NAV_SIGNUP)}
                         >
-                            <Text style={commonUi.auth.signupButtonText}>
+                            <Text style={commonUi.auth.inlineCtaButtonText}>
                                 Create Account
                             </Text>
                         </Pressable>
