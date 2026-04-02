@@ -17,7 +17,8 @@ import {
 import { Calendar } from "react-native-calendars";
 import { apiFetch } from "../utils";
 import { NAV_HOME } from "../consts";
-import { commonUi } from "../styles";
+import { useTheme } from "../styles";
+import { colorScheme } from "../colorScheme";
 
 const EMPLOYEE_OPTIONS = {
     ANY: "ANY",
@@ -113,7 +114,7 @@ function formatDisplayDate(dateString) {
     });
 }
 
-function OptionModal({
+export function OptionModal({
     visible,
     title,
     options,
@@ -121,6 +122,7 @@ function OptionModal({
     onSelect,
     onClose,
     emptyText = "No options available",
+    styles,
 }) {
     return (
         <Modal
@@ -211,6 +213,7 @@ function InfoSelectCard({
     meta,
     onPress,
     disabled = false,
+    styles,
 }) {
     return (
         <View style={styles.secondaryActionCardFull}>
@@ -248,6 +251,11 @@ function InfoSelectCard({
 }
 
 export function BookingScreen({ navigation }) {
+
+    const commonUi = useTheme((state) => state.getCommonUi)();
+    const colorScheme = useTheme((state) => state.getScheme)();
+    const styles = useMemo(() => makeStyles(colorScheme), [colorScheme]);
+
     const { width, height } = useWindowDimensions();
 
     const fadeIn = useRef(new Animated.Value(0)).current;
@@ -473,885 +481,841 @@ export function BookingScreen({ navigation }) {
 
     if (isLoading) {
         return (
-            <SafeAreaView
-                style={[styles.safeArea, Platform.OS === "web" && styles.safeAreaWeb]}
-            >
+            <>
                 <StatusBar barStyle="dark-content" />
                 <View style={styles.loadingWrap}>
                     <View style={styles.loadingCard}>
-                        <ActivityIndicator size="large" color="#9b664d" />
+                        <ActivityIndicator size="large" color={colorScheme.textAccent} />
                         <Text style={styles.loadingTitle}>Preparing Booking</Text>
                         <Text style={styles.loadingText}>
                             Loading services, employees, and available times...
                         </Text>
                     </View>
                 </View>
-            </SafeAreaView>
+            </>
         );
     }
 
-    return (
-        <SafeAreaView
-            style={[styles.safeArea, Platform.OS === "web" && styles.safeAreaWeb]}
-        >
-            <StatusBar barStyle="dark-content" />
-
-            <ScrollView
-                style={[
-                    styles.scrollView,
-                    Platform.OS === "web" && styles.scrollViewWeb,
+    return (<ScrollView style={commonUi.screen.pageMargins}>
+        <Animated.View style={{
+                    minHeight: height,
+                    opacity: fadeIn,
+                    transform: [{ translateY: slideUp }],
+        }}>
+            <Pressable
+                style={({ pressed }) => [
+                    styles.backButton,
+                    pressed && styles.cardPressed,
                 ]}
-                contentContainerStyle={[
-                    styles.scrollContent,
-                    { minHeight: height },
-                ]}
-                showsVerticalScrollIndicator={false}
-                bounces={true}
-                nestedScrollEnabled={true}
-                keyboardShouldPersistTaps="handled"
+                onPress={() => navigation.navigate(NAV_HOME)}
             >
+                <Text style={styles.backButtonArrow}>←</Text>
+                <Text style={styles.backButtonText}>Back to Home</Text>
+            </Pressable>
+
+            <View style={[commonUi.hero.heroCard, { minHeight: heroMinHeight }]}>
                 <Animated.View
                     style={[
-                        styles.pageWrap,
+                        commonUi.hero.blobOne,
+                        { transform: [{ translateY: blob1Y }] },
+                    ]}
+                />
+                <Animated.View
+                    style={[
+                        commonUi.hero.blobTwo,
+                        { transform: [{ translateY: blob2Y }] },
+                    ]}
+                />
+                <Animated.View
+                    style={[
+                        commonUi.hero.blobThree,
                         {
-                            minHeight: height,
-                            opacity: fadeIn,
-                            transform: [{ translateY: slideUp }],
+                            left: width * 0.56,
+                            transform: [{ translateY: blob1Y }],
                         },
                     ]}
-                >
-                    <View style={styles.screenInner}>
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.backButton,
-                                pressed && styles.cardPressed,
-                            ]}
-                            onPress={() => navigation.navigate(NAV_HOME)}
-                        >
-                            <Text style={styles.backButtonArrow}>←</Text>
-                            <Text style={styles.backButtonText}>Back to Home</Text>
-                        </Pressable>
+                />
 
-                        <View style={[styles.heroCard, { minHeight: heroMinHeight }]}>
-                            <Animated.View
-                                style={[
-                                    styles.blobOne,
-                                    { transform: [{ translateY: blob1Y }] },
-                                ]}
-                            />
-                            <Animated.View
-                                style={[
-                                    styles.blobTwo,
-                                    { transform: [{ translateY: blob2Y }] },
-                                ]}
-                            />
-                            <Animated.View
-                                style={[
-                                    styles.blobThree,
-                                    {
-                                        left: width * 0.56,
-                                        transform: [{ translateY: blob1Y }],
-                                    },
-                                ]}
-                            />
+                <View style={commonUi.hero.heroTopRow}>
+                    <Text style={commonUi.hero.kicker}>BOOK APPOINTMENT</Text>
+                </View>
 
-                            <View style={styles.heroTopRow}>
-                                <Text style={styles.kicker}>BOOK APPOINTMENT</Text>
-                            </View>
+                <View style={commonUi.hero.heroTextBlock}>
+                    <Text style={commonUi.hero.heroTitle}>Create Your</Text>
+                    <Text style={commonUi.hero.heroTitleAccent}>Booking</Text>
+                    <Text style={commonUi.hero.heroText}>
+                        Choose a service, pick your stylist, and reserve a
+                        time that works best for you.
+                    </Text>
+                </View>
 
-                            <View style={styles.heroTextBlock}>
-                                <Text style={styles.heroTitle}>Create Your</Text>
-                                <Text style={styles.heroTitleAccent}>Booking</Text>
-                                <Text style={styles.heroText}>
-                                    Choose a service, pick your stylist, and reserve a
-                                    time that works best for you.
-                                </Text>
-                            </View>
-
-                            <View style={styles.metaRow}>
-                                <View style={styles.metaChip}>
-                                    <Text style={styles.metaChipText}>
-                                        {selectedDate
-                                            ? formatDisplayDate(selectedDate)
-                                            : "Select your details below"}
-                                    </Text>
-                                </View>
-                            </View>
-
-                            <View style={styles.heroFadeWrap}>
-                                <View style={styles.heroFadeMain} />
-                                <View style={styles.heroFadeSmall} />
-                            </View>
-                        </View>
-
-                        <InfoSelectCard
-                            step="01"
-                            title="Choose Service"
-                            label="Select the service you want to book."
-                            value={selectedTask?.name || "Choose a task"}
-                            meta={
-                                selectedTask ? `${appointmentLength} min` : "Service"
-                            }
-                            onPress={() => setShowTaskModal(true)}
-                        />
-
-                        <View style={styles.secondaryActionCardFull}>
-                            <View style={styles.smallTopRow}>
-                                <View style={styles.iconWrapSmall}>
-                                    <Text style={styles.iconSmall}>02</Text>
-                                </View>
-                                <Text style={styles.cornerText}>Preference</Text>
-                            </View>
-
-                            <Text style={styles.secondaryTitle}>Employee Choice</Text>
-                            <Text style={styles.secondaryDescription}>
-                                Pick any available employee or choose someone specific.
-                            </Text>
-
-                            <View style={styles.preferenceRow}>
-                                <Pressable
-                                    style={({ pressed }) => [
-                                        styles.preferenceChip,
-                                        employeePreference === EMPLOYEE_OPTIONS.ANY &&
-                                            styles.preferenceChipActive,
-                                        pressed && styles.cardPressed,
-                                    ]}
-                                    onPress={() =>
-                                        setEmployeePreference(EMPLOYEE_OPTIONS.ANY)
-                                    }
-                                >
-                                    <Text
-                                        style={[
-                                            styles.preferenceChipText,
-                                            employeePreference === EMPLOYEE_OPTIONS.ANY &&
-                                                styles.preferenceChipTextActive,
-                                        ]}
-                                    >
-                                        Any employee
-                                    </Text>
-                                </Pressable>
-
-                                <Pressable
-                                    style={({ pressed }) => [
-                                        styles.preferenceChip,
-                                        employeePreference ===
-                                            EMPLOYEE_OPTIONS.SPECIFIC &&
-                                            styles.preferenceChipActive,
-                                        pressed && styles.cardPressed,
-                                    ]}
-                                    onPress={() =>
-                                        setEmployeePreference(
-                                            EMPLOYEE_OPTIONS.SPECIFIC
-                                        )
-                                    }
-                                >
-                                    <Text
-                                        style={[
-                                            styles.preferenceChipText,
-                                            employeePreference ===
-                                                EMPLOYEE_OPTIONS.SPECIFIC &&
-                                                styles.preferenceChipTextActive,
-                                        ]}
-                                    >
-                                        Specific employee
-                                    </Text>
-                                </Pressable>
-                            </View>
-
-                            {employeePreference === EMPLOYEE_OPTIONS.SPECIFIC && (
-                                <Pressable
-                                    style={({ pressed }) => [
-                                        styles.selectButton,
-                                        styles.employeeSelectButton,
-                                        pressed && styles.cardPressed,
-                                    ]}
-                                    onPress={() => setShowEmployeeModal(true)}
-                                >
-                                    <Text style={styles.selectValue}>
-                                        {summaryEmployee === "Not selected"
-                                            ? "Choose an employee"
-                                            : summaryEmployee}
-                                    </Text>
-                                    <Text style={styles.selectChevron}>⌄</Text>
-                                </Pressable>
-                            )}
-                        </View>
-
-                        <InfoSelectCard
-                            step="03"
-                            title="Choose Date"
-                            label="Select the day for your appointment."
-                            value={formatDisplayDate(selectedDate)}
-                            meta="Calendar"
-                            onPress={() => setShowCalendar(true)}
-                        />
-
-                        <InfoSelectCard
-                            step="04"
-                            title="Choose Time"
-                            label="Pick from the available times for that day."
-                            value={
-                                selectedTime ||
-                                (availableTimes.length === 0
-                                    ? "No times available"
-                                    : "Choose a time")
-                            }
-                            meta="Time"
-                            onPress={() => {
-                                if (availableTimes.length > 0) {
-                                    setShowTimeModal(true);
-                                }
-                            }}
-                            disabled={availableTimes.length === 0}
-                        />
-
-                        <View style={styles.primaryActionCard}>
-                            <View style={styles.cardGlow} />
-
-                            <View style={styles.cardHeaderRow}>
-                                <View style={styles.iconWrapLarge}>
-                                    <Text style={styles.iconLarge}>✦</Text>
-                                </View>
-
-                                <View style={styles.pillDark}>
-                                    <Text style={styles.pillDarkText}>
-                                        Booking Summary
-                                    </Text>
-                                </View>
-                            </View>
-
-                            <Text style={styles.primaryTitle}>Review Details</Text>
-                            <Text style={styles.primaryDescription}>
-                                Double-check your booking information before creating
-                                the appointment.
-                            </Text>
-
-                            <View style={styles.summaryGrid}>
-                                <View style={styles.summaryRow}>
-                                    <Text style={styles.summaryKey}>Task</Text>
-                                    <Text style={styles.summaryValue}>
-                                        {selectedTask?.name || "Not selected"}
-                                    </Text>
-                                </View>
-
-                                <View style={styles.summaryRow}>
-                                    <Text style={styles.summaryKey}>Employee</Text>
-                                    <Text style={styles.summaryValue}>
-                                        {summaryEmployee}
-                                    </Text>
-                                </View>
-
-                                <View style={styles.summaryRow}>
-                                    <Text style={styles.summaryKey}>Date</Text>
-                                    <Text style={styles.summaryValue}>
-                                        {selectedDate
-                                            ? formatDisplayDate(selectedDate)
-                                            : "Not selected"}
-                                    </Text>
-                                </View>
-
-                                <View style={styles.summaryRow}>
-                                    <Text style={styles.summaryKey}>Time</Text>
-                                    <Text style={styles.summaryValue}>
-                                        {selectedTime || "Not selected"}
-                                    </Text>
-                                </View>
-
-                                {!!selectedTask && (
-                                    <View style={styles.summaryRow}>
-                                        <Text style={styles.summaryKey}>Duration</Text>
-                                        <Text style={styles.summaryValue}>
-                                            {appointmentLength} min
-                                        </Text>
-                                    </View>
-                                )}
-                            </View>
-
-                            <Pressable
-                                style={({ pressed }) => [
-                                    styles.innerCreateButton,
-                                    !isFormComplete && styles.createButtonDisabled,
-                                    pressed && isFormComplete && styles.cardPressed,
-                                ]}
-                                onPress={handleCreateAppointment}
-                            >
-                                <Text style={styles.innerCreateButtonText}>
-                                    Create Appointment
-                                </Text>
-                            </Pressable>
-                        </View>
-                    </View>
-                </Animated.View>
-            </ScrollView>
-
-            <Modal
-                visible={showCalendar}
-                transparent={true}
-                animationType="fade"
-                onRequestClose={() => setShowCalendar(false)}
-            >
-                <View style={styles.modalOverlay}>
-                    <Pressable
-                        style={styles.modalBackdrop}
-                        onPress={() => setShowCalendar(false)}
-                    />
-
-                    <View style={styles.calendarCard}>
-                        <Text style={styles.calendarTitle}>Choose a Date</Text>
-
-                        <Calendar
-                            onDayPress={(day) => {
-                                setSelectedDate(day.dateString);
-                                handleDayChange(
-                                    new Date(day.dateString + "T12:00:00").getDay()
-                                );
-                                setShowCalendar(false);
-                            }}
-                            markedDates={
-                                selectedDate
-                                    ? {
-                                          [selectedDate]: {
-                                              selected: true,
-                                              selectedColor: "#9b664d",
-                                          },
-                                      }
-                                    : {}
-                            }
-                            minDate={new Date().toISOString().split("T")[0]}
-                            theme={{
-                                backgroundColor: "#fff8f2",
-                                calendarBackground: "#fff8f2",
-                                textSectionTitleColor: "#7f5d4d",
-                                selectedDayBackgroundColor: "#9b664d",
-                                selectedDayTextColor: "#fffaf6",
-                                todayTextColor: "#9b664d",
-                                dayTextColor: "#2b1b15",
-                                textDisabledColor: "#ccb8ab",
-                                monthTextColor: "#2b1b15",
-                                arrowColor: "#9b664d",
-                            }}
-                        />
+                <View style={commonUi.hero.metaRow}>
+                    <View style={commonUi.hero.metaChip}>
+                        <Text style={commonUi.hero.metaChipText}>
+                            {selectedDate
+                                ? formatDisplayDate(selectedDate)
+                                : "Select your details below"}
+                        </Text>
                     </View>
                 </View>
-            </Modal>
 
-            <OptionModal
-                visible={showTaskModal}
-                title="Choose a Task"
-                options={taskOptions}
-                selectedValue={selectedTaskId}
-                onSelect={setSelectedTaskId}
-                onClose={() => setShowTaskModal(false)}
+                <View style={commonUi.hero.heroFadeWrap}>
+                    <View style={commonUi.hero.heroFadeMain} />
+                    <View style={commonUi.hero.heroFadeSmall} />
+                </View>
+            </View>
+
+            <InfoSelectCard
+                step="01"
+                title="Choose Service"
+                label="Select the service you want to book."
+                value={selectedTask?.name || "Choose a task"}
+                meta={
+                    selectedTask ? `${appointmentLength} min` : "Service"
+                }
+                onPress={() => setShowTaskModal(true)}
+                styles={styles}
             />
 
-            <OptionModal
-                visible={showEmployeeModal}
-                title="Choose an Employee"
-                options={employeeOptions}
-                selectedValue={selectedEmployeeId}
-                onSelect={setSelectedEmployeeId}
-                onClose={() => setShowEmployeeModal(false)}
+            <View style={styles.secondaryActionCardFull}>
+                <View style={styles.smallTopRow}>
+                    <View style={styles.iconWrapSmall}>
+                        <Text style={styles.iconSmall}>02</Text>
+                    </View>
+                    <Text style={styles.cornerText}>Preference</Text>
+                </View>
+
+                <Text style={styles.secondaryTitle}>Employee Choice</Text>
+                <Text style={styles.secondaryDescription}>
+                    Pick any available employee or choose someone specific.
+                </Text>
+
+                <View style={styles.preferenceRow}>
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.preferenceChip,
+                            employeePreference === EMPLOYEE_OPTIONS.ANY &&
+                                styles.preferenceChipActive,
+                            pressed && styles.cardPressed,
+                        ]}
+                        onPress={() =>
+                            setEmployeePreference(EMPLOYEE_OPTIONS.ANY)
+                        }
+                    >
+                        <Text
+                            style={[
+                                styles.preferenceChipText,
+                                employeePreference === EMPLOYEE_OPTIONS.ANY &&
+                                    styles.preferenceChipTextActive,
+                            ]}
+                        >
+                            Any employee
+                        </Text>
+                    </Pressable>
+
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.preferenceChip,
+                            employeePreference ===
+                                EMPLOYEE_OPTIONS.SPECIFIC &&
+                                styles.preferenceChipActive,
+                            pressed && styles.cardPressed,
+                        ]}
+                        onPress={() =>
+                            setEmployeePreference(
+                                EMPLOYEE_OPTIONS.SPECIFIC
+                            )
+                        }
+                    >
+                        <Text
+                            style={[
+                                styles.preferenceChipText,
+                                employeePreference ===
+                                    EMPLOYEE_OPTIONS.SPECIFIC &&
+                                    styles.preferenceChipTextActive,
+                            ]}
+                        >
+                            Specific employee
+                        </Text>
+                    </Pressable>
+                </View>
+
+                {employeePreference === EMPLOYEE_OPTIONS.SPECIFIC && (
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.selectButton,
+                            styles.employeeSelectButton,
+                            pressed && styles.cardPressed,
+                        ]}
+                        onPress={() => setShowEmployeeModal(true)}
+                    >
+                        <Text style={styles.selectValue}>
+                            {summaryEmployee === "Not selected"
+                                ? "Choose an employee"
+                                : summaryEmployee}
+                        </Text>
+                        <Text style={styles.selectChevron}>⌄</Text>
+                    </Pressable>
+                )}
+            </View>
+
+            <InfoSelectCard
+                step="03"
+                title="Choose Date"
+                label="Select the day for your appointment."
+                value={formatDisplayDate(selectedDate)}
+                meta="Calendar"
+                onPress={() => setShowCalendar(true)}
+                styles={styles}
             />
 
-            <OptionModal
-                visible={showTimeModal}
-                title="Choose a Time"
-                options={timeOptions}
-                selectedValue={selectedTime}
-                onSelect={setSelectedTime}
-                onClose={() => setShowTimeModal(false)}
-                emptyText="No times available for this date"
+            <InfoSelectCard
+                step="04"
+                title="Choose Time"
+                label="Pick from the available times for that day."
+                value={
+                    selectedTime ||
+                    (availableTimes.length === 0
+                        ? "No times available"
+                        : "Choose a time")
+                }
+                meta="Time"
+                onPress={() => {
+                    if (availableTimes.length > 0) {
+                        setShowTimeModal(true);
+                    }
+                }}
+                disabled={availableTimes.length === 0}
+                styles={styles}
             />
-        </SafeAreaView>
-    );
+
+            <View style={styles.primaryActionCard}>
+                <View style={styles.cardGlow} />
+
+                <View style={styles.cardHeaderRow}>
+                    <View style={styles.iconWrapLarge}>
+                        <Text style={styles.iconLarge}>✦</Text>
+                    </View>
+
+                    <View style={styles.pillDark}>
+                        <Text style={styles.pillDarkText}>
+                            Booking Summary
+                        </Text>
+                    </View>
+                </View>
+
+                <Text style={styles.primaryTitle}>Review Details</Text>
+                <Text style={styles.primaryDescription}>
+                    Double-check your booking information before creating
+                    the appointment.
+                </Text>
+
+                <View style={styles.summaryGrid}>
+                    <View style={styles.summaryRow}>
+                        <Text style={styles.summaryKey}>Task</Text>
+                        <Text style={styles.summaryValue}>
+                            {selectedTask?.name || "Not selected"}
+                        </Text>
+                    </View>
+
+                    <View style={styles.summaryRow}>
+                        <Text style={styles.summaryKey}>Employee</Text>
+                        <Text style={styles.summaryValue}>
+                            {summaryEmployee}
+                        </Text>
+                    </View>
+
+                    <View style={styles.summaryRow}>
+                        <Text style={styles.summaryKey}>Date</Text>
+                        <Text style={styles.summaryValue}>
+                            {selectedDate
+                                ? formatDisplayDate(selectedDate)
+                                : "Not selected"}
+                        </Text>
+                    </View>
+
+                    <View style={styles.summaryRow}>
+                        <Text style={styles.summaryKey}>Time</Text>
+                        <Text style={styles.summaryValue}>
+                            {selectedTime || "Not selected"}
+                        </Text>
+                    </View>
+
+                    {!!selectedTask && (
+                        <View style={styles.summaryRow}>
+                            <Text style={styles.summaryKey}>Duration</Text>
+                            <Text style={styles.summaryValue}>
+                                {appointmentLength} min
+                            </Text>
+                        </View>
+                    )}
+                </View>
+
+                <Pressable
+                    style={({ pressed }) => [
+                        styles.innerCreateButton,
+                        !isFormComplete && styles.createButtonDisabled,
+                        pressed && isFormComplete && styles.cardPressed,
+                    ]}
+                    onPress={handleCreateAppointment}
+                >
+                    <Text style={styles.innerCreateButtonText}>
+                        Create Appointment
+                    </Text>
+                </Pressable>
+            </View>
+        </Animated.View>
+
+        <Modal
+            visible={showCalendar}
+            transparent={true}
+            animationType="fade"
+            onRequestClose={() => setShowCalendar(false)}
+        >
+            <View style={styles.modalOverlay}>
+                <Pressable
+                    style={styles.modalBackdrop}
+                    onPress={() => setShowCalendar(false)}
+                />
+
+                <View style={styles.calendarCard}>
+                    <Text style={styles.calendarTitle}>Choose a Date</Text>
+
+                    <Calendar
+                        onDayPress={(day) => {
+                            setSelectedDate(day.dateString);
+                            handleDayChange(
+                                new Date(day.dateString + "T12:00:00").getDay()
+                            );
+                            setShowCalendar(false);
+                        }}
+                        markedDates={
+                            selectedDate
+                                ? {
+                                      [selectedDate]: {
+                                          selected: true,
+                                          selectedColor: colorScheme.textAccent,
+                                      },
+                                  }
+                                : {}
+                        }
+                        minDate={new Date().toISOString().split("T")[0]}
+                        theme={{
+                            backgroundColor: colorScheme.whiteWarmCard,
+                            calendarBackground: colorScheme.whiteWarmCard,
+                            textSectionTitleColor: colorScheme.textAccentSoft,
+                            selectedDayBackgroundColor: colorScheme.textAccent,
+                            selectedDayTextColor: colorScheme.whiteSoft,
+                            todayTextColor: colorScheme.textAccent,
+                            dayTextColor: colorScheme.textDefault,
+                            textDisabledColor: colorScheme.textDisabled,
+                            monthTextColor: colorScheme.textDefault,
+                            arrowColor: colorScheme.textAccent,
+                        }}
+                    />
+                </View>
+            </View>
+        </Modal>
+
+        <OptionModal
+            visible={showTaskModal}
+            title="Choose a Task"
+            options={taskOptions}
+            selectedValue={selectedTaskId}
+            onSelect={setSelectedTaskId}
+            onClose={() => setShowTaskModal(false)}
+            styles={styles}
+        />
+
+        <OptionModal
+            visible={showEmployeeModal}
+            title="Choose an Employee"
+            options={employeeOptions}
+            selectedValue={selectedEmployeeId}
+            onSelect={setSelectedEmployeeId}
+            onClose={() => setShowEmployeeModal(false)}
+            styles={styles}
+        />
+
+        <OptionModal
+            visible={showTimeModal}
+            title="Choose a Time"
+            options={timeOptions}
+            selectedValue={selectedTime}
+            onSelect={setSelectedTime}
+            onClose={() => setShowTimeModal(false)}
+            emptyText="No times available for this date"
+            styles={styles}
+        />
+    </ScrollView>);
 }
 
-const styles = StyleSheet.create({
-    safeArea: commonUi.screen.safeArea,
-    safeAreaWeb: commonUi.screen.safeAreaWeb,
-    scrollView: commonUi.screen.scrollView,
-    scrollViewWeb: commonUi.screen.scrollViewWeb,
-    scrollContent: commonUi.screen.scrollContent,
-    pageWrap: commonUi.screen.pageWrapNarrow,
-    screenInner: commonUi.screen.screenInner,
-
-    backButton: {
-        flexDirection: "row",
-        alignItems: "center",
-        alignSelf: "flex-start",
-        backgroundColor: "#fff8f2",
-        borderRadius: 999,
-        paddingVertical: 10,
-        paddingHorizontal: 14,
-        borderWidth: 1,
-        borderColor: "#ead9ce",
-        marginBottom: 12,
-    },
-
-    backButtonArrow: {
-        fontSize: 18,
-        color: "#7f5d4d",
-        marginRight: 8,
-        fontWeight: "800",
-    },
-
-    backButtonText: {
-        fontSize: 14,
-        fontWeight: "700",
-        color: "#2b1b15",
-    },
-
-    heroCard: commonUi.hero.heroCard,
-    heroTopRow: commonUi.hero.heroTopRow,
-    heroTextBlock: commonUi.hero.heroTextBlock,
-    heroFadeWrap: commonUi.hero.heroFadeWrap,
-    heroFadeMain: commonUi.hero.heroFadeMain,
-    heroFadeSmall: commonUi.hero.heroFadeSmall,
-    blobOne: commonUi.hero.blobOne,
-    blobTwo: commonUi.hero.blobTwo,
-    blobThree: commonUi.hero.blobThree,
-    kicker: commonUi.hero.kicker,
-    heroTitle: commonUi.hero.heroTitle,
-    heroTitleAccent: commonUi.hero.heroTitleAccent,
-
-    heroText: {
-        fontSize: 15,
-        lineHeight: 22,
-        color: "#5e473c",
-        maxWidth: "82%",
-    },
-
-    metaRow: commonUi.hero.metaRow,
-    metaChip: commonUi.hero.metaChip,
-    metaChipText: commonUi.hero.metaChipText,
-
-    secondaryActionCardFull: {
-        backgroundColor: "#fff8f2",
-        borderRadius: 28,
-        paddingHorizontal: 18,
-        paddingTop: 18,
-        paddingBottom: 18,
-        minHeight: 150,
-        borderWidth: 1,
-        borderColor: "#ead9ce",
-        width: "100%",
-        marginBottom: 14,
-    },
-
-    smallTopRow: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 12,
-    },
-
-    iconWrapSmall: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: "#f2e4d8",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-
-    iconSmall: {
-        fontSize: 13,
-        fontWeight: "800",
-        color: "#7e5d4d",
-    },
-
-    cornerText: {
-        fontSize: 12,
-        fontWeight: "700",
-        color: "#8b6d5e",
-    },
-
-    secondaryTitle: {
-        fontSize: 22,
-        lineHeight: 26,
-        fontWeight: "800",
-        color: "#281c17",
-        marginBottom: 6,
-    },
-
-    secondaryDescription: {
-        fontSize: 13.5,
-        lineHeight: 20,
-        color: "#6a5348",
-        maxWidth: "92%",
-        marginBottom: 14,
-    },
-
-    selectButton: {
-        backgroundColor: "#f3e7de",
-        borderRadius: 18,
-        paddingHorizontal: 16,
-        paddingVertical: 15,
-        borderWidth: 1,
-        borderColor: "#e5d2c5",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-    },
-
-    selectButtonDisabled: {
-        opacity: 0.6,
-    },
-
-    employeeSelectButton: {
-        marginTop: 14,
-    },
-
-    selectValue: {
-        flex: 1,
-        fontSize: 15,
-        fontWeight: "700",
-        color: "#2b1b15",
-        paddingRight: 10,
-    },
-
-    selectValueMuted: {
-        color: "#8b6d5e",
-    },
-
-    selectChevron: {
-        fontSize: 24,
-        color: "#7f5d4d",
-        marginTop: -2,
-    },
-
-    preferenceRow: {
-        flexDirection: "row",
-        gap: 10,
-        flexWrap: "wrap",
-    },
-
-    preferenceChip: {
-        flex: 1,
-        minWidth: 140,
-        backgroundColor: "#f3e7de",
-        borderRadius: 16,
-        paddingVertical: 13,
-        paddingHorizontal: 14,
-        borderWidth: 1,
-        borderColor: "#e5d2c5",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-
-    preferenceChipActive: {
-        backgroundColor: "#241713",
-        borderColor: "#241713",
-    },
-
-    preferenceChipText: {
-        fontSize: 14,
-        fontWeight: "700",
-        color: "#6a5348",
-    },
-
-    preferenceChipTextActive: {
-        color: "#fff8f3",
-    },
-
-    primaryActionCard: {
-        position: "relative",
-        overflow: "hidden",
-        backgroundColor: "#241713",
-        borderRadius: 28,
-        paddingHorizontal: 18,
-        paddingTop: 18,
-        paddingBottom: 18,
-        marginBottom: 8,
-        minHeight: 270,
-        width: "100%",
-    },
-
-    cardGlow: {
-        position: "absolute",
-        width: 170,
-        height: 170,
-        borderRadius: 85,
-        backgroundColor: "#b97f5f",
-        top: -40,
-        right: -30,
-        opacity: 0.13,
-    },
-
-    cardHeaderRow: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginBottom: 18,
-    },
-
-    iconWrapLarge: {
-        width: 52,
-        height: 52,
-        borderRadius: 26,
-        backgroundColor: "rgba(255,255,255,0.08)",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-
-    iconLarge: {
-        fontSize: 22,
-        color: "#f2d0b9",
-    },
-
-    pillDark: {
-        backgroundColor: "rgba(242,208,185,0.12)",
-        borderRadius: 999,
-        paddingHorizontal: 11,
-        paddingVertical: 7,
-    },
-
-    pillDarkText: {
-        color: "#f2d0b9",
-        fontSize: 12,
-        fontWeight: "700",
-    },
-
-    primaryTitle: {
-        fontSize: 26,
-        lineHeight: 31,
-        fontWeight: "800",
-        color: "#fff8f3",
-        marginBottom: 9,
-        maxWidth: "82%",
-    },
-
-    primaryDescription: {
-        fontSize: 14,
-        lineHeight: 21,
-        color: "#d8c2b5",
-        maxWidth: "96%",
-        marginBottom: 18,
-    },
-
-    summaryGrid: {
-        gap: 8,
-        marginBottom: 18,
-    },
-
-    summaryRow: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "flex-start",
-        gap: 10,
-        paddingVertical: 3,
-    },
-
-    summaryKey: {
-        fontSize: 14,
-        color: "#d8c2b5",
-        fontWeight: "700",
-    },
-
-    summaryValue: {
-        flex: 1,
-        textAlign: "right",
-        fontSize: 14,
-        color: "#fff8f3",
-        fontWeight: "700",
-    },
-
-    innerCreateButton: {
-        backgroundColor: "#d8b59f",
-        borderRadius: 24,
-        paddingVertical: 16,
-        paddingHorizontal: 18,
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: "auto",
-    },
-
-    innerCreateButtonText: {
-        fontSize: 15,
-        fontWeight: "800",
-        color: "#2b1b15",
-        letterSpacing: 0.2,
-    },
-
-    createButtonDisabled: {
-        opacity: 0.72,
-    },
-
-    loadingWrap: {
-        flex: 1,
-        justifyContent: "center",
-        paddingHorizontal: 20,
-        backgroundColor: "#f5efe9",
-    },
-
-    loadingCard: {
-        backgroundColor: "#fff8f2",
-        borderRadius: 28,
-        paddingHorizontal: 24,
-        paddingVertical: 28,
-        alignItems: "center",
-        borderWidth: 1,
-        borderColor: "#ead9ce",
-    },
-
-    loadingTitle: {
-        marginTop: 16,
-        fontSize: 20,
-        fontWeight: "800",
-        color: "#231712",
-    },
-
-    loadingText: {
-        marginTop: 8,
-        fontSize: 14,
-        lineHeight: 21,
-        color: "#6a5348",
-        textAlign: "center",
-    },
-
-    modalOverlay: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        paddingHorizontal: 18,
-        backgroundColor: "rgba(36, 23, 19, 0.22)",
-    },
-
-    modalBackdrop: {
-        position: "absolute",
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-    },
-
-    calendarCard: {
-        width: "100%",
-        maxWidth: 420,
-        backgroundColor: "#fff8f2",
-        borderRadius: 28,
-        padding: 16,
-        borderWidth: 1,
-        borderColor: "#ead9ce",
-    },
-
-    calendarTitle: {
-        fontSize: 18,
-        fontWeight: "800",
-        color: "#231712",
-        marginBottom: 12,
-        textAlign: "center",
-    },
-
-    optionModalCard: {
-        width: "100%",
-        maxWidth: 430,
-        maxHeight: "70%",
-        backgroundColor: "#fff8f2",
-        borderRadius: 28,
-        paddingHorizontal: 16,
-        paddingTop: 16,
-        paddingBottom: 14,
-        borderWidth: 1,
-        borderColor: "#ead9ce",
-    },
-
-    optionModalHeader: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 10,
-    },
-
-    optionModalTitle: {
-        fontSize: 18,
-        fontWeight: "800",
-        color: "#231712",
-    },
-
-    closeButton: {
-        paddingHorizontal: 6,
-        paddingVertical: 2,
-    },
-
-    optionModalClose: {
-        fontSize: 18,
-        fontWeight: "800",
-        color: "#7f5d4d",
-    },
-
-    optionModalList: {
-        maxHeight: 420,
-    },
-
-    optionModalListContent: {
-        paddingBottom: 8,
-    },
-
-    optionRow: {
-        backgroundColor: "#f3e7de",
-        borderRadius: 18,
-        paddingHorizontal: 14,
-        paddingVertical: 14,
-        borderWidth: 1,
-        borderColor: "#e5d2c5",
-        marginTop: 10,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-    },
-
-    optionRowSelected: {
-        backgroundColor: "#ead7ca",
-        borderColor: "#9b664d",
-    },
-
-    optionRowPressed: {
-        opacity: 0.92,
-        transform: [{ scale: 0.99 }],
-    },
-
-    optionTextWrap: {
-        flex: 1,
-        paddingRight: 12,
-    },
-
-    optionLabel: {
-        fontSize: 15,
-        fontWeight: "700",
-        color: "#2b1b15",
-    },
-
-    optionLabelSelected: {
-        color: "#231712",
-    },
-
-    optionSubLabel: {
-        marginTop: 4,
-        fontSize: 12,
-        color: "#7f5d4d",
-        fontWeight: "600",
-    },
-
-    optionSubLabelSelected: {
-        color: "#9b664d",
-    },
-
-    optionCheck: {
-        fontSize: 18,
-        fontWeight: "800",
-        color: "#9b664d",
-    },
-
-    emptyOptionText: {
-        fontSize: 14,
-        color: "#6a5348",
-        textAlign: "center",
-        paddingVertical: 22,
-    },
-
-    cardPressed: {
-        opacity: 0.93,
-        transform: [{ scale: 0.985 }],
-    },
-});
+
+export function makeStyles(colorScheme) {
+
+    return StyleSheet.create({
+
+        backButton: {
+            flexDirection: "row",
+            alignItems: "center",
+            alignSelf: "flex-start",
+            backgroundColor: colorScheme.whiteWarmCard,
+            borderRadius: 999,
+            paddingVertical: 10,
+            paddingHorizontal: 14,
+            borderWidth: 1,
+            borderColor: colorScheme.borderLight,
+            marginBottom: 12,
+        },
+
+        backButtonArrow: {
+            fontSize: 18,
+            color: colorScheme.textAccentSoft,
+            marginRight: 8,
+            fontWeight: "800",
+        },
+
+        backButtonText: {
+            fontSize: 14,
+            fontWeight: "700",
+            color: colorScheme.textDefault,
+        },
+
+        heroText: {
+            fontSize: 15,
+            lineHeight: 22,
+            color: colorScheme.textSubtle,
+            maxWidth: "82%",
+        },
+
+        secondaryActionCardFull: {
+            backgroundColor: colorScheme.whiteWarmCard,
+            borderRadius: 28,
+            paddingHorizontal: 18,
+            paddingTop: 18,
+            paddingBottom: 18,
+            minHeight: 150,
+            borderWidth: 1,
+            borderColor: colorScheme.borderLight,
+            width: "100%",
+            marginBottom: 14,
+        },
+
+        smallTopRow: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 12,
+        },
+
+        iconWrapSmall: {
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: colorScheme.panelBackgroundAlt,
+            alignItems: "center",
+            justifyContent: "center",
+        },
+
+        iconSmall: {
+            fontSize: 13,
+            fontWeight: "800",
+            color: colorScheme.textAccentSoft,
+        },
+
+        cornerText: {
+            fontSize: 12,
+            fontWeight: "700",
+            color: colorScheme.textLabel,
+        },
+
+        secondaryTitle: {
+            fontSize: 22,
+            lineHeight: 26,
+            fontWeight: "800",
+            color: colorScheme.textDark,
+            marginBottom: 6,
+        },
+
+        secondaryDescription: {
+            fontSize: 13.5,
+            lineHeight: 20,
+            color: colorScheme.textMuted,
+            maxWidth: "92%",
+            marginBottom: 14,
+        },
+
+        selectButton: {
+            backgroundColor: colorScheme.panelBackground,
+            borderRadius: 18,
+            paddingHorizontal: 16,
+            paddingVertical: 15,
+            borderWidth: 1,
+            borderColor: colorScheme.borderLightAlt,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+        },
+
+        selectButtonDisabled: {
+            opacity: 0.6,
+        },
+
+        employeeSelectButton: {
+            marginTop: 14,
+        },
+
+        selectValue: {
+            flex: 1,
+            fontSize: 15,
+            fontWeight: "700",
+            color: colorScheme.textDefault,
+            paddingRight: 10,
+        },
+
+        selectValueMuted: {
+            color: colorScheme.textLabel,
+        },
+
+        selectChevron: {
+            fontSize: 24,
+            color: colorScheme.textAccentSoft,
+            marginTop: -2,
+        },
+
+        preferenceRow: {
+            flexDirection: "row",
+            gap: 10,
+            flexWrap: "wrap",
+        },
+
+        preferenceChip: {
+            flex: 1,
+            minWidth: 140,
+            backgroundColor: colorScheme.panelBackground,
+            borderRadius: 16,
+            paddingVertical: 13,
+            paddingHorizontal: 14,
+            borderWidth: 1,
+            borderColor: colorScheme.borderLightAlt,
+            alignItems: "center",
+            justifyContent: "center",
+        },
+
+        preferenceChipActive: {
+            backgroundColor: colorScheme.darkSurface,
+            borderColor: colorScheme.darkSurface,
+        },
+
+        preferenceChipText: {
+            fontSize: 14,
+            fontWeight: "700",
+            color: colorScheme.textMuted,
+        },
+
+        preferenceChipTextActive: {
+            color: colorScheme.whiteWarm,
+        },
+
+        primaryActionCard: {
+            position: "relative",
+            overflow: "hidden",
+            backgroundColor: colorScheme.darkSurface,
+            borderRadius: 28,
+            paddingHorizontal: 18,
+            paddingTop: 18,
+            paddingBottom: 18,
+            marginBottom: 8,
+            minHeight: 270,
+            width: "100%",
+        },
+
+        cardGlow: {
+            position: "absolute",
+            width: 170,
+            height: 170,
+            borderRadius: 85,
+            backgroundColor: colorScheme.accentGlow,
+            top: -40,
+            right: -30,
+            opacity: 0.13,
+        },
+
+        cardHeaderRow: {
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 18,
+        },
+
+        iconWrapLarge: {
+            width: 52,
+            height: 52,
+            borderRadius: 26,
+            backgroundColor: colorScheme.overlayWhiteSoft,
+            alignItems: "center",
+            justifyContent: "center",
+        },
+
+        iconLarge: {
+            fontSize: 22,
+            color: colorScheme.accentHighlight,
+        },
+
+        pillDark: {
+            backgroundColor: colorScheme.overlayAccentSoft,
+            borderRadius: 999,
+            paddingHorizontal: 11,
+            paddingVertical: 7,
+        },
+
+        pillDarkText: {
+            color: colorScheme.accentHighlight,
+            fontSize: 12,
+            fontWeight: "700",
+        },
+
+        primaryTitle: {
+            fontSize: 26,
+            lineHeight: 31,
+            fontWeight: "800",
+            color: colorScheme.whiteWarm,
+            marginBottom: 9,
+            maxWidth: "82%",
+        },
+
+        primaryDescription: {
+            fontSize: 14,
+            lineHeight: 21,
+            color: colorScheme.textOnDark,
+            maxWidth: "96%",
+            marginBottom: 18,
+        },
+
+        summaryGrid: {
+            gap: 8,
+            marginBottom: 18,
+        },
+
+        summaryRow: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            gap: 10,
+            paddingVertical: 3,
+        },
+
+        summaryKey: {
+            fontSize: 14,
+            color: colorScheme.textOnDark,
+            fontWeight: "700",
+        },
+
+        summaryValue: {
+            flex: 1,
+            textAlign: "right",
+            fontSize: 14,
+            color: colorScheme.whiteWarm,
+            fontWeight: "700",
+        },
+
+        innerCreateButton: {
+            backgroundColor: colorScheme.accentButton,
+            borderRadius: 24,
+            paddingVertical: 16,
+            paddingHorizontal: 18,
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: "auto",
+        },
+
+        innerCreateButtonText: {
+            fontSize: 15,
+            fontWeight: "800",
+            color: colorScheme.textDefault,
+            letterSpacing: 0.2,
+        },
+
+        createButtonDisabled: {
+            opacity: 0.72,
+        },
+
+        loadingWrap: {
+            flex: 1,
+            justifyContent: "center",
+            paddingHorizontal: 20,
+            backgroundColor: colorScheme.pageBackground,
+        },
+
+        loadingCard: {
+            backgroundColor: colorScheme.whiteWarmCard,
+            borderRadius: 28,
+            paddingHorizontal: 24,
+            paddingVertical: 28,
+            alignItems: "center",
+            borderWidth: 1,
+            borderColor: colorScheme.borderLight,
+        },
+
+        loadingTitle: {
+            marginTop: 16,
+            fontSize: 20,
+            fontWeight: "800",
+            color: colorScheme.textDarkest,
+        },
+
+        loadingText: {
+            marginTop: 8,
+            fontSize: 14,
+            lineHeight: 21,
+            color: colorScheme.textMuted,
+            textAlign: "center",
+        },
+
+        modalOverlay: {
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            paddingHorizontal: 18,
+            backgroundColor: colorScheme.overlayDarkSoft,
+        },
+
+        modalBackdrop: {
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+        },
+
+        calendarCard: {
+            width: "100%",
+            maxWidth: 420,
+            backgroundColor: colorScheme.whiteWarmCard,
+            borderRadius: 28,
+            padding: 16,
+            borderWidth: 1,
+            borderColor: colorScheme.borderLight,
+        },
+
+        calendarTitle: {
+            fontSize: 18,
+            fontWeight: "800",
+            color: colorScheme.textDarkest,
+            marginBottom: 12,
+            textAlign: "center",
+        },
+
+        optionModalCard: {
+            width: "100%",
+            maxWidth: 430,
+            maxHeight: "70%",
+            backgroundColor: colorScheme.whiteWarmCard,
+            borderRadius: 28,
+            paddingHorizontal: 16,
+            paddingTop: 16,
+            paddingBottom: 14,
+            borderWidth: 1,
+            borderColor: colorScheme.borderLight,
+        },
+
+        optionModalHeader: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 10,
+        },
+
+        optionModalTitle: {
+            fontSize: 18,
+            fontWeight: "800",
+            color: colorScheme.textDarkest,
+        },
+
+        closeButton: {
+            paddingHorizontal: 6,
+            paddingVertical: 2,
+        },
+
+        optionModalClose: {
+            fontSize: 18,
+            fontWeight: "800",
+            color: colorScheme.textAccentSoft,
+        },
+
+        optionModalList: {
+            maxHeight: 420,
+        },
+
+        optionModalListContent: {
+            paddingBottom: 8,
+        },
+
+        optionRow: {
+            backgroundColor: colorScheme.panelBackground,
+            borderRadius: 18,
+            paddingHorizontal: 14,
+            paddingVertical: 14,
+            borderWidth: 1,
+            borderColor: colorScheme.borderLightAlt,
+            marginTop: 10,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+        },
+
+        optionRowSelected: {
+            backgroundColor: colorScheme.accentTint,
+            borderColor: colorScheme.textAccent,
+        },
+
+        optionRowPressed: {
+            opacity: 0.92,
+            transform: [{ scale: 0.99 }],
+        },
+
+        optionTextWrap: {
+            flex: 1,
+            paddingRight: 12,
+        },
+
+        optionLabel: {
+            fontSize: 15,
+            fontWeight: "700",
+            color: colorScheme.textDefault,
+        },
+
+        optionLabelSelected: {
+            color: colorScheme.textDarkest,
+        },
+
+        optionSubLabel: {
+            marginTop: 4,
+            fontSize: 12,
+            color: colorScheme.textAccentSoft,
+            fontWeight: "600",
+        },
+
+        optionSubLabelSelected: {
+            color: colorScheme.textAccent,
+        },
+
+        optionCheck: {
+            fontSize: 18,
+            fontWeight: "800",
+            color: colorScheme.textAccent,
+        },
+
+        emptyOptionText: {
+            fontSize: 14,
+            color: colorScheme.textMuted,
+            textAlign: "center",
+            paddingVertical: 22,
+        },
+
+        cardPressed: {
+            opacity: 0.93,
+            transform: [{ scale: 0.985 }],
+        },
+    });
+}
