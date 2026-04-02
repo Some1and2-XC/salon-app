@@ -15,11 +15,22 @@ export const NAV_BARCODE_SCANNER: string = "barcode-scanner";
 export const NAV_ADMIN_HOMEPAGE: string = "adminHomepage";
 export const NAV_SET_THEME: string = "set-theme";
 
-export const APPOINTMENT_STATE_UNCONFIRMED : int = 0
-export const APPOINTMENT_STATE_ACCEPTED    : int = 1;
-export const APPOINTMENT_STATE_CONFIRMED   : int = 2;
-export const APPOINTMENT_STATE_CANCELLED   : int = 3;
-export const APPOINTMENT_STATE_COMPLETED   : int = 4;
+export const TOAST_TYPE_SUCCESS: number = 0;
+export const TOAST_TYPE_ERROR: number = 1;
+export const TOAST_TYPE_INFO: number = 2;
+// export const TOAST_TYPE_WARNING: number = 3;
+
+export const TOAST_TYPE_MAPPINGS = {
+    0: "success",
+    1: "error",
+    2: "info",
+}
+
+export const APPOINTMENT_STATE_UNCONFIRMED : number = 0
+export const APPOINTMENT_STATE_ACCEPTED    : number = 1;
+export const APPOINTMENT_STATE_CONFIRMED   : number = 2;
+export const APPOINTMENT_STATE_CANCELLED   : number = 3;
+export const APPOINTMENT_STATE_COMPLETED   : number = 4;
 
 export const FIREBASE_AUTH_ERROR_MESSAGES = {
     "auth/invalid-credential": "Invalid email or password.",

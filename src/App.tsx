@@ -9,7 +9,8 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 // Shows behind buttons
 import * as NavigationBar from "expo-navigation-bar";
 
-import { User as FBUser, onAuthStateChanged } from 'firebase/auth';
+import { User as FBUser, onAuthStateChanged } from "firebase/auth";
+import Toast from "react-native-toast-message";
 
 import { auth } from "./firebaseConfig";
 import { sty, useTheme } from "./styles";
@@ -67,10 +68,10 @@ export default function App() {
 
     useEffect(() => {
         const unsub = onAuthStateChanged(auth, (user) => {
-            // const uid = user.uid;
             setUser(user);
             setAuthReady(true);
         });
+
         return unsub;
     }, []);
 
@@ -100,12 +101,7 @@ export default function App() {
                 <Stack.Navigator initialRouteName={ initialRoute }
                     screenOptions={{ headerShown: false }}
                 >
-
-                    <Stack.Screen
-                        name={ NAV_EXAMPLE_HOME }
-                        component={ ExampleHome }
-                        // options={{ headerShown: false }}
-                        />
+                    <Stack.Screen name={ NAV_EXAMPLE_HOME } component={ExampleHome} />
                     <Stack.Screen name={ NAV_BOOKING } component={ BookingScreen } />
                     <Stack.Screen name={ NAV_CHECKIN } component={ CheckinScreen } />
                     <Stack.Screen name={ NAV_CHECKINCONFIRM } component={ CheckinConfirmScreen } />
@@ -120,30 +116,9 @@ export default function App() {
                     <Stack.Screen name={ NAV_ADMIN_HOMEPAGE } component={AdminHomepageScreen} />
                     <Stack.Screen name={ NAV_SET_THEME } component={SetThemeScreen} />
 
-                    {/*
-
-                    // Can be used for only allowing some screens to be reached while logged in.
-                    // May be replaced with some "screen" class that has the
-                    //    - Route Name
-                    //    - Route Element
-                    //    - Authentication Requirements (i.e. admin/user/unauthenticated)
-
-                    {user ? (<>
-                        <Stack.Screen name={ NAV_EXAMPLE_HOME } component={ ExampleHome } />
-                        <Stack.Screen name={ NAV_BOOKING } component={ BookingScreen } />
-                        <Stack.Screen name={ NAV_CHECKIN } component={ CheckinScreen } />
-                        <Stack.Screen name={ NAV_CHECKINCONFIRM } component={ CheckinConfirmScreen } />
-                        <Stack.Screen name={ NAV_HOME } component={ HomeScreen } />
-                    </>) : (<>
-                        <Stack.Screen name={ NAV_LOGIN } component={ LoginScreen } />
-                        <Stack.Screen name={ NAV_SIGNUP } component={ SignupScreen } />
-                    </>)}
-
-                    */}
-
                 </Stack.Navigator>
+                <Toast />
             </NavigationContainer>
         </SafeAreaView>
-
     </SafeAreaProvider>);
 }
