@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Text, Platform, FlatList, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Text, Platform, FlatList, TouchableOpacity, View, StyleSheet, Alert } from 'react-native';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { apiFetch } from "../utils";
-import Toast from 'react-native-toast-message';
+import { apiFetch, assertFetchSuccessful } from "../utils";
 
 import {
     NAV_QR,
@@ -31,41 +30,27 @@ export function CheckinScreen({ navigation }) {
     }, []);
 
     const fetchAppointments = async (user) => {
-        try {
-            const token = await user.getIdToken();
+        const token = await user.getIdToken();
 
-            const res = await apiFetch('/appointments', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-
-            const data = await res.json();
-
-            if (!data || data.length === 0) {
-                if (Platform.OS === 'web') {
-                    alert('You must book an appointment before checking in');
-                } else {
-                    Toast.show({
-                        type: 'info',
-                        text1: 'No Appointment',
-                        text2: 'You must book an appointment before checking in'
-                    });
-                }
-                return;
+        apiFetch(`/appointments`, {
+            headers: {
+                Authorization: `Bearer ${token}`
             }
-
-            setAppointments(data);
-
-        } catch (e) {
-            console.error(e);
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'Failed to fetch appointments'
-            });
-        }
-    };
+        })
+            .then((res) => res.json())
+            .then(assertFetchSuccessful)
+            .then((data) => {
+                if (!data || data.length === 0) {
+                    //Integrate toast message
+                    return;
+                }
+                setAppointments(data);
+            })
+            .catch((err) => {
+                console.error(err);
+                Alert.alert("Server Error", err.message || "Something went wrong");
+            });              
+    }
 
     const renderItem = ({ item }) => {
         const formattedDate = new Date(item.start_time * 1000).toLocaleString(undefined, {
@@ -78,8 +63,8 @@ export function CheckinScreen({ navigation }) {
                 style={styles.card}
                 onPress={() =>
                     navigation.navigate(NAV_QR, {
-                        userId: item.user_id,
-                        appointmentId: item.id || item._id
+                        userId: item.user_uuid,
+                        appointmentId: item.task_id
                     })
                 }
             >
