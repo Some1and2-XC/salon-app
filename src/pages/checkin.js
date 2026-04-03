@@ -7,7 +7,10 @@ import Toast from 'react-native-toast-message';
 import {
     NAV_QR,
     NAV_LOGIN,
-    NAV_EXAMPLE_HOME
+    NAV_EXAMPLE_HOME,
+    TOAST_TYPE_SUCCESS,
+    TOAST_TYPE_ERROR,
+    TOAST_TYPE_INFO,
 } from "../consts";
 
 import { sty } from "../styles";
@@ -94,6 +97,7 @@ export function CheckinScreen({ navigation }) {
 
     return (
         <View style={sty.container}>
+
             <Text style={sty.h1}>Check In</Text>
 
             <Button title="HOME" onPress={returnToHomePage} />

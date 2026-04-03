@@ -1,15 +1,19 @@
-import { useState, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState, useEffect, useMemo } from "react";
 
-import { StatusBar } from 'expo-status-bar';
-import { User as FBUser, onAuthStateChanged } from 'firebase/auth';
+import { StatusBar } from "expo-status-bar";
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { Platform } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+// Shows behind buttons
+import * as NavigationBar from "expo-navigation-bar";
+
+import { User as FBUser, onAuthStateChanged } from "firebase/auth";
+import Toast from "react-native-toast-message";
 
 import { auth } from "./firebaseConfig";
-
-import { sty } from "./styles";
+import { sty, useTheme } from "./styles";
 
 // Screen imports
 import { ExampleHome } from "./pages/index";
@@ -23,6 +27,11 @@ import { LoginScreen } from "./pages/login";
 import { SignupScreen } from "./pages/signup";
 import { AdminAppointmentTypesScreen } from "./pages/appTypes";
 import { BarcodeScannerScreen } from "./pages/barcodeScanner";
+import { QRScreen } from "./pages/qrGenerator";
+import { AdminHomepageScreen } from "./pages/adminHomepage";
+import { AddEmployeeScreen } from "./pages/addEmployee";
+import { SetAvailabilityScreen } from "./pages/setAvailability";
+import { SetThemeScreen } from "./pages/setTheme";
 
 const Stack = createStackNavigator();
 
@@ -38,88 +47,130 @@ import {
     NAV_SIGNUP,
     NAV_APP_TYPES,
     NAV_QR,
-    NAV_BARCODE_SCANNER
+    NAV_BARCODE_SCANNER,
+    NAV_ADMIN_HOMEPAGE,
+    NAV_ADD_EMPLOYEE,
+    NAV_SET_AVAILABILITY,
+    NAV_SET_THEME,
 } from "./consts";
-import { QRScreen } from './pages/qrGenerator';
+
+import { MAP_COLOR_SCHEME } from "./colorScheme";
 
 export default function App() {
+    // Inits scheme from storage
+    useEffect(() => {
+        useTheme.getState().loadScheme();
+    }, [useTheme]);
 
-  const [user, setUser] = useState<FBUser | null>(null);
-  const [authReady, setAuthReady] = useState(false);
+    const commonUi = useTheme((state) => state.getCommonUi)();
+    const scheme = useTheme((state) => state.scheme);
+    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeBrown;
 
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      // const uid = user.uid;
-      setUser(user);
-      setAuthReady(true);
-    });
-    return unsub;
-  }, []);
+    const [user, setUser] = useState<FBUser | null>(null);
+    const [authReady, setAuthReady] = useState(false);
 
-  // Doesn't render until we know if the user is logged in or not.
-  // May be replaced with a spinner in the future.
-  if (!authReady) return null;
+    useEffect(() => {
+        const unsub = onAuthStateChanged(auth, (user) => {
+            setUser(user);
+            setAuthReady(true);
+        });
 
-  // Sets the initial route.
-  // Thought should be put into if the default unauthenticated screen should be the login screen
-  // or signup (I think login is a sensible default).
-  // const initialRoute: string = user ? NAV_HOME : NAV_LOGIN;
-  const initialRoute: string = NAV_EXAMPLE_HOME; // for debugging and dev purposes
+        return unsub;
+    }, []);
 
-  return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName={ initialRoute }
-        screenOptions={{ headerShown: false }}
-      >
+    // Sets the initial route.
+    // Thought should be put into if the default unauthenticated screen should be the login screen
+    // or signup (I think login is a sensible default).
+    // const initialRoute: string = user ? NAV_HOME : NAV_LOGIN;
+    const initialRoute: string = NAV_EXAMPLE_HOME; // for debugging and dev purposes
 
-        <Stack.Screen
-            name={ NAV_EXAMPLE_HOME }
-            component={ ExampleHome }
-            // options={{ headerShown: false }}
-            />
-        <Stack.Screen name={ NAV_BOOKING } component={ BookingScreen } />
-        <Stack.Screen name={ NAV_CHECKIN } component={ CheckinScreen } />
-        <Stack.Screen name={ NAV_CHECKINCONFIRM } component={ CheckinConfirmScreen } />
-        <Stack.Screen name={ NAV_CHECKIN_CONFIRM_ADMIN } component={ AdminCheckinConfirm } />
-        <Stack.Screen name={ NAV_CHECKIN_CONFIRM_ADMIN_LIST } component={ AdminCheckinConfirmList } />
-        <Stack.Screen name={ NAV_HOME } component={ HomeScreen } />
-        <Stack.Screen name={ NAV_LOGIN } component={ LoginScreen } />
-        <Stack.Screen name={ NAV_SIGNUP } component={ SignupScreen } />
-        <Stack.Screen name={ NAV_APP_TYPES } component={ AdminAppointmentTypesScreen } />
-        <Stack.Screen name={ NAV_QR} component={QRScreen} />
-        <Stack.Screen name={ NAV_BARCODE_SCANNER } component={BarcodeScannerScreen} />
+    // Doesn't render until we know if the user is logged in or not.
+    // May be replaced with a spinner in the future.
+    if (!authReady) return null;
 
-        {/*
+    const navTheme = {
+        ...DefaultTheme,
+        colors: {
+            ...DefaultTheme.colors,
+            background: colorScheme.pageBackground,
+        },
+    };
 
-        // Can be used for only allowing some screens to be reached while logged in.
-        // May be replaced with some "screen" class that has the
-        //  - Route Name
-        //  - Route Element
-        //  - Authentication Requirements (i.e. admin/user/unauthenticated)
+    return (
+        <SafeAreaProvider>
+            <SafeAreaView
+                style={commonUi.screen.safeArea}
+                edges={["left", "right"]}
+            >
+                <StatusBar translucent backgroundColor="transparent" />
 
-        {user ? (<>
-          <Stack.Screen name={ NAV_EXAMPLE_HOME } component={ ExampleHome } />
-          <Stack.Screen name={ NAV_BOOKING } component={ BookingScreen } />
-          <Stack.Screen name={ NAV_CHECKIN } component={ CheckinScreen } />
-          <Stack.Screen name={ NAV_CHECKINCONFIRM } component={ CheckinConfirmScreen } />
-          <Stack.Screen name={ NAV_HOME } component={ HomeScreen } />
-        </>) : (<>
-          <Stack.Screen name={ NAV_LOGIN } component={ LoginScreen } />
-          <Stack.Screen name={ NAV_SIGNUP } component={ SignupScreen } />
-        </>)}
-
-        */}
-
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
+                <NavigationContainer theme={navTheme}>
+                    <Stack.Navigator
+                        initialRouteName={initialRoute}
+                        screenOptions={{ headerShown: false }}
+                    >
+                        <Stack.Screen
+                            name={NAV_EXAMPLE_HOME}
+                            component={ExampleHome}
+                        />
+                        <Stack.Screen
+                            name={NAV_BOOKING}
+                            component={BookingScreen}
+                        />
+                        <Stack.Screen
+                            name={NAV_CHECKIN}
+                            component={CheckinScreen}
+                        />
+                        <Stack.Screen
+                            name={NAV_CHECKINCONFIRM}
+                            component={CheckinConfirmScreen}
+                        />
+                        <Stack.Screen
+                            name={NAV_CHECKIN_CONFIRM_ADMIN}
+                            component={AdminCheckinConfirm}
+                        />
+                        <Stack.Screen
+                            name={NAV_CHECKIN_CONFIRM_ADMIN_LIST}
+                            component={AdminCheckinConfirmList}
+                        />
+                        <Stack.Screen name={NAV_HOME} component={HomeScreen} />
+                        <Stack.Screen
+                            name={NAV_LOGIN}
+                            component={LoginScreen}
+                        />
+                        <Stack.Screen
+                            name={NAV_SIGNUP}
+                            component={SignupScreen}
+                        />
+                        <Stack.Screen
+                            name={NAV_APP_TYPES}
+                            component={AdminAppointmentTypesScreen}
+                        />
+                        <Stack.Screen name={NAV_QR} component={QRScreen} />
+                        <Stack.Screen
+                            name={NAV_BARCODE_SCANNER}
+                            component={BarcodeScannerScreen}
+                        />
+                        <Stack.Screen
+                            name={NAV_ADMIN_HOMEPAGE}
+                            component={AdminHomepageScreen}
+                        />
+                        <Stack.Screen
+                            name={NAV_SET_THEME}
+                            component={SetThemeScreen}
+                        />
+                        <Stack.Screen
+                            name={NAV_ADD_EMPLOYEE}
+                            component={AddEmployeeScreen}
+                        />
+                        <Stack.Screen
+                            name={NAV_SET_AVAILABILITY}
+                            component={SetAvailabilityScreen}
+                        />
+                    </Stack.Navigator>
+                    <Toast />
+                </NavigationContainer>
+            </SafeAreaView>
+        </SafeAreaProvider>
+    );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
