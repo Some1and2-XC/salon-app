@@ -1,19 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { View, Text } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 
 import { sty } from "../styles";
 
-export function QRScreen({route}) {
+export function QRScreen({ route }) {
 
-    const qrValue = JSON.stringify(route.params.data);
+    const { userId, appointmentId } = route.params;
+    const [qrValue, setQrValue] = useState('');
 
-    // TODO remove this log call (or console.trace or something...).
-    console.log(qrValue);
+    useEffect(() => {
+        const qrData = JSON.stringify({
+            userId,
+            appointmentId
+        });
+
+        setQrValue(qrData);
+    }, [userId, appointmentId]);
 
     return (
-        <View styles={sty.container}>
-            <Text>Checkin Confirmed! Use this to checkin for your appointment!</Text>
+        <View style={sty.container}>
+            <Text>Check-in ready! Show this QR to the admin.</Text>
+
             {qrValue !== '' && (
                 <View style={sty.containerCentered}>
                     <QRCode value={qrValue} size={250} />

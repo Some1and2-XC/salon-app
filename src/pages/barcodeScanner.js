@@ -3,7 +3,9 @@ import { Button, View, Text, Alert, Platform } from "react-native";
 import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
 
 import { sty } from "../styles";
-export function BarcodeScannerScreen() {
+import { NAV_CHECKIN_CONFIRM_ADMIN } from "../consts";
+
+export function BarcodeScannerScreen({ navigation }) {
 
     const [facing, setFacing] = useState('back');
     const [permission, requestPermission] = useCameraPermissions();
@@ -28,8 +30,21 @@ export function BarcodeScannerScreen() {
     // }
 
     const handleBarCodeScanned = ({ data }) => {
-        console.log("Found URL:", data);
-        Alert.alert("Found URL", data);
+        if (scanned) return;
+        setScanned(true);
+
+        try {
+            const parsed = JSON.parse(data);
+
+            navigation.navigate(NAV_CHECKIN_CONFIRM_ADMIN, {
+                userId: parsed.userId,
+                appointmentId: parsed.appointmentId
+            });
+
+        } catch (err) {
+            Alert.alert("Invalid QR Code");
+            setScanned(false);
+        }
     };
 
     return (
