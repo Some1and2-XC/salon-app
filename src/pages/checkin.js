@@ -1,33 +1,52 @@
-import { useEffect } from "react";
-import { Text, View, Button } from "react-native";
+import { useEffect, useState } from "react";
+import { Text, View, FlatList, TouchableOpacity, Platform } from "react-native";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-import { apiFetch, showAppToast } from "../utils";
+import { apiFetch } from "../utils";
+import Toast from "react-native-toast-message";
 
 import {
     NAV_QR,
     NAV_LOGIN,
-    NAV_EXAMPLE_HOME,
-    TOAST_TYPE_SUCCESS,
-    TOAST_TYPE_ERROR,
-    TOAST_TYPE_INFO,
 } from "../consts";
 
 import { sty } from "../styles";
 
 export function CheckinScreen({ navigation }) {
 
-    const handleGenerateQR = async() => {
+    const [appointments, setAppointments] = useState([]);
+
+    // Auth check
+    useEffect(() => {
+        const auth = getAuth();
+
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                navigation.navigate(NAV_LOGIN);
+            }
+        });
+
+        return unsubscribe;
+    }, []);
+
+    // Fetch appointments
+    useEffect(() => {
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        if (!user) {
+            navigation.navigate(NAV_LOGIN);
+            return;
+        }
 
         apiFetch(`/appointments`)
             .then((res) => res.json())
-            // TODO replace with global popup handler (or just remove)
-            .then((res) => {
-                if (!data || data.length == 0) {
-                    if(Platform.OS === 'web') {
+            .then((data) => {
+
+                if (!data || data.length === 0) {
+                    if (Platform.OS === 'web') {
                         alert('You must book an appointment before checking in');
-                    }
-                    else {
+                    } else {
                         Toast.show({
                             type: 'info',
                             text1: 'No Appointment',
@@ -36,21 +55,42 @@ export function CheckinScreen({ navigation }) {
                     }
                     return;
                 }
-                return res;
-            })
-            .then((res) => navigation.navigate(NAV_QR, { data: data }))
-            // TODO replace with global popup handler.
-            .catch(console.error)
-            ;
 
-    }
+                setAppointments(data);
+            })
+            .catch(console.error);
+
+    }, []);
+
+    // Render appointment
+    const renderItem = ({ item }) => {
+        const formattedDate = new Date(item.start_time * 1000).toLocaleString();
+
+        return (
+            <TouchableOpacity
+                style={sty.card}
+                onPress={() =>
+                    navigation.navigate(NAV_QR, {
+                        userId: item.user_id,
+                        appointmentId: item.id || item._id
+                    })
+                }
+            >
+                <Text>Appointment</Text>
+                <Text>{formattedDate}</Text>
+            </TouchableOpacity>
+        );
+    };
 
     return (
         <View style={sty.container}>
-
             <Text style={sty.h1}>Check In</Text>
-            {/* TODO make this a list of user appointments */}
-            <Button style={sty.button} title={"QR Code"} onPress={handleGenerateQR} />
+
+            <FlatList
+                data={appointments}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={renderItem}
+            />
         </View>
     );
 }
