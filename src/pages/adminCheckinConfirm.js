@@ -86,9 +86,10 @@ export function AdminCheckinConfirm({ navigation, route }) {
         setLoadingUser(true);
         setLoadError(null);
 
+        // Needs to pass the user token to validate the admin (only the admin can access the list of users)
+
         apiFetch(`/users/${appointment.user_uuid}`, { 
-            method: "GET",
-            headers: `Bearer `
+            method: "GET"
         })
             .then(assertFetchSuccessful)
             .then((res) => res.json())
@@ -121,13 +122,12 @@ export function AdminCheckinConfirm({ navigation, route }) {
         };
 
         if (appointment.uuid) {
-            try {
-                await apiFetch(`/appointments/${appointment.uuid}`, fetch_body).then(
-                    (res) => res.json()
-                );
-            } catch (e) {
-                console.error(e);
-            }
+            apiFetch(`/appointments/${appointment.uuid}`, fetch_body)
+                .then(assertFetchSuccessful)
+                .then(res => res.json())
+                .catch((e) => {
+                    console.error(e);
+                })
         } else {
             console.error(
                 "Attempted to update appointment state but params.uuid is not set!"
