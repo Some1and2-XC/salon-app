@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Text, Platform, FlatList, TouchableOpacity, View, StyleSheet, Alert } from 'react-native';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { Text, FlatList, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { getAuth } from 'firebase/auth';
 import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
 
 import {
@@ -15,42 +15,38 @@ export function CheckinScreen({ navigation }) {
     const [appointments, setAppointments] = useState([]);
 
     useEffect(() => {
-        const auth = getAuth();
-
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
+        const fetchAppointments = async () => {
+            const auth = getAuth();
+            const user = auth.currentUser;
+            
             if (!user) {
                 navigation.navigate(NAV_LOGIN);
                 return;
             }
+            const token = await user.getIdToken();
 
-            fetchAppointments(user);
-        });
-
-        return unsubscribe;
-    }, []);
-
-    const fetchAppointments = async (user) => {
-        const token = await user.getIdToken();
-
-        apiFetch(`/appointments`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-            .then(assertFetchSuccessful)
-            .then((res) => res.json())
-            .then((data) => {
-                if (!data || data.length === 0) {
-                    showAppToast(0, "Oops!", "You have no appointments");
-                    return;
+            apiFetch(`/appointments`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
                 }
-                setAppointments(data);
             })
-            .catch((err) => {
-                console.error(err);
-                showAppToast(1, "Oops!", err.message || "Something went wrong");
-            });              
-    }
+                .then(assertFetchSuccessful)
+                .then((res) => res.json())
+                .then((data) => {
+                    if (!data || data.length === 0) {
+                        showAppToast(0, "Oops!", "You have no appointments");
+                        return;
+                    }
+                    setAppointments(data);
+                })
+                .catch((err) => {
+                    console.error(err);
+                    showAppToast(1, "Oops!", err.message || "Something went wrong");
+                });   
+            }   
+            
+            fetchAppointments();       
+    }, []);
 
     const renderItem = ({ item }) => {
         const formattedDate = new Date(item.start_time * 1000).toLocaleString(undefined, {
