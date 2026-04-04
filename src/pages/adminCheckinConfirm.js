@@ -48,7 +48,6 @@ export function AdminCheckinConfirm({ navigation, route }) {
             return;
         }
 
-        let cancelled = false;
         setLoadingAppointment(true);
         setLoadError(null);
 
@@ -56,23 +55,15 @@ export function AdminCheckinConfirm({ navigation, route }) {
             .then(assertFetchSuccessful)
             .then((res) => res.json())
             .then((arr) => {
-                if (cancelled) return;
                 if (Array.isArray(arr) && arr[0]) {
                     setAppointment(arr[0]);
                 } else {
                     setLoadError("No appointments found.");
                 }
             })
-            .catch(() => {
-                if (!cancelled) setLoadError("Could not load appointments.");
-            })
-            .finally(() => {
-                if (!cancelled) setLoadingAppointment(false);
-            });
-
-        return () => {
-            cancelled = true;
-        };
+            .catch(() => setLoadError("Could not load appointments."))
+            .finally(() => setLoadingAppointment(false))
+            ;
     }, []);
 
     // User Fetching Effect
@@ -83,7 +74,6 @@ export function AdminCheckinConfirm({ navigation, route }) {
             return;
         }
 
-        let cancelled = false;
         setLoadingUser(true);
         setLoadError(null);
 
@@ -94,19 +84,11 @@ export function AdminCheckinConfirm({ navigation, route }) {
         })
             .then(assertFetchSuccessful)
             .then((res) => res.json())
-            .then((user) => {
-                if (!cancelled) setUser(user);
-            })
-            .catch(() => {
-                if (!cancelled) setLoadError("Could not load customer details.");
-            })
-            .finally(() => {
-                if (!cancelled) setLoadingUser(false);
-            });
+            .then((user) => setUser(user))
+            .catch(() => setLoadError("Could not load customer details."))
+            .finally(() => setLoadingUser(false))
+            ;
 
-        return () => {
-            cancelled = true;
-        };
     }, [appointment]);
 
     // Appointment Fetching Effect
