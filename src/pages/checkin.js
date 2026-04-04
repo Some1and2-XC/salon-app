@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Text, Platform, FlatList, TouchableOpacity, View, StyleSheet, Alert } from 'react-native';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { apiFetch, assertFetchSuccessful } from "../utils";
+import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
 
 import {
     NAV_QR,
@@ -41,14 +41,14 @@ export function CheckinScreen({ navigation }) {
             .then((res) => res.json())
             .then((data) => {
                 if (!data || data.length === 0) {
-                    //Integrate toast message
+                    showAppToast(0, "Oops!", "You have no appointments");
                     return;
                 }
                 setAppointments(data);
             })
             .catch((err) => {
                 console.error(err);
-                Alert.alert("Server Error", err.message || "Something went wrong");
+                showAppToast(1, "Oops!", err.message || "Something went wrong");
             });              
     }
 

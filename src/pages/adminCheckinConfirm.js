@@ -129,7 +129,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
                 })
         } else {
             console.error(
-                "Attempted to update appointment state but params.uuid is not set!"
+                "Attempted to update appointment state but appointment.uuid is not set!"
             );
         }
 
