@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
     StyleSheet,
     Text,
@@ -23,6 +23,7 @@ import { AdminBackBar } from "../components/AdminBackBar";
  * Admin confirm/deny for an appointment. Pass the appointment via route.params,
  * or the first open appointment is loaded when params are omitted (dev / debug).
  */
+
 export function AdminCheckinConfirm({ navigation, route }) {
 
     const commonUi = useTheme((state) => state.getCommonUi)();

@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Text, FlatList, TouchableOpacity, View, StyleSheet } from 'react-native';
-import { getAuth } from 'firebase/auth';
 import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
 
 import {
     NAV_QR,
-    NAV_LOGIN,
 } from "../consts";
 
 import { sty } from "../styles";
@@ -15,37 +13,27 @@ export function CheckinScreen({ navigation }) {
     const [appointments, setAppointments] = useState([]);
 
     useEffect(() => {
-        const fetchAppointments = async () => {
-            const auth = getAuth();
-            const user = auth.currentUser;
-            
-            if (!user) {
-                navigation.navigate(NAV_LOGIN);
-                return;
-            }
-            const token = await user.getIdToken();
+        let cancelled = false;
 
-            apiFetch(`/appointments`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
+        apiFetch(`/appointments`)
+            .then(assertFetchSuccessful)
+            .then((res) => res.json())
+            .then((data) => {
+                if (cancelled) return;
+                if (!data || data.length === 0) {
+                    showAppToast(0, "Oops!", "You have no appointments");
+                    return;
                 }
+                setAppointments(data);
             })
-                .then(assertFetchSuccessful)
-                .then((res) => res.json())
-                .then((data) => {
-                    if (!data || data.length === 0) {
-                        showAppToast(0, "Oops!", "You have no appointments");
-                        return;
-                    }
-                    setAppointments(data);
-                })
-                .catch((err) => {
+            .catch((err) => {
+                if(!cancelled) {
                     console.error(err);
                     showAppToast(1, "Oops!", err.message || "Something went wrong");
-                });   
-            }   
+                }
+            });
             
-            fetchAppointments();       
+            return () => { cancelled = true; };
     }, []);
 
     const renderItem = ({ item }) => {
