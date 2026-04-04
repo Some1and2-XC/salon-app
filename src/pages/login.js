@@ -31,8 +31,6 @@ export function LoginScreen({ navigation }) {
     const onLogin = async () => {
         // TODO centralize email + password validation.
         const trimmedEmail = email.trim();
-        setFeedbackMessage("");
-        setFeedbackType("");
         if (!trimmedEmail || !password) {
             showAppToast(TOAST_TYPE_ERROR, "Please enter your email and password.");
             return;
@@ -41,7 +39,7 @@ export function LoginScreen({ navigation }) {
         signInWithEmailAndPassword(auth, trimmedEmail, password)
             .then(() => apiFetch("/users/me"))
             .then((res) => res.json())
-            .then((res) => navigation.navigate(NAV_HOME, { loggedInAs: trimmedEmail }))
+            .then((res) => navigation.navigate(NAV_HOME, { toastMessage: `Logged in as ${trimmedEmail}`}))
             .catch((error) => showAppToast(TOAST_TYPE_ERROR, "Login Failed", FIREBASE_AUTH_ERROR_MESSAGES[error.code] ?? "Could not send password reset email. Please try again."))
             ;
 

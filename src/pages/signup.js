@@ -78,7 +78,6 @@ export function SignupScreen({ navigation }) {
                 }),
             }))
             .then((res) => res.json())
-            // TODO replace loggedInAs with just pulling from the firebase token itself.
             .then((res) => navigation.navigate(NAV_HOME, {
                 toastMessage: `Account created for ${trimmedEmail}`,
             }))
