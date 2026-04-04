@@ -14,9 +14,9 @@ import {
 import { createUserWithEmailAndPassword } from "firebase/auth";
 
 import { auth } from "../firebaseConfig";
-import { apiFetch } from "../utils";
+import { apiFetch, showAppToast } from "../utils";
 import { useTheme } from "../styles";
-import { NAV_HOME, NAV_LOGIN, FIREBASE_AUTH_ERROR_MESSAGES } from "../consts";
+import { NAV_HOME, NAV_SIGNUP, FIREBASE_AUTH_ERROR_MESSAGES, TOAST_TYPE_SUCCESS, TOAST_TYPE_ERROR } from "../consts";
 import { colorScheme } from "../colorScheme";
 
 export function SignupScreen({ navigation }) {
@@ -29,16 +29,12 @@ export function SignupScreen({ navigation }) {
     const [lastName, setLastName] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [feedbackMessage, setFeedbackMessage] = useState("");
-    const [feedbackType, setFeedbackType] = useState("");
 
     const onSignUp = async () => {
         // TODO centralize email + password validation.
         const trimmedEmail = email.trim();
         const trimmedFirstName = firstName.trim();
         const trimmedLastName = lastName.trim();
-        setFeedbackMessage("");
-        setFeedbackType("");
 
         if (
             !trimmedEmail ||
@@ -47,32 +43,27 @@ export function SignupScreen({ navigation }) {
             !trimmedLastName ||
             !confirmPassword
         ) {
-            setFeedbackMessage("Please fill in all fields.");
-            setFeedbackType("error");
+            showAppToast(TOAST_TYPE_ERROR, "Please fill in all fields.");
             return;
         }
 
         if (trimmedFirstName.length < 2) {
-            setFeedbackMessage("First name must be at least 2 characters.");
-            setFeedbackType("error");
+            showAppToast(TOAST_TYPE_ERROR, "First name must be at least 2 characters.");
             return;
         }
 
         if (trimmedLastName.length < 2) {
-            setFeedbackMessage("Last name must be at least 2 characters.");
-            setFeedbackType("error");
+            showAppToast(TOAST_TYPE_ERROR, "Last name must be at least 2 characters.");
             return;
         }
 
         if (password.length < 6) {
-            setFeedbackMessage("Password must be at least 6 characters.");
-            setFeedbackType("error");
+            showAppToast(TOAST_TYPE_ERROR, "Password must be at least 6 characters.");
             return;
         }
 
         if (password !== confirmPassword) {
-            setFeedbackMessage("Passwords do not match.");
-            setFeedbackType("error");
+            showAppToast(TOAST_TYPE_ERROR, "Passwords do not match.");
             return;
         }
 
@@ -91,12 +82,7 @@ export function SignupScreen({ navigation }) {
             .then((res) => navigation.navigate(NAV_HOME, {
                 toastMessage: `Account created for ${trimmedEmail}`,
             }))
-            .catch((error) => {
-                // TODO replace with global popup
-                console.error("Sign Up Failed", error);
-                setFeedbackMessage(FIREBASE_AUTH_ERROR_MESSAGES[error.code] ?? "Sign up failed. Please try again.");
-                setFeedbackType("error");
-            })
+            .catch((error) => showAppToast(TOAST_TYPE_ERROR, "Sign Up Failed", FIREBASE_AUTH_ERROR_MESSAGES[error.code] ?? "Sign up failed. Please try again."))
             ;
 
     };
@@ -181,19 +167,6 @@ export function SignupScreen({ navigation }) {
                             secureTextEntry
                         />
                     </View>
-
-                    {feedbackMessage ? (
-                        <Text
-                            style={[
-                                commonUi.auth.feedbackText,
-                                feedbackType === "success"
-                                    ? commonUi.auth.feedbackSuccess
-                                    : commonUi.auth.feedbackError,
-                            ]}
-                        >
-                            {feedbackMessage}
-                        </Text>
-                    ) : null}
 
                     <Pressable
                         style={({ pressed }) => [
