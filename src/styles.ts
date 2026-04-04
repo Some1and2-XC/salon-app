@@ -63,6 +63,9 @@ export function useCommonUi(scheme) {
             pageMargins: {
                 padding: 14,
             },
+            pageInnerGaps: {
+                gap: 14,
+            },
             scrollViewWeb: {
                 minHeight: 0,
             },

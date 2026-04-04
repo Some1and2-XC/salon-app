@@ -5,14 +5,15 @@ import { NAV_HOME } from "../consts";
 import { makeStyles as makeBookingStyles, OptionModal } from "./booking";
 
 import { useState, useMemo } from "react";
-import { Button, ScrollView } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 
-export function SetThemeScreen({ navigation }) { 
+export function SetThemeScreen({ navigation }) {
 
     const commonUi = useTheme((state) => state.getCommonUi)();
     const colorScheme = useTheme((state) => state.getScheme)();
     const colorSchemeSet = useTheme((state) => state.setScheme);
     const colorSchemeName = useTheme((state) => state.scheme);
+
     const styles = useMemo(() => makeBookingStyles(colorScheme), [colorScheme]);
 
     const [showSelectionModal, setShowSelectionModal] = useState(false);
@@ -23,17 +24,43 @@ export function SetThemeScreen({ navigation }) {
     }));
 
     return (
-        <ScrollView style={commonUi.screen.pageMargins}>
+        <ScrollView style={ commonUi.screen.pageMargins } contentContainerStyle={ commonUi.screen.pageInnerGaps }>
 
-            <Button
-                title="Select Theme!"
-                onPress={() => setShowSelectionModal(true)}
-                />
+            <View style={commonUi.auth.formCard}>
+                <View style={commonUi.hero.heroTextBlock}>
+                    <Text style={commonUi.hero.heroTitle}>Set the theme of the Application</Text>
+                    <Text style={commonUi.hero.heroTitleAccent}>Application Teme</Text>
+                    <Text style={commonUi.hero.heroText}>
+                        Manage check-ins and book appointments in one clean, smooth
+                        workspace.
+                    </Text>
+                </View>
+            </View>
 
-            <Button
-                title="Back!"
+            <Pressable
+                style={({ pressed }) => [
+                    commonUi.auth.inlineCtaButton,
+                    pressed && commonUi.auth.cardPressed,
+                ]}
+                onPress={() => setShowSelectionModal(true) }
+            >
+                <Text style={commonUi.auth.inlineCtaButtonText}>
+                    Set Theme &#x1F3A8;
+                </Text>
+            </Pressable>
+
+            {/* TODO replace this with the global back button after it is merged */}
+            <Pressable
+                style={({ pressed }) => [
+                    commonUi.auth.inlineCtaButton,
+                    pressed && commonUi.auth.cardPressed,
+                ]}
                 onPress={() => navigation.navigate(NAV_HOME) }
-                />
+            >
+                <Text style={commonUi.auth.inlineCtaButtonText}>
+                    Back
+                </Text>
+            </Pressable>
 
             <OptionModal
                 visible={showSelectionModal}
