@@ -15,10 +15,9 @@ import {
 import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 
 import { auth } from "../firebaseConfig";
-import { apiFetch } from "../utils";
-import { sty } from "../styles";
-import { useTheme } from "../styles";
-import { NAV_HOME, NAV_SIGNUP, FIREBASE_AUTH_ERROR_MESSAGES  } from "../consts";
+import { apiFetch, showAppToast } from "../utils";
+import { sty, useTheme } from "../styles";
+import { NAV_HOME, NAV_SIGNUP, FIREBASE_AUTH_ERROR_MESSAGES, TOAST_TYPE_INFO, TOAST_TYPE_ERROR } from "../consts";
 import { colorScheme } from "../colorScheme";
 
 export function LoginScreen({ navigation }) {
@@ -28,8 +27,6 @@ export function LoginScreen({ navigation }) {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [feedbackMessage, setFeedbackMessage] = useState("");
-    const [feedbackType, setFeedbackType] = useState("");
 
     const onLogin = async () => {
         // TODO centralize email + password validation.
@@ -37,24 +34,15 @@ export function LoginScreen({ navigation }) {
         setFeedbackMessage("");
         setFeedbackType("");
         if (!trimmedEmail || !password) {
-            setFeedbackMessage("Please enter your email and password.");
-            setFeedbackType("error");
+            showAppToast(TOAST_TYPE_ERROR, "Please enter your email and password.");
             return;
         }
 
         signInWithEmailAndPassword(auth, trimmedEmail, password)
             .then(() => apiFetch("/users/me"))
             .then((res) => res.json())
-            // TODO replace loggedInAs with just pulling from the firebase token itself.
             .then((res) => navigation.navigate(NAV_HOME, { loggedInAs: trimmedEmail }))
-            // TODO replace with global popup
-            .catch((error) => {
-                console.error("Login Failed", error);
-                // TODO while replacing with global popup, fixing the inconsistency between the feedback for this
-                // vs feedback for onForgotPassword
-                setFeedbackMessage(FIREBASE_AUTH_ERROR_MESSAGES[error.code] ?? "Could not send password reset email. Please try again.");
-                setFeedbackType("error");
-            })
+            .catch((error) => showAppToast(TOAST_TYPE_ERROR, "Login Failed", FIREBASE_AUTH_ERROR_MESSAGES[error.code] ?? "Could not send password reset email. Please try again."))
             ;
 
     };
@@ -63,21 +51,12 @@ export function LoginScreen({ navigation }) {
         const trimmedEmail = email.trim();
 
         if (!trimmedEmail) {
-            // TODO replace with global popup
-            Alert.alert(
-                "Enter Email",
-                "Type your email above first, then tap Forgot Password."
-            );
-            return;
+            showAppToast(TOAST_TYPE_ERROR, "Enter Email", "Type your email above first, then tap Forgot Password.");
         }
 
         sendPasswordResetEmail(auth, trimmedEmail)
-            .then(() => Alert.alert("Reset Email Sent", "If an account exists for this email, a password reset link has been sent."))
-            // TODO replace with global popup
-            .catch((error) => Alert.alert(
-                "Password Reset",
-                FIREBASE_AUTH_ERROR_MESSAGES[error.code] ?? "Could not send password reset email. Please try again."
-            ))
+            .then(() => showAppToast(TOAST_TYPE_ERROR, "Reset Email Sent", "If an account exists for this email, a password reset link has been sent."))
+            .catch((error) => showAppToast(TOAST_TYPE_ERROR, "Password Reset", FIREBASE_AUTH_ERROR_MESSAGES[error.code] ?? "Could not send password reset email. Please try again."))
             ;
 
     };
@@ -120,19 +99,6 @@ export function LoginScreen({ navigation }) {
                             secureTextEntry
                         />
                     </View>
-
-                    {feedbackMessage ? (
-                        <Text
-                            style={[
-                                commonUi.auth.feedbackText,
-                                feedbackType === "success"
-                                    ? commonUi.auth.feedbackSuccess
-                                    : commonUi.auth.feedbackError,
-                            ]}
-                        >
-                            {feedbackMessage}
-                        </Text>
-                    ) : null}
 
                     <Pressable
                         style={({ pressed }) => [
