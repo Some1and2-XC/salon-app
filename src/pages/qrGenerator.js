@@ -6,11 +6,10 @@ import { sty } from "../styles";
 
 export function QRScreen({ route }) {
 
-    const { userId, appointmentId } = route.params;
+    const { appointment } = route.params;
 
     const qrValue = JSON.stringify({
-        userId,
-        appointmentId
+        appointment
     });
 
     return (

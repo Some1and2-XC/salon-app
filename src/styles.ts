@@ -165,6 +165,14 @@ export function useCommonUi(scheme) {
                 fontSize: 15,
                 fontWeight: "800",
             },
+            heroButton: {
+                zIndex: 2,
+                alignSelf: "stretch",
+                width: "100%",
+            },
+            emptyButton: {
+                marginTop: 4,
+            },
             dividerWrap: {
                 flexDirection: "row",
                 alignItems: "center",
@@ -299,6 +307,12 @@ export function useCommonUi(scheme) {
                 lineHeight: 41,
                 color: scheme.textAccent,
                 marginBottom: 12,
+            },
+            heroText: {
+                fontSize: 15,
+                lineHeight: 22,
+                color: scheme.textSubtle,
+                maxWidth: "78%",
             },
             metaRow: {
                 zIndex: 2,

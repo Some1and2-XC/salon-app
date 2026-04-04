@@ -15,7 +15,8 @@ import {
 
 import { useTheme } from "../styles";
 import { apiFetch } from "../utils";
-import { colorScheme } from "../colorScheme";
+import { colorSchemeGreens } from "../colorScheme";
+import { AdminBackBar } from "../components/AdminBackBar";
 
 function OptionModal({
     visible,
@@ -111,10 +112,11 @@ function OptionModal({
     );
 }
 
-export function AdminAppointmentTypesScreen() {
+export function AdminAppointmentTypesScreen({ navigation }) {
 
     const commonUi = useTheme((state) => state.getCommonUi)();
-    const colorScheme = useTheme((state) => state.getScheme)();
+    const colorScheme =
+        useTheme((state) => state.getScheme)() ?? colorSchemeGreens;
     const styles = useMemo(() => makeStyles(colorScheme), [colorScheme]);
 
     const [tasks, setTasks] = useState([]);
@@ -306,6 +308,8 @@ export function AdminAppointmentTypesScreen() {
 
     return (
         <ScrollView style={commonUi.screen.pageMargins}>
+
+            <AdminBackBar navigation={navigation} />
 
             <View style={commonUi.hero.heroCard}>
                 <View style={commonUi.hero.blobOne} />
@@ -741,6 +745,13 @@ function makeStyles(colorScheme) {
             opacity: 0.55,
         },
 
+        primaryButton: {
+            backgroundColor: colorScheme.darkSurface,
+            borderRadius: 24,
+            paddingVertical: 16,
+            alignItems: "center",
+        },
+
         secondaryButton: {
             backgroundColor: colorScheme.panelBackgroundAlt,
             borderRadius: 24,
@@ -844,6 +855,11 @@ function makeStyles(colorScheme) {
             color: colorScheme.textMuted,
             textAlign: "center",
             paddingVertical: 22,
+        },
+
+        cardPressed: {
+            opacity: 0.93,
+            transform: [{ scale: 0.985 }],
         },
 
         // metaChip: commonUi.hero.metaChip,
