@@ -37,8 +37,8 @@ export function CheckinScreen({ navigation }) {
                 Authorization: `Bearer ${token}`
             }
         })
-            .then((res) => res.json())
             .then(assertFetchSuccessful)
+            .then((res) => res.json())
             .then((data) => {
                 if (!data || data.length === 0) {
                     //Integrate toast message
