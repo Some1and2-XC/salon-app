@@ -6,7 +6,6 @@ import { apiFetch, assertFetchSuccessful } from "../utils";
 import {
     NAV_QR,
     NAV_LOGIN,
-    NAV_CHECKIN_CONFIRM_ADMIN
 } from "../consts";
 
 import { sty } from "../styles";
@@ -63,7 +62,7 @@ export function CheckinScreen({ navigation }) {
             <TouchableOpacity
                 style={styles.card}
                 onPress={() =>
-                    navigation.navigate(NAV_CHECKIN_CONFIRM_ADMIN, {
+                    navigation.navigate(NAV_QR, {
                         appointment: item
                     })
                 }

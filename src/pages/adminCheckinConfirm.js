@@ -16,7 +16,7 @@ import {
 import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
 
-import { apiFetch, assertFetchSuccessful } from "../utils";
+import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
 import { AdminBackBar } from "../components/AdminBackBar";
 
 /**
@@ -77,7 +77,6 @@ export function AdminCheckinConfirm({ navigation, route }) {
 
     useEffect(() => {
         if (!appointment || !appointment.user_uuid) {
-            console.log("cannot find user");
             setUser(null);
             return;
         }
@@ -132,6 +131,13 @@ export function AdminCheckinConfirm({ navigation, route }) {
             console.error(
                 "Attempted to update appointment state but params.uuid is not set!"
             );
+        }
+
+        if(confirmed) {
+            showAppToast(0, "Confirmed!", "Successfully confirmed customer check in!");
+        }
+        else {
+            showAppToast(0, "Denied!", "Denied Customer Check In");
         }
 
         navigation.navigate(NAV_CHECKIN_CONFIRM_ADMIN_LIST);

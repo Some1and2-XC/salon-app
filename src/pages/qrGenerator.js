@@ -8,6 +8,8 @@ export function QRScreen({ route }) {
 
     const { appointment } = route.params;
 
+    console.log(appointment);
+
     const qrValue = JSON.stringify({
         appointment
     });
