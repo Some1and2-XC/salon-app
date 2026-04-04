@@ -12,31 +12,38 @@ import {
     NAV_CHECKIN_CONFIRM_ADMIN_LIST,
     APPOINTMENT_STATE_ACCEPTED,
     APPOINTMENT_STATE_CANCELLED,
+    TOAST_TYPE_SUCCESS
 } from "../consts";
 import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
-import { apiFetch } from "../utils";
+
+import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
 import { AdminBackBar } from "../components/AdminBackBar";
 
 /**
  * Admin confirm/deny for an appointment. Pass the appointment via route.params,
  * or the first open appointment is loaded when params are omitted (dev / debug).
  */
+
 export function AdminCheckinConfirm({ navigation, route }) {
+
     const commonUi = useTheme((state) => state.getCommonUi)();
     const colorScheme =
         useTheme((state) => state.getScheme)() ?? colorSchemeGreens;
     const styles = useMemo(() => makeStyles(colorScheme), [colorScheme]);
 
-    const [params, setParams] = useState(route.params ?? null);
+    const [appointment, setAppointment ] = useState(route.params?.appointment || null);
     const [user, setUser] = useState(null);
-    const [loadingAppointment, setLoadingAppointment] = useState(!route.params);
     const [loadingUser, setLoadingUser] = useState(false);
+    const [loadingAppointment, setLoadingAppointment] = useState(false);
     const [loadError, setLoadError] = useState(null);
 
+    // Check if you have been passed an appointment object or no
+    // If not then render the first appointment from the booked appointments 
+
     useEffect(() => {
-        if (route.params) {
-            setParams(route.params);
+
+        if (appointment) {
             setLoadingAppointment(false);
             return;
         }
@@ -46,11 +53,12 @@ export function AdminCheckinConfirm({ navigation, route }) {
         setLoadError(null);
 
         apiFetch("/appointments", { method: "GET" })
+            .then(assertFetchSuccessful)
             .then((res) => res.json())
             .then((arr) => {
                 if (cancelled) return;
                 if (Array.isArray(arr) && arr[0]) {
-                    setParams(arr[0]);
+                    setAppointment(arr[0]);
                 } else {
                     setLoadError("No appointments found.");
                 }
@@ -65,10 +73,12 @@ export function AdminCheckinConfirm({ navigation, route }) {
         return () => {
             cancelled = true;
         };
-    }, [route.params]);
+    }, []);
+
+    // User Fetching Effect
 
     useEffect(() => {
-        if (!params?.uuid) {
+        if (!appointment || !appointment.user_uuid) {
             setUser(null);
             return;
         }
@@ -77,10 +87,15 @@ export function AdminCheckinConfirm({ navigation, route }) {
         setLoadingUser(true);
         setLoadError(null);
 
-        apiFetch(`/users/${params.uuid}`, { method: "GET" })
+        // Needs to pass the user token to validate the admin (only the admin can access the list of users)
+
+        apiFetch(`/users/${appointment.user_uuid}`, { 
+            method: "GET"
+        })
+            .then(assertFetchSuccessful)
             .then((res) => res.json())
-            .then((u) => {
-                if (!cancelled) setUser(u);
+            .then((user) => {
+                if (!cancelled) setUser(user);
             })
             .catch(() => {
                 if (!cancelled) setLoadError("Could not load customer details.");
@@ -92,7 +107,9 @@ export function AdminCheckinConfirm({ navigation, route }) {
         return () => {
             cancelled = true;
         };
-    }, [params?.uuid]);
+    }, [appointment]);
+
+    // Appointment Fetching Effect
 
     const handleResponse = async (confirmed) => {
         const fetch_body = {
@@ -105,18 +122,24 @@ export function AdminCheckinConfirm({ navigation, route }) {
             }),
         };
 
-        if (params?.uuid) {
-            try {
-                await apiFetch(`/appointments/${params.uuid}`, fetch_body).then(
-                    (res) => res.json()
-                );
-            } catch (e) {
-                console.error(e);
-            }
+        if (appointment.uuid) {
+            apiFetch(`/appointments/${appointment.uuid}`, fetch_body)
+                .then(assertFetchSuccessful)
+                .then(res => res.json())
+                .catch((e) => {
+                    console.error(e);
+                })
         } else {
             console.error(
-                "Attempted to update appointment state but params.uuid is not set!"
+                "Attempted to update appointment state but appointment.uuid is not set!"
             );
+        }
+
+        if(confirmed) {
+            showAppToast(TOAST_TYPE_SUCCESS, "Confirmed!", "Successfully confirmed customer check in!");
+        }
+        else {
+            showAppToast(TOAST_TYPE_SUCCESS, "Denied!", "Denied Customer Check In");
         }
 
         navigation.navigate(NAV_CHECKIN_CONFIRM_ADMIN_LIST);
@@ -125,19 +148,21 @@ export function AdminCheckinConfirm({ navigation, route }) {
     const customerLine = (() => {
         if (loadingUser) return "Loading customer…";
         if (!user) return "—";
+
+        console.log("user", user);
         const name = [user.first_name, user.last_name].filter(Boolean).join(" ");
         const email = user.email ? ` (${user.email})` : "";
         return `${name || "Customer"}${email}`;
     })();
 
-    const lastModifiedMs = params?.last_modified
-        ? Number(params.last_modified)
+    const lastModifiedMs = appointment?.last_modified
+        ? Number(appointment.last_modified)
         : NaN;
     const lastModifiedLabel = Number.isFinite(lastModifiedMs)
         ? new Date(lastModifiedMs).toLocaleString()
         : "—";
 
-    const showSpinner = loadingAppointment || (params && loadingUser);
+    const showSpinner = loadingAppointment || (appointment && loadingUser);
 
     return (
         <ScrollView
@@ -325,3 +350,4 @@ function makeStyles(colorScheme) {
         },
     });
 }
+

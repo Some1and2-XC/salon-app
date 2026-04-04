@@ -4,14 +4,16 @@ import {
     Text,
     Pressable,
     StyleSheet,
-    Alert,
     ActivityIndicator,
 } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
+import { NAV_CHECKIN_CONFIRM_ADMIN } from "../consts";
 
 import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
 import { AdminBackBar } from "../components/AdminBackBar";
+import { useIsFocused } from '@react-navigation/native';
+import { showAppToast } from "../utils";
 
 export function BarcodeScannerScreen({ navigation }) {
     const commonUi = useTheme((state) => state.getCommonUi)();
@@ -19,12 +21,28 @@ export function BarcodeScannerScreen({ navigation }) {
         useTheme((state) => state.getScheme)() ?? colorSchemeGreens;
     const styles = useMemo(() => makeStyles(colorScheme), [colorScheme]);
 
-    const [facing] = useState("back");
     const [permission, requestPermission] = useCameraPermissions();
+    const [scanned, setScanned] = useState(false);
+
+    const isFocused = useIsFocused();
 
     const handleBarCodeScanned = ({ data }) => {
-        console.log("Found URL:", data);
-        Alert.alert("Scanned", data);
+
+        if (scanned) return;
+
+        setScanned(true);
+
+        try {
+            const parsed = JSON.parse(data);
+
+            navigation.navigate(NAV_CHECKIN_CONFIRM_ADMIN, {
+                appointment: parsed.appointment
+            });
+
+        } catch (err) {
+            showAppToast(1, "Oops!", "Invalid QR code");
+            setScanned(false);
+        }
     };
 
     if (!permission) {
@@ -98,14 +116,15 @@ export function BarcodeScannerScreen({ navigation }) {
             </View>
 
             <View style={styles.cameraShell}>
-                <CameraView
+                {isFocused && <CameraView
                     style={StyleSheet.absoluteFill}
-                    barcodeScannerSettings={{
-                        barcodeTypes: ["qr"],
+                    facing="back"
+                    autoFocus="on"
+                    barCodeScannerSettings={{
+                        barCodeTypes: ["qr"],
                     }}
-                    onBarCodeScanned={handleBarCodeScanned}
-                    facing={facing}
-                />
+                    onBarcodeScanned={handleBarCodeScanned}
+                />}
             </View>
         </View>
     );
