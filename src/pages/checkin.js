@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
-import { Text, View, FlatList, TouchableOpacity, Platform } from "react-native";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-
-import { apiFetch } from "../utils";
-import Toast from "react-native-toast-message";
+import { useEffect, useState } from 'react';
+import { Text, Platform, FlatList, TouchableOpacity, View, StyleSheet, Alert } from 'react-native';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { apiFetch, assertFetchSuccessful } from "../utils";
 
 import {
     NAV_QR,
@@ -16,67 +14,61 @@ export function CheckinScreen({ navigation }) {
 
     const [appointments, setAppointments] = useState([]);
 
-    // Auth check
     useEffect(() => {
         const auth = getAuth();
 
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (!user) {
                 navigation.navigate(NAV_LOGIN);
+                return;
             }
+
+            fetchAppointments(user);
         });
 
         return unsubscribe;
     }, []);
 
-    // Fetch appointments
-    useEffect(() => {
-        const auth = getAuth();
-        const user = auth.currentUser;
+    const fetchAppointments = async (user) => {
+        const token = await user.getIdToken();
 
-        if (!user) {
-            navigation.navigate(NAV_LOGIN);
-            return;
-        }
-
-        apiFetch(`/appointments`)
+        apiFetch(`/appointments`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then(assertFetchSuccessful)
             .then((res) => res.json())
             .then((data) => {
-
                 if (!data || data.length === 0) {
-                    if (Platform.OS === 'web') {
-                        alert('You must book an appointment before checking in');
-                    } else {
-                        Toast.show({
-                            type: 'info',
-                            text1: 'No Appointment',
-                            text2: 'You must book an appointment before checking in'
-                        });
-                    }
+                    //Integrate toast message
                     return;
                 }
-
                 setAppointments(data);
             })
-            .catch(console.error);
+            .catch((err) => {
+                console.error(err);
+                Alert.alert("Server Error", err.message || "Something went wrong");
+            });              
+    }
 
-    }, []);
-
-    // Render appointment
     const renderItem = ({ item }) => {
-        const formattedDate = new Date(item.start_time * 1000).toLocaleString();
+        const formattedDate = new Date(item.start_time * 1000).toLocaleString(undefined, {
+            dateStyle: 'medium',
+            timeStyle: 'short'
+        });
 
         return (
             <TouchableOpacity
-                style={sty.card}
+                style={styles.card}
                 onPress={() =>
                     navigation.navigate(NAV_QR, {
-                        userId: item.user_id,
-                        appointmentId: item.id || item._id
+                        userId: item.user_uuid,
+                        appointmentId: item.task_id
                     })
                 }
             >
-                <Text>Appointment</Text>
+                <Text style={styles.title}>Appointment</Text>
                 <Text>{formattedDate}</Text>
             </TouchableOpacity>
         );
@@ -94,3 +86,15 @@ export function CheckinScreen({ navigation }) {
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    card: {
+        padding: 15,
+        marginVertical: 8,
+        backgroundColor: "#eee",
+        borderRadius: 10
+    },
+    title: {
+        fontWeight: "bold"
+    }
+});
