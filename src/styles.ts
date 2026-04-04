@@ -191,6 +191,7 @@ export function useCommonUi(scheme) {
                 transform: [{ scale: 0.98 }],
             },
             inlineCtaButton: {
+                alignItems: "center",
                 backgroundColor: scheme.accentTint,
                 borderRadius: 999,
                 paddingVertical: 12,

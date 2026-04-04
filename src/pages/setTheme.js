@@ -28,11 +28,10 @@ export function SetThemeScreen({ navigation }) {
 
             <View style={commonUi.auth.formCard}>
                 <View style={commonUi.hero.heroTextBlock}>
-                    <Text style={commonUi.hero.heroTitle}>Set the theme of the Application</Text>
-                    <Text style={commonUi.hero.heroTitleAccent}>Application Teme</Text>
+                    <Text style={commonUi.hero.heroTitle}>Set the</Text>
+                    <Text style={commonUi.hero.heroTitleAccent}>Application Theme</Text>
                     <Text style={commonUi.hero.heroText}>
-                        Manage check-ins and book appointments in one clean, smooth
-                        workspace.
+                        Customize the Color Scheme to whatever your heart desires.
                     </Text>
                 </View>
             </View>
