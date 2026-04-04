@@ -24,7 +24,6 @@ import { AdminBackBar } from "../components/AdminBackBar";
  * Admin confirm/deny for an appointment. Pass the appointment via route.params,
  * or the first open appointment is loaded when params are omitted (dev / debug).
  */
-
 export function AdminCheckinConfirm({ navigation, route }) {
 
     const commonUi = useTheme((state) => state.getCommonUi)();
@@ -40,7 +39,6 @@ export function AdminCheckinConfirm({ navigation, route }) {
 
     // Check if you have been passed an appointment object or no
     // If not then render the first appointment from the booked appointments 
-
     useEffect(() => {
 
         if (appointment) {
@@ -67,7 +65,6 @@ export function AdminCheckinConfirm({ navigation, route }) {
     }, []);
 
     // User Fetching Effect
-
     useEffect(() => {
         if (!appointment || !appointment.user_uuid) {
             setUser(null);
@@ -78,7 +75,6 @@ export function AdminCheckinConfirm({ navigation, route }) {
         setLoadError(null);
 
         // Needs to pass the user token to validate the admin (only the admin can access the list of users)
-
         apiFetch(`/users/${appointment.user_uuid}`, { 
             method: "GET"
         })
@@ -92,7 +88,6 @@ export function AdminCheckinConfirm({ navigation, route }) {
     }, [appointment]);
 
     // Appointment Fetching Effect
-
     const handleResponse = async (confirmed) => {
         const fetch_body = {
             method: "PATCH",
