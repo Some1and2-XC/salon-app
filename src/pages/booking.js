@@ -277,8 +277,10 @@ function InfoSelectCard({
 }
 
 export function BookingScreen({ navigation }) {
+
     const commonUi = useTheme((state) => state.getCommonUi)();
-    const colorScheme = useTheme((state) => state.getScheme)();
+    const scheme = useTheme((state) => state.scheme);
+    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeBrown;
     const styles = useMemo(() => makeStyles(colorScheme), [colorScheme]);
 
     const { width, height } = useWindowDimensions();

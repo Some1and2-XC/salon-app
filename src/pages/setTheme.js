@@ -9,9 +9,9 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 export function SetThemeScreen({ navigation }) {
 
     const commonUi = useTheme((state) => state.getCommonUi)();
-    const colorScheme = useTheme((state) => state.getScheme)();
+    const scheme = useTheme((state) => state.scheme);
+    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeBrown;
     const colorSchemeSet = useTheme((state) => state.setScheme);
-    const colorSchemeName = useTheme((state) => state.scheme);
 
     const styles = useMemo(() => makeBookingStyles(colorScheme), [colorScheme]);
 
@@ -64,7 +64,7 @@ export function SetThemeScreen({ navigation }) {
                 visible={showSelectionModal}
                 title="Choose a color Scheme"
                 options={colorSchemeOptions}
-                selectedValue={colorSchemeName}
+                selectedValue={scheme}
                 onSelect={colorSchemeSet}
                 onClose={() => setShowSelectionModal(false)}
                 styles={styles}

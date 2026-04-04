@@ -16,7 +16,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { NAV_BOOKING, NAV_CHECKIN, NAV_LOGIN, NAV_SET_THEME } from "../consts";
 import { useTheme } from "../styles";
-import { colorSchemeGreens } from "../colorScheme";
+import { colorSchemeGreens, MAP_COLOR_SCHEME } from "../colorScheme";
 
 function getGreeting() {
     const hour = new Date().getHours();
@@ -37,7 +37,8 @@ function getTodayLabel() {
 export function HomeScreen({ navigation, route }) {
 
     const commonUi = useTheme((state) => state.getCommonUi)();
-    const colorScheme = useTheme((state) => state.getScheme)() ?? colorSchemeGreens;
+    const scheme = useTheme((state) => state.scheme);
+    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeBrown;
     const styles = useMemo(() => makeStyles(colorScheme), [colorScheme]);
 
     const { width, height } = useWindowDimensions();

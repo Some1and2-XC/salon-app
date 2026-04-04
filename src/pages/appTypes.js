@@ -114,8 +114,10 @@ function OptionModal({
 export function AdminAppointmentTypesScreen() {
 
     const commonUi = useTheme((state) => state.getCommonUi)();
-    const colorScheme = useTheme((state) => state.getScheme)();
+    const scheme = useTheme((state) => state.scheme);
+    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeBrown;
     const styles = useMemo(() => makeStyles(colorScheme), [colorScheme]);
+
 
     const [tasks, setTasks] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);

@@ -24,7 +24,8 @@ import { colorScheme } from "../colorScheme";
 export function LoginScreen({ navigation }) {
 
     const commonUi = useTheme((state) => state.getCommonUi)();
-    const colorScheme = useTheme((state) => state.getScheme)();
+    const scheme = useTheme((state) => state.scheme);
+    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeBrown;
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");

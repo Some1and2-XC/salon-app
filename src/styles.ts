@@ -1,5 +1,5 @@
 import { StyleSheet, Platform } from 'react-native';
-import { colorScheme, colorSchemeGreens, COLOR_SCHEME_BROWN, COLOR_SCHEME_GREENS, MAP_COLOR_SCHEME } from "./colorScheme";
+import { colorScheme, colorSchemePink, COLOR_SCHEME_PINK, MAP_COLOR_SCHEME } from "./colorScheme";
 
 import { create } from "zustand";
 
@@ -330,14 +330,17 @@ export const ASYNC_STORAGE_KEY_COLOR_SCHEME: string = "color-scheme";
 
 // A global color scheme
 export const useTheme = create((set, get) => ({
-        scheme: COLOR_SCHEME_BROWN,
-        reset: () => set((state) => ({ scheme: COLOR_SCHEME_BROWN })),
+        scheme: COLOR_SCHEME_PINK,
+        reset: () => set((state) => ({ scheme: COLOR_SCHEME_PINK })),
         setScheme: async (scheme: string) => {
             set({ scheme });
             await AsyncStorage.setItem(ASYNC_STORAGE_KEY_COLOR_SCHEME, JSON.stringify({ scheme: scheme }));
         },
-        getScheme: () => { return MAP_COLOR_SCHEME[get().scheme] ?? colorSchemeBrown; },
-        getCommonUi: () => useCommonUi(get().getScheme()),
+        getScheme: () => {
+            console.warn("WARNING! Using `useTheme:getScheme` may not update your color scheme when expected! Use other pages as reference for implementation.");
+            return MAP_COLOR_SCHEME[get().scheme] ?? colorSchemePink;
+        },
+        getCommonUi: () => useCommonUi(MAP_COLOR_SCHEME[get().scheme] ?? colorSchemePink),
         loadScheme: async () => {
             const stored = await AsyncStorage.getItem(ASYNC_STORAGE_KEY_COLOR_SCHEME);
             if (stored) {
