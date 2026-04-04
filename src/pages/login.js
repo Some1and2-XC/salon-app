@@ -16,8 +16,8 @@ import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "fir
 
 import { auth } from "../firebaseConfig";
 import { apiFetch, showAppToast } from "../utils";
-import { sty, useTheme } from "../styles";
-import { NAV_HOME, NAV_SIGNUP, FIREBASE_AUTH_ERROR_MESSAGES, TOAST_TYPE_INFO, TOAST_TYPE_ERROR } from "../consts";
+import { useTheme } from "../styles";
+import { NAV_HOME, NAV_SIGNUP, FIREBASE_AUTH_ERROR_MESSAGES, TOAST_TYPE_SUCCESS, TOAST_TYPE_ERROR } from "../consts";
 import { colorScheme } from "../colorScheme";
 
 export function LoginScreen({ navigation }) {
@@ -55,7 +55,7 @@ export function LoginScreen({ navigation }) {
         }
 
         sendPasswordResetEmail(auth, trimmedEmail)
-            .then(() => showAppToast(TOAST_TYPE_ERROR, "Reset Email Sent", "If an account exists for this email, a password reset link has been sent."))
+            .then(() => showAppToast(TOAST_TYPE_SUCCESS, "Reset Email Sent", "If an account exists for this email, a password reset link has been sent."))
             .catch((error) => showAppToast(TOAST_TYPE_ERROR, "Password Reset", FIREBASE_AUTH_ERROR_MESSAGES[error.code] ?? "Could not send password reset email. Please try again."))
             ;
 
