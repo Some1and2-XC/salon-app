@@ -39,8 +39,7 @@ export function CheckinScreen({ navigation }) {
                 return res;
             })
             .then((res) => navigation.navigate(NAV_QR, { data: data }))
-            // TODO replace with global popup handler.
-            .catch(console.error)
+            .catch((error) => showAppToast(TOAST_TYPE_ERROR, `Getting Appointments Failed! Error: \`${error}\``))
             ;
 
     }
