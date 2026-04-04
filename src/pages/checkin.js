@@ -4,6 +4,8 @@ import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
 
 import {
     NAV_QR,
+    TOAST_TYPE_SUCCESS,
+    TOAST_TYPE_ERROR
 } from "../consts";
 
 import { sty } from "../styles";
@@ -21,7 +23,7 @@ export function CheckinScreen({ navigation }) {
             .then((data) => {
                 if (cancelled) return;
                 if (!data || data.length === 0) {
-                    showAppToast(0, "Oops!", "You have no appointments");
+                    showAppToast(TOAST_TYPE_SUCCESS, "Oops!", "You have no appointments");
                     return;
                 }
                 setAppointments(data);
@@ -29,7 +31,7 @@ export function CheckinScreen({ navigation }) {
             .catch((err) => {
                 if(!cancelled) {
                     console.error(err);
-                    showAppToast(1, "Oops!", err.message || "Something went wrong");
+                    showAppToast(TOAST_TYPE_ERROR, "Oops!", err.message || "Something went wrong");
                 }
             });
             

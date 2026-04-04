@@ -12,6 +12,7 @@ import {
     NAV_CHECKIN_CONFIRM_ADMIN_LIST,
     APPOINTMENT_STATE_ACCEPTED,
     APPOINTMENT_STATE_CANCELLED,
+    TOAST_TYPE_SUCCESS
 } from "../consts";
 import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
@@ -135,10 +136,10 @@ export function AdminCheckinConfirm({ navigation, route }) {
         }
 
         if(confirmed) {
-            showAppToast(0, "Confirmed!", "Successfully confirmed customer check in!");
+            showAppToast(TOAST_TYPE_SUCCESS, "Confirmed!", "Successfully confirmed customer check in!");
         }
         else {
-            showAppToast(0, "Denied!", "Denied Customer Check In");
+            showAppToast(TOAST_TYPE_SUCCESS, "Denied!", "Denied Customer Check In");
         }
 
         navigation.navigate(NAV_CHECKIN_CONFIRM_ADMIN_LIST);
