@@ -48,7 +48,6 @@ const ADMIN_ACTIONS = [
         title: "Confirm check-in",
         description:
             "Review arrivals and confirm client check-ins from the admin queue.",
-        variant: "primary",
     },
     {
         route: NAV_CHECKIN_CONFIRM_ADMIN_LIST,
@@ -57,7 +56,6 @@ const ADMIN_ACTIONS = [
         title: "Check-in list",
         description:
             "See all pending confirmations and manage the check-in pipeline.",
-        variant: "secondary",
     },
     {
         route: NAV_APP_TYPES,
@@ -65,7 +63,6 @@ const ADMIN_ACTIONS = [
         icon: "◇",
         title: "Appointment types",
         description: "Configure services and how they appear when booking.",
-        variant: "primary",
     },
     {
         route: NAV_BARCODE_SCANNER,
@@ -73,7 +70,6 @@ const ADMIN_ACTIONS = [
         icon: "▣",
         title: "Barcode scanner",
         description: "Open the scanner for quick product or code lookup.",
-        variant: "secondary",
     },
     {
         route: NAV_ADD_EMPLOYEE,
@@ -81,7 +77,6 @@ const ADMIN_ACTIONS = [
         icon: "✶",
         title: "Add employee",
         description: "Create staff accounts and keep the roster up to date.",
-        variant: "primary",
     },
     {
         route: NAV_SET_AVAILABILITY,
@@ -89,7 +84,6 @@ const ADMIN_ACTIONS = [
         icon: "⏱",
         title: "Set availability",
         description: "Define when stylists and services can be booked.",
-        variant: "secondary",
     },
 ];
 
@@ -231,56 +225,26 @@ export function AdminHomepageScreen({ navigation }) {
                 </View>
 
                 {ADMIN_ACTIONS.map((action) =>
-                    action.variant === "primary" ? (
-                        <Pressable
-                            key={action.route}
-                            style={({ pressed }) => [
-                                styles.primaryActionCard,
-                                pressed && styles.cardPressed,
-                            ]}
-                            onPress={() => navigation.navigate(action.route)}
-                        >
-                            <View style={styles.cardGlow} />
-                            <View style={styles.cardHeaderRow}>
-                                <View style={styles.iconWrapLarge}>
-                                    <Text style={styles.iconLarge}>{action.icon}</Text>
-                                </View>
-                                <View style={styles.pillDark}>
-                                    <Text style={styles.pillDarkText}>{action.pill}</Text>
-                                </View>
+                    <Pressable
+                        key={action.route}
+                        style={({ pressed }) => [
+                            styles.secondaryActionCardFull,
+                            pressed && styles.cardPressed,
+                        ]}
+                        onPress={() => navigation.navigate(action.route)}
+                    >
+                        <View style={styles.smallTopRow}>
+                            <View style={styles.iconWrapSmall}>
+                                <Text style={styles.iconSmall}>{action.icon}</Text>
                             </View>
-                            <Text style={styles.primaryTitle}>{action.title}</Text>
-                            <Text style={styles.primaryDescription}>
-                                {action.description}
-                            </Text>
+                            <Text style={styles.cornerText}>{action.pill}</Text>
+                        </View>
 
-                            <View style={styles.primaryFooter}>
-                                <Text style={styles.primaryFooterText}>Open</Text>
-                                <Text style={styles.primaryArrow}>→</Text>
-                            </View>
-                        </Pressable>
-                    ) : (
-                        <Pressable
-                            key={action.route}
-                            style={({ pressed }) => [
-                                styles.secondaryActionCardFull,
-                                pressed && styles.cardPressed,
-                            ]}
-                            onPress={() => navigation.navigate(action.route)}
-                        >
-                            <View style={styles.smallTopRow}>
-                                <View style={styles.iconWrapSmall}>
-                                    <Text style={styles.iconSmall}>{action.icon}</Text>
-                                </View>
-                                <Text style={styles.cornerText}>{action.pill}</Text>
-                            </View>
-
-                            <Text style={styles.secondaryTitle}>{action.title}</Text>
-                            <Text style={styles.secondaryDescription}>
-                                {action.description}
-                            </Text>
-                        </Pressable>
-                    )
+                        <Text style={styles.secondaryTitle}>{action.title}</Text>
+                        <Text style={styles.secondaryDescription}>
+                            {action.description}
+                        </Text>
+                    </Pressable>
                 )}
 
                 <View style={styles.bottomSpacer} />
