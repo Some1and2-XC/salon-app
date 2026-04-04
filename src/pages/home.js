@@ -116,9 +116,9 @@ export function HomeScreen({ navigation, route }) {
     const heroMinHeight = Math.max(240, Math.min(height * 0.33, 310));
 
     return (
-        <ScrollView>
+        <ScrollView style={ commonUi.screen.pageMargins }>
             <Animated.View
-                style={[ commonUi.screen.pageMargins, {
+                style={[ commonUi.screen.pageInnerGaps, {
                     opacity: fadeIn,
                     transform: [{ translateY: slideUp }],
                 }]}
@@ -171,12 +171,13 @@ export function HomeScreen({ navigation, route }) {
                         <View style={commonUi.hero.heroFadeMain} />
                         <View style={commonUi.hero.heroFadeSmall} />
                     </View>
+
                 </View>
 
                 <Pressable
                     style={({ pressed }) => [
                         styles.primaryActionCard,
-                        pressed && styles.cardPressed,
+                        pressed && commonUi.auth.cardPressed,
                     ]}
                     onPress={() => navigation.navigate(NAV_CHECKIN)}
                     >
@@ -205,7 +206,7 @@ export function HomeScreen({ navigation, route }) {
                 <Pressable
                     style={({ pressed }) => [
                         styles.secondaryActionCardFull,
-                        pressed && styles.cardPressed,
+                        pressed && commonUi.auth.cardPressed,
                     ]}
                     onPress={() => navigation.navigate(NAV_BOOKING)}
                     >
@@ -217,33 +218,29 @@ export function HomeScreen({ navigation, route }) {
                     </View>
 
                     <Text style={styles.secondaryTitle}>Book Appointment</Text>
-                    <Text style={styles.secondaryDescription}>
+                    <Text style={commonUi.hero.heroText}>
                         Create a new booking with a smoother scheduling flow.
                     </Text>
                 </Pressable>
 
-                <View style={styles.bottomSpacer} />
-
                 <Pressable
                     style={({ pressed }) => [
-                        styles.logoutBar,
-                        pressed && styles.logoutBarPressed,
+                        commonUi.auth.inlineCtaButton,
+                        pressed && commonUi.auth.cardPressed,
                     ]}
                     onPress={() => navigation.navigate(NAV_SET_THEME) }
                 >
-                    <Text style={styles.logoutBarText}>Set Theme &#x1F3A8;</Text>
+                    <Text style={commonUi.auth.inlineCtaButtonText}>Set Theme &#x1F3A8;</Text>
                 </Pressable>
-
-                <View style={styles.bottomSpacer} />
 
                 <Pressable
                     style={({ pressed }) => [
-                        styles.logoutBar,
-                        pressed && styles.logoutBarPressed,
+                        commonUi.auth.inlineCtaButton,
+                        pressed && commonUi.auth.cardPressed,
                     ]}
                     onPress={handleLogout}
                 >
-                    <Text style={styles.logoutBarText}>Log Out</Text>
+                    <Text style={commonUi.auth.inlineCtaButtonText}>Log Out</Text>
                 </Pressable>
 
             </Animated.View>
@@ -417,44 +414,6 @@ function makeStyles(colorScheme) {
             marginBottom: 6,
         },
 
-        secondaryDescription: {
-            fontSize: 13.5,
-            lineHeight: 20,
-            color: colorScheme.textMuted,
-            maxWidth: "92%",
-        },
-
-        bottomSpacer: {
-            height: 10,
-        },
-
-        logoutBar: {
-            backgroundColor: colorScheme.accentButton,
-            borderRadius: 28,
-            paddingVertical: 16,
-            paddingHorizontal: 18,
-            alignItems: "center",
-            justifyContent: "center",
-            marginTop: 6,
-            width: "100%",
-        },
-
-        logoutBarPressed: {
-            opacity: 0.92,
-            transform: [{ scale: 0.99 }],
-        },
-
-        logoutBarText: {
-            fontSize: 15,
-            fontWeight: "800",
-            color: colorScheme.textDefault,
-            letterSpacing: 0.2,
-        },
-
-        cardPressed: {
-            opacity: 0.93,
-            transform: [{ scale: 0.985 }],
-        },
     });
 
 }

@@ -199,13 +199,11 @@ export function useCommonUi(scheme) {
                 transform: [{ scale: 0.98 }],
             },
             inlineCtaButton: {
-                alignItems: "center",
-                backgroundColor: scheme.accentTint,
+                backgroundColor: scheme.accentButton,
                 borderRadius: 999,
-                paddingVertical: 12,
-                paddingHorizontal: 18,
-                borderWidth: 1,
-                borderColor: scheme.borderAccentSoft,
+                padding: 14,
+                alignItems: "center",
+                justifyContent: "center",
             },
             inlineCtaButtonText: {
                 fontSize: 14,
