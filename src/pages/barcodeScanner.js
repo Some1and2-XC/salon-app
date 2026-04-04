@@ -28,8 +28,6 @@ export function BarcodeScannerScreen({ navigation }) {
 
     const handleBarCodeScanned = ({ data }) => {
 
-        console.log("SCANNED DATA:");
-
         if (scanned) return;
 
         setScanned(true);
