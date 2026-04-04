@@ -1,6 +1,5 @@
 import { useTheme } from "../styles";
 import { MAP_COLOR_SCHEME } from "../colorScheme";
-import { NAV_HOME } from "../consts";
 // I knows this is sorta silly to do like this but it's fine
 import { makeStyles as makeBookingStyles, OptionModal } from "./booking";
 
@@ -54,7 +53,7 @@ export function SetThemeScreen({ navigation }) {
                     commonUi.auth.inlineCtaButton,
                     pressed && commonUi.auth.cardPressed,
                 ]}
-                onPress={() => navigation.navigate(NAV_HOME) }
+                onPress={() => navigation.goBack() }
             >
                 <Text style={commonUi.auth.inlineCtaButtonText}>
                     Back
