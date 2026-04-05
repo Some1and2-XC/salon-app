@@ -38,10 +38,10 @@ function generateTimes() {
 }
 
 function toSecondsFromWeekStart(date, time) {
-    const d = new Date(`${date}T${time}:00`);
-    const dayOfWeek = d.getDay();
-    const hours = d.getHours();
-    const minutes = d.getMinutes();
+    const dateObj = new Date(`${date}T${time}:00`);
+    const dayOfWeek = dateObj.getDay();
+    const hours = dateObj.getHours();
+    const minutes = dateObj.getMinutes();
     return dayOfWeek * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60;
 }
 
@@ -174,8 +174,6 @@ export function SetAvailabilityScreen({ navigation }) {
             .then(assertFetchSuccessful)
             .then((res) => res.json())
             .then((res) => {
-                        console.log("availability response:", JSON.stringify(d));
-
                 setCurrentAvailability([...currentAvailability, res]);
                 setStartTime("");
                 setEndTime("");
