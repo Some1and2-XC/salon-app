@@ -1,6 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
-    StyleSheet,
     Text,
     View,
     Pressable,
@@ -90,7 +89,6 @@ const ADMIN_ACTIONS = [
 export function AdminHomepageScreen({ navigation }) {
     const commonUi = useTheme((state) => state.getCommonUi)();
     const colorScheme = useTheme((state) => state.getScheme)() ?? colorSchemeGreens;
-    const styles = useMemo(() => makeStyles(colorScheme), [colorScheme]);
 
     const { width } = useWindowDimensions();
 
@@ -168,10 +166,8 @@ export function AdminHomepageScreen({ navigation }) {
             <Animated.View
                 style={[
                     commonUi.screen.pageMargins,
-                    {
-                        opacity: fadeIn,
-                        transform: [{ translateY: slideUp }],
-                    },
+                    commonUi.screen.pageInnerGaps,
+                    { opacity: fadeIn, transform: [{ translateY: slideUp }] },
                 ]}
             >
                 <View style={commonUi.hero.heroCard}>
@@ -228,241 +224,43 @@ export function AdminHomepageScreen({ navigation }) {
                     <Pressable
                         key={action.route}
                         style={({ pressed }) => [
-                            styles.secondaryActionCardFull,
-                            pressed && styles.cardPressed,
+                            commonUi.card.secondaryActionCard,
+                            pressed && commonUi.card.cardPressed,
                         ]}
                         onPress={() => navigation.navigate(action.route)}
                     >
-                        <View style={styles.smallTopRow}>
-                            <View style={styles.iconWrapSmall}>
-                                <Text style={styles.iconSmall}>{action.icon}</Text>
+                        <View style={commonUi.card.smallTopRow}>
+                            <View style={commonUi.card.iconWrapSmall}>
+                                <Text style={commonUi.card.iconSmall}>{action.icon}</Text>
                             </View>
-                            <Text style={styles.cornerText}>{action.pill}</Text>
+                            <Text style={commonUi.card.cornerText}>{action.pill}</Text>
                         </View>
 
-                        <Text style={styles.secondaryTitle}>{action.title}</Text>
-                        <Text style={styles.secondaryDescription}>
-                            {action.description}
-                        </Text>
+                        <Text style={commonUi.card.secondaryTitle}>{action.title}</Text>
+                        <Text style={commonUi.card.secondaryDescription}>{action.description}</Text>
                     </Pressable>
-                )}
-
-                <View style={styles.bottomSpacer} />
+                ))}
 
                 <Pressable
                     style={({ pressed }) => [
-                        styles.logoutBar,
-                        pressed && styles.logoutBarPressed,
+                        commonUi.auth.inlineCtaButton,
+                        pressed && commonUi.card.pressed,
                     ]}
                     onPress={() => navigation.navigate(NAV_SET_THEME)}
                 >
-                    <Text style={styles.logoutBarText}>Set Theme &#x1F3A8;</Text>
+                    <Text style={commonUi.auth.inlineCtaButtonText}>Set Theme &#x1F3A8;</Text>
                 </Pressable>
-
-                <View style={styles.bottomSpacer} />
 
                 <Pressable
                     style={({ pressed }) => [
-                        styles.logoutBar,
-                        pressed && styles.logoutBarPressed,
+                        commonUi.auth.inlineCtaButton,
+                        pressed && commonUi.card.pressed,
                     ]}
                     onPress={handleLogout}
                 >
-                    <Text style={styles.logoutBarText}>Log Out</Text>
+                    <Text style={commonUi.auth.inlineCtaButtonText}>Log Out</Text>
                 </Pressable>
             </Animated.View>
         </ScrollView>
     );
-}
-
-function makeStyles(colorScheme) {
-    return StyleSheet.create({
-        heroText: {
-            fontSize: 15,
-            lineHeight: 22,
-            color: colorScheme.textSubtle,
-            maxWidth: "78%",
-        },
-
-        primaryActionCard: {
-            position: "relative",
-            overflow: "hidden",
-            backgroundColor: colorScheme.darkSurface,
-            borderRadius: 28,
-            paddingHorizontal: 18,
-            paddingTop: 18,
-            paddingBottom: 18,
-            marginBottom: 14,
-            minHeight: 205,
-            width: "100%",
-        },
-
-        cardGlow: {
-            position: "absolute",
-            width: 170,
-            height: 170,
-            borderRadius: 85,
-            backgroundColor: colorScheme.accentGlow,
-            top: -40,
-            right: -30,
-            opacity: 0.13,
-        },
-
-        cardHeaderRow: {
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 18,
-        },
-
-        iconWrapLarge: {
-            width: 52,
-            height: 52,
-            borderRadius: 26,
-            backgroundColor: colorScheme.overlayWhiteSoft,
-            alignItems: "center",
-            justifyContent: "center",
-        },
-
-        iconLarge: {
-            fontSize: 22,
-            color: colorScheme.accentHighlight,
-        },
-
-        pillDark: {
-            backgroundColor: colorScheme.overlayAccentSoft,
-            borderRadius: 999,
-            paddingHorizontal: 11,
-            paddingVertical: 7,
-        },
-
-        pillDarkText: {
-            color: colorScheme.accentHighlight,
-            fontSize: 12,
-            fontWeight: "700",
-        },
-
-        primaryTitle: {
-            fontSize: 26,
-            lineHeight: 31,
-            fontWeight: "800",
-            color: colorScheme.whiteWarm,
-            marginBottom: 9,
-            maxWidth: "82%",
-        },
-
-        primaryDescription: {
-            fontSize: 14,
-            lineHeight: 21,
-            color: colorScheme.textOnDark,
-            maxWidth: "94%",
-            marginBottom: 18,
-        },
-
-        primaryFooter: {
-            marginTop: "auto",
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-        },
-
-        primaryFooterText: {
-            color: colorScheme.whiteWarm,
-            fontWeight: "700",
-            fontSize: 14.5,
-        },
-
-        primaryArrow: {
-            color: colorScheme.accentHighlight,
-            fontSize: 22,
-            fontWeight: "700",
-        },
-
-        secondaryActionCardFull: {
-            backgroundColor: colorScheme.whiteWarmCard,
-            borderRadius: 28,
-            paddingHorizontal: 18,
-            paddingTop: 18,
-            paddingBottom: 18,
-            minHeight: 150,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLight,
-            width: "100%",
-            marginBottom: 14,
-        },
-
-        smallTopRow: {
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 12,
-        },
-
-        iconWrapSmall: {
-            width: 40,
-            height: 40,
-            borderRadius: 20,
-            backgroundColor: colorScheme.panelBackgroundAlt,
-            alignItems: "center",
-            justifyContent: "center",
-        },
-
-        iconSmall: {
-            fontSize: 18,
-            color: colorScheme.textAccentSoft,
-        },
-
-        cornerText: {
-            fontSize: 12,
-            fontWeight: "700",
-            color: colorScheme.textLabel,
-        },
-
-        secondaryTitle: {
-            fontSize: 22,
-            lineHeight: 26,
-            fontWeight: "800",
-            color: colorScheme.textDark,
-            marginBottom: 6,
-        },
-
-        secondaryDescription: {
-            fontSize: 13.5,
-            lineHeight: 20,
-            color: colorScheme.textMuted,
-            maxWidth: "92%",
-        },
-
-        bottomSpacer: {
-            height: 10,
-        },
-
-        logoutBar: {
-            backgroundColor: colorScheme.accentButton,
-            borderRadius: 28,
-            paddingVertical: 16,
-            paddingHorizontal: 18,
-            alignItems: "center",
-            justifyContent: "center",
-            marginTop: 6,
-            width: "100%",
-        },
-
-        logoutBarPressed: {
-            opacity: 0.92,
-            transform: [{ scale: 0.99 }],
-        },
-
-        logoutBarText: {
-            fontSize: 15,
-            fontWeight: "800",
-            color: colorScheme.textDefault,
-            letterSpacing: 0.2,
-        },
-
-        cardPressed: {
-            opacity: 0.93,
-            transform: [{ scale: 0.985 }],
-        },
-    });
 }

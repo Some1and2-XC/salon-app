@@ -146,22 +146,23 @@ export function AdminCheckinConfirm({ navigation, route }) {
             style={{ backgroundColor: colorScheme.pageBackground }}
             contentContainerStyle={[
                 commonUi.screen.pageMargins,
+                commonUi.screen.pageInnerGaps,
                 { paddingBottom: 28 },
             ]}
         >
             <AdminBackBar navigation={navigation} />
 
-            <View style={styles.heroCard}>
-                <View style={styles.blobSoft} />
-                <Text style={styles.kicker}>Front desk</Text>
-                <Text style={styles.title}>Confirm booking</Text>
-                <Text style={styles.subtitle}>
+            <View style={commonUi.card.accentCard}>
+                <View style={commonUi.card.accentCardBlob} />
+                <Text style={commonUi.card.kicker}>Front desk</Text>
+                <Text style={commonUi.card.cardTitle}>Confirm booking</Text>
+                <Text style={commonUi.card.cardSubtitle}>
                     Review the visit below, then accept or decline the check-in.
                 </Text>
             </View>
 
             {loadError ? (
-                <View style={styles.panel}>
+                <View style={commonUi.card.pageCard}>
                     <Text style={styles.errorText}>{loadError}</Text>
                 </View>
             ) : null}
@@ -174,7 +175,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
                     />
                 </View>
             ) : (
-                <View style={styles.panel}>
+                <View style={commonUi.card.pageCard}>
                     <View style={styles.row}>
                         <Text style={styles.label}>Customer</Text>
                         <Text style={styles.value}>{customerLine}</Text>
@@ -186,19 +187,13 @@ export function AdminCheckinConfirm({ navigation, route }) {
 
                     <View style={styles.actions}>
                         <Pressable
-                            style={({ pressed }) => [
-                                styles.btnConfirm,
-                                pressed && styles.pressed,
-                            ]}
+                            style={({ pressed }) => [styles.btnConfirm, pressed && commonUi.card.pressed]}
                             onPress={() => handleResponse(true)}
                         >
                             <Text style={styles.btnConfirmText}>Confirm</Text>
                         </Pressable>
                         <Pressable
-                            style={({ pressed }) => [
-                                styles.btnDeny,
-                                pressed && styles.pressed,
-                            ]}
+                            style={({ pressed }) => [styles.btnDeny, pressed && commonUi.card.pressed]}
                             onPress={() => handleResponse(false)}
                         >
                             <Text style={styles.btnDenyText}>Deny</Text>
@@ -212,57 +207,6 @@ export function AdminCheckinConfirm({ navigation, route }) {
 
 function makeStyles(colorScheme) {
     return StyleSheet.create({
-        heroCard: {
-            position: "relative",
-            overflow: "hidden",
-            borderRadius: 28,
-            paddingHorizontal: 20,
-            paddingVertical: 22,
-            backgroundColor: colorScheme.accentTint,
-            marginBottom: 16,
-            borderWidth: 1,
-            borderColor: colorScheme.borderAccentSoft,
-        },
-        blobSoft: {
-            position: "absolute",
-            width: 120,
-            height: 120,
-            borderRadius: 60,
-            backgroundColor: colorScheme.accentBlob,
-            right: -30,
-            top: -20,
-            opacity: 0.25,
-        },
-        kicker: {
-            fontSize: 12,
-            fontWeight: "700",
-            letterSpacing: 1.5,
-            textTransform: "uppercase",
-            color: colorScheme.textAccentSoft,
-            marginBottom: 8,
-            zIndex: 1,
-        },
-        title: {
-            fontSize: 26,
-            fontWeight: "800",
-            color: colorScheme.textDarkest,
-            marginBottom: 8,
-            zIndex: 1,
-        },
-        subtitle: {
-            fontSize: 14,
-            lineHeight: 21,
-            color: colorScheme.textSubtle,
-            maxWidth: "95%",
-            zIndex: 1,
-        },
-        panel: {
-            backgroundColor: colorScheme.whiteWarmCard,
-            borderRadius: 24,
-            padding: 18,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLight,
-        },
         row: {
             marginBottom: 14,
         },
@@ -321,10 +265,5 @@ function makeStyles(colorScheme) {
             fontSize: 15,
             fontWeight: "800",
         },
-        pressed: {
-            opacity: 0.92,
-            transform: [{ scale: 0.99 }],
-        },
     });
 }
-

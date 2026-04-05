@@ -9,7 +9,6 @@ import {
     Pressable,
     ScrollView,
     ActivityIndicator,
-    SafeAreaView,
     StatusBar,
     Animated,
     useWindowDimensions,
@@ -18,7 +17,6 @@ import { Calendar } from "react-native-calendars";
 import { apiFetch, assertFetchSuccessful } from "../utils";
 import { NAV_HOME } from "../consts";
 import { useTheme } from "../styles";
-import { colorScheme } from "../colorScheme";
 
 const EMPLOYEE_OPTIONS = {
     ANY: "ANY",
@@ -141,8 +139,9 @@ export function OptionModal({
     onSelect,
     onClose,
     emptyText = "No options available",
-    styles,
 }) {
+    const commonUi = useTheme((state) => state.getCommonUi)();
+
     return (
         <Modal
             visible={visible}
@@ -150,28 +149,26 @@ export function OptionModal({
             animationType="fade"
             onRequestClose={onClose}
         >
-            <View style={styles.modalOverlay}>
-                <Pressable style={styles.modalBackdrop} onPress={onClose} />
+            <View style={commonUi.modal.overlay}>
+                <Pressable style={commonUi.modal.backdrop} onPress={onClose} />
 
-                <View style={styles.optionModalCard}>
-                    <View style={styles.optionModalHeader}>
-                        <Text style={styles.optionModalTitle}>{title}</Text>
+                <View style={commonUi.modal.card}>
+                    <View style={commonUi.modal.header}>
+                        <Text style={commonUi.modal.title}>{title}</Text>
 
-                        <Pressable onPress={onClose} style={styles.closeButton}>
-                            <Text style={styles.optionModalClose}>✕</Text>
+                        <Pressable onPress={onClose} style={commonUi.modal.closeButton}>
+                            <Text style={commonUi.modal.closeText}>✕</Text>
                         </Pressable>
                     </View>
 
                     <ScrollView
-                        style={styles.optionModalList}
-                        contentContainerStyle={styles.optionModalListContent}
+                        style={commonUi.modal.list}
+                        contentContainerStyle={commonUi.modal.listContent}
                         showsVerticalScrollIndicator={true}
                         nestedScrollEnabled={true}
                     >
                         {options.length === 0 ? (
-                            <Text style={styles.emptyOptionText}>
-                                {emptyText}
-                            </Text>
+                            <Text style={commonUi.modal.emptyText}>{emptyText}</Text>
                         ) : (
                             options.map((option) => {
                                 const isSelected =
@@ -181,22 +178,20 @@ export function OptionModal({
                                     <Pressable
                                         key={String(option.value)}
                                         style={({ pressed }) => [
-                                            styles.optionRow,
-                                            isSelected &&
-                                                styles.optionRowSelected,
-                                            pressed && styles.optionRowPressed,
+                                            commonUi.modal.optionRow,
+                                            isSelected && commonUi.modal.optionRowSelected,
+                                            pressed && commonUi.modal.optionRowPressed,
                                         ]}
                                         onPress={() => {
                                             onSelect(option.value);
                                             onClose();
                                         }}
                                     >
-                                        <View style={styles.optionTextWrap}>
+                                        <View style={commonUi.modal.optionTextWrap}>
                                             <Text
                                                 style={[
-                                                    styles.optionLabel,
-                                                    isSelected &&
-                                                        styles.optionLabelSelected,
+                                                    commonUi.modal.optionLabel,
+                                                    isSelected && commonUi.modal.optionLabelSelected,
                                                 ]}
                                             >
                                                 {option.label}
@@ -205,9 +200,8 @@ export function OptionModal({
                                             {!!option.subLabel && (
                                                 <Text
                                                     style={[
-                                                        styles.optionSubLabel,
-                                                        isSelected &&
-                                                            styles.optionSubLabelSelected,
+                                                        commonUi.modal.optionSubLabel,
+                                                        isSelected && commonUi.modal.optionSubLabelSelected,
                                                     ]}
                                                 >
                                                     {option.subLabel}
@@ -216,9 +210,7 @@ export function OptionModal({
                                         </View>
 
                                         {isSelected && (
-                                            <Text style={styles.optionCheck}>
-                                                ✓
-                                            </Text>
+                                            <Text style={commonUi.modal.optionCheck}>✓</Text>
                                         )}
                                     </Pressable>
                                 );
@@ -242,35 +234,35 @@ function InfoSelectCard({
     styles,
 }) {
     return (
-        <View style={styles.secondaryActionCardFull}>
-            <View style={styles.smallTopRow}>
-                <View style={styles.iconWrapSmall}>
-                    <Text style={styles.iconSmall}>{step}</Text>
+        <View style={commonUi.card.secondaryActionCard}>
+            <View style={commonUi.card.smallTopRow}>
+                <View style={commonUi.card.iconWrapSmall}>
+                    <Text style={[commonUi.card.iconSmall, { fontSize: 13, fontWeight: "800" }]}>{step}</Text>
                 </View>
 
-                {!!meta && <Text style={styles.cornerText}>{meta}</Text>}
+                {!!meta && <Text style={commonUi.card.cornerText}>{meta}</Text>}
             </View>
 
-            <Text style={styles.secondaryTitle}>{title}</Text>
-            <Text style={styles.secondaryDescription}>{label}</Text>
+            <Text style={commonUi.card.secondaryTitle}>{title}</Text>
+            <Text style={[commonUi.card.secondaryDescription, { marginBottom: 14 }]}>{label}</Text>
 
             <Pressable
                 style={({ pressed }) => [
-                    styles.selectButton,
-                    disabled && styles.selectButtonDisabled,
-                    pressed && !disabled && styles.cardPressed,
+                    commonUi.form.selectButton,
+                    disabled && commonUi.form.selectButtonDisabled,
+                    pressed && !disabled && commonUi.card.cardPressed,
                 ]}
                 onPress={disabled ? undefined : onPress}
             >
                 <Text
                     style={[
-                        styles.selectValue,
-                        disabled && styles.selectValueMuted,
+                        commonUi.form.selectValue,
+                        disabled && commonUi.form.selectValueMuted,
                     ]}
                 >
                     {value}
                 </Text>
-                <Text style={styles.selectChevron}>⌄</Text>
+                <Text style={commonUi.form.selectChevron}>⌄</Text>
             </Pressable>
         </View>
     );
@@ -327,7 +319,6 @@ export function BookingScreen({ navigation }) {
 
     const availableTimes = useMemo(() => {
         if (!selectedDate) return [];
-
         return getAvailableTimesForDay(
             new Date(selectedDate + "T12:00:00").getDay(),
             filteredAvailabilities,
@@ -575,16 +566,15 @@ export function BookingScreen({ navigation }) {
     return (
         <ScrollView style={commonUi.screen.pageMargins}>
             <Animated.View
-                style={{
-                    minHeight: height,
-                    opacity: fadeIn,
-                    transform: [{ translateY: slideUp }],
-                }}
+                style={[
+                    commonUi.screen.pageInnerGaps,
+                    { minHeight: height, opacity: fadeIn, transform: [{ translateY: slideUp }] },
+                ]}
             >
                 <Pressable
                     style={({ pressed }) => [
                         styles.backButton,
-                        pressed && styles.cardPressed,
+                        pressed && commonUi.card.cardPressed,
                     ]}
                     onPress={() => navigation.navigate(NAV_HOME)}
                 >
@@ -660,19 +650,18 @@ export function BookingScreen({ navigation }) {
                     value={selectedTask?.name || "Choose a task"}
                     meta={selectedTask ? `${appointmentLength} min` : "Service"}
                     onPress={() => setShowTaskModal(true)}
-                    styles={styles}
                 />
 
-                <View style={styles.secondaryActionCardFull}>
-                    <View style={styles.smallTopRow}>
-                        <View style={styles.iconWrapSmall}>
-                            <Text style={styles.iconSmall}>02</Text>
+                <View style={commonUi.card.secondaryActionCard}>
+                    <View style={commonUi.card.smallTopRow}>
+                        <View style={commonUi.card.iconWrapSmall}>
+                            <Text style={[commonUi.card.iconSmall, { fontSize: 13, fontWeight: "800" }]}>02</Text>
                         </View>
-                        <Text style={styles.cornerText}>Preference</Text>
+                        <Text style={commonUi.card.cornerText}>Preference</Text>
                     </View>
 
-                    <Text style={styles.secondaryTitle}>Employee Choice</Text>
-                    <Text style={styles.secondaryDescription}>
+                    <Text style={commonUi.card.secondaryTitle}>Employee Choice</Text>
+                    <Text style={[commonUi.card.secondaryDescription, { marginBottom: 14 }]}>
                         Pick any available employee or choose someone specific.
                     </Text>
 
@@ -680,9 +669,8 @@ export function BookingScreen({ navigation }) {
                         <Pressable
                             style={({ pressed }) => [
                                 styles.preferenceChip,
-                                employeePreference === EMPLOYEE_OPTIONS.ANY &&
-                                    styles.preferenceChipActive,
-                                pressed && styles.cardPressed,
+                                employeePreference === EMPLOYEE_OPTIONS.ANY && styles.preferenceChipActive,
+                                pressed && commonUi.card.cardPressed,
                             ]}
                             onPress={() =>
                                 setEmployeePreference(EMPLOYEE_OPTIONS.ANY)
@@ -703,10 +691,8 @@ export function BookingScreen({ navigation }) {
                         <Pressable
                             style={({ pressed }) => [
                                 styles.preferenceChip,
-                                employeePreference ===
-                                    EMPLOYEE_OPTIONS.SPECIFIC &&
-                                    styles.preferenceChipActive,
-                                pressed && styles.cardPressed,
+                                employeePreference === EMPLOYEE_OPTIONS.SPECIFIC && styles.preferenceChipActive,
+                                pressed && commonUi.card.cardPressed,
                             ]}
                             onPress={() =>
                                 setEmployeePreference(EMPLOYEE_OPTIONS.SPECIFIC)
@@ -728,18 +714,16 @@ export function BookingScreen({ navigation }) {
                     {employeePreference === EMPLOYEE_OPTIONS.SPECIFIC && (
                         <Pressable
                             style={({ pressed }) => [
-                                styles.selectButton,
+                                commonUi.form.selectButton,
                                 styles.employeeSelectButton,
-                                pressed && styles.cardPressed,
+                                pressed && commonUi.card.cardPressed,
                             ]}
                             onPress={() => setShowEmployeeModal(true)}
                         >
-                            <Text style={styles.selectValue}>
-                                {summaryEmployee === "Not selected"
-                                    ? "Choose an employee"
-                                    : summaryEmployee}
+                            <Text style={commonUi.form.selectValue}>
+                                {summaryEmployee === "Not selected" ? "Choose an employee" : summaryEmployee}
                             </Text>
-                            <Text style={styles.selectChevron}>⌄</Text>
+                            <Text style={commonUi.form.selectChevron}>⌄</Text>
                         </Pressable>
                     )}
                 </View>
@@ -751,7 +735,6 @@ export function BookingScreen({ navigation }) {
                     value={formatDisplayDate(selectedDate)}
                     meta="Calendar"
                     onPress={() => setShowCalendar(true)}
-                    styles={styles}
                 />
 
                 <InfoSelectCard
@@ -771,28 +754,23 @@ export function BookingScreen({ navigation }) {
                         }
                     }}
                     disabled={availableTimes.length === 0}
-                    styles={styles}
                 />
 
-                <View style={styles.primaryActionCard}>
-                    <View style={styles.cardGlow} />
+                <View style={[commonUi.card.primaryActionCard, { minHeight: 270 }]}>
+                    <View style={commonUi.card.cardGlow} />
 
-                    <View style={styles.cardHeaderRow}>
-                        <View style={styles.iconWrapLarge}>
-                            <Text style={styles.iconLarge}>✦</Text>
+                    <View style={commonUi.card.cardHeaderRow}>
+                        <View style={commonUi.card.iconWrapLarge}>
+                            <Text style={commonUi.card.iconLarge}>✦</Text>
                         </View>
-
-                        <View style={styles.pillDark}>
-                            <Text style={styles.pillDarkText}>
-                                Booking Summary
-                            </Text>
+                        <View style={commonUi.card.pillDark}>
+                            <Text style={commonUi.card.pillDarkText}>Booking Summary</Text>
                         </View>
                     </View>
 
-                    <Text style={styles.primaryTitle}>Review Details</Text>
-                    <Text style={styles.primaryDescription}>
-                        Double-check your booking information before creating
-                        the appointment.
+                    <Text style={commonUi.card.primaryTitle}>Review Details</Text>
+                    <Text style={[commonUi.card.primaryDescription, { maxWidth: "96%" }]}>
+                        Double-check your booking information before creating the appointment.
                     </Text>
 
                     <View style={styles.summaryGrid}>
@@ -802,14 +780,12 @@ export function BookingScreen({ navigation }) {
                                 {selectedTask?.name || "Not selected"}
                             </Text>
                         </View>
-
                         <View style={styles.summaryRow}>
                             <Text style={styles.summaryKey}>Employee</Text>
                             <Text style={styles.summaryValue}>
                                 {summaryEmployee}
                             </Text>
                         </View>
-
                         <View style={styles.summaryRow}>
                             <Text style={styles.summaryKey}>Date</Text>
                             <Text style={styles.summaryValue}>
@@ -818,14 +794,12 @@ export function BookingScreen({ navigation }) {
                                     : "Not selected"}
                             </Text>
                         </View>
-
                         <View style={styles.summaryRow}>
                             <Text style={styles.summaryKey}>Time</Text>
                             <Text style={styles.summaryValue}>
                                 {selectedTime || "Not selected"}
                             </Text>
                         </View>
-
                         {!!selectedTask && (
                             <View style={styles.summaryRow}>
                                 <Text style={styles.summaryKey}>Duration</Text>
@@ -857,11 +831,8 @@ export function BookingScreen({ navigation }) {
                 animationType="fade"
                 onRequestClose={() => setShowCalendar(false)}
             >
-                <View style={styles.modalOverlay}>
-                    <Pressable
-                        style={styles.modalBackdrop}
-                        onPress={() => setShowCalendar(false)}
-                    />
+                <View style={commonUi.modal.overlay}>
+                    <Pressable style={commonUi.modal.backdrop} onPress={() => setShowCalendar(false)} />
 
                     <View style={styles.calendarCard}>
                         <Text style={styles.calendarTitle}>Choose a Date</Text>
@@ -914,7 +885,6 @@ export function BookingScreen({ navigation }) {
                 selectedValue={selectedTaskId}
                 onSelect={setSelectedTaskId}
                 onClose={() => setShowTaskModal(false)}
-                styles={styles}
             />
 
             <OptionModal
@@ -924,7 +894,6 @@ export function BookingScreen({ navigation }) {
                 selectedValue={selectedEmployeeId}
                 onSelect={setSelectedEmployeeId}
                 onClose={() => setShowEmployeeModal(false)}
-                styles={styles}
             />
 
             <OptionModal
@@ -953,130 +922,23 @@ export function makeStyles(colorScheme) {
             paddingHorizontal: 14,
             borderWidth: 1,
             borderColor: colorScheme.borderLight,
-            marginBottom: 12,
         },
-
         backButtonArrow: {
             fontSize: 18,
             color: colorScheme.textAccentSoft,
             marginRight: 8,
             fontWeight: "800",
         },
-
         backButtonText: {
             fontSize: 14,
             fontWeight: "700",
             color: colorScheme.textDefault,
         },
-
-        heroText: {
-            fontSize: 15,
-            lineHeight: 22,
-            color: colorScheme.textSubtle,
-            maxWidth: "82%",
-        },
-
-        secondaryActionCardFull: {
-            backgroundColor: colorScheme.whiteWarmCard,
-            borderRadius: 28,
-            paddingHorizontal: 18,
-            paddingTop: 18,
-            paddingBottom: 18,
-            minHeight: 150,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLight,
-            width: "100%",
-            marginBottom: 14,
-        },
-
-        smallTopRow: {
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 12,
-        },
-
-        iconWrapSmall: {
-            width: 40,
-            height: 40,
-            borderRadius: 20,
-            backgroundColor: colorScheme.panelBackgroundAlt,
-            alignItems: "center",
-            justifyContent: "center",
-        },
-
-        iconSmall: {
-            fontSize: 13,
-            fontWeight: "800",
-            color: colorScheme.textAccentSoft,
-        },
-
-        cornerText: {
-            fontSize: 12,
-            fontWeight: "700",
-            color: colorScheme.textLabel,
-        },
-
-        secondaryTitle: {
-            fontSize: 22,
-            lineHeight: 26,
-            fontWeight: "800",
-            color: colorScheme.textDark,
-            marginBottom: 6,
-        },
-
-        secondaryDescription: {
-            fontSize: 13.5,
-            lineHeight: 20,
-            color: colorScheme.textMuted,
-            maxWidth: "92%",
-            marginBottom: 14,
-        },
-
-        selectButton: {
-            backgroundColor: colorScheme.panelBackground,
-            borderRadius: 18,
-            paddingHorizontal: 16,
-            paddingVertical: 15,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLightAlt,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-        },
-
-        selectButtonDisabled: {
-            opacity: 0.6,
-        },
-
-        employeeSelectButton: {
-            marginTop: 14,
-        },
-
-        selectValue: {
-            flex: 1,
-            fontSize: 15,
-            fontWeight: "700",
-            color: colorScheme.textDefault,
-            paddingRight: 10,
-        },
-
-        selectValueMuted: {
-            color: colorScheme.textLabel,
-        },
-
-        selectChevron: {
-            fontSize: 24,
-            color: colorScheme.textAccentSoft,
-            marginTop: -2,
-        },
-
         preferenceRow: {
             flexDirection: "row",
             gap: 10,
             flexWrap: "wrap",
         },
-
         preferenceChip: {
             flex: 1,
             minWidth: 140,
@@ -1089,102 +951,25 @@ export function makeStyles(colorScheme) {
             alignItems: "center",
             justifyContent: "center",
         },
-
         preferenceChipActive: {
             backgroundColor: colorScheme.darkSurface,
             borderColor: colorScheme.darkSurface,
         },
-
         preferenceChipText: {
             fontSize: 14,
             fontWeight: "700",
             color: colorScheme.textMuted,
         },
-
         preferenceChipTextActive: {
             color: colorScheme.whiteWarm,
         },
-
-        primaryActionCard: {
-            position: "relative",
-            overflow: "hidden",
-            backgroundColor: colorScheme.darkSurface,
-            borderRadius: 28,
-            paddingHorizontal: 18,
-            paddingTop: 18,
-            paddingBottom: 18,
-            marginBottom: 8,
-            minHeight: 270,
-            width: "100%",
+        employeeSelectButton: {
+            marginTop: 14,
         },
-
-        cardGlow: {
-            position: "absolute",
-            width: 170,
-            height: 170,
-            borderRadius: 85,
-            backgroundColor: colorScheme.accentGlow,
-            top: -40,
-            right: -30,
-            opacity: 0.13,
-        },
-
-        cardHeaderRow: {
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 18,
-        },
-
-        iconWrapLarge: {
-            width: 52,
-            height: 52,
-            borderRadius: 26,
-            backgroundColor: colorScheme.overlayWhiteSoft,
-            alignItems: "center",
-            justifyContent: "center",
-        },
-
-        iconLarge: {
-            fontSize: 22,
-            color: colorScheme.accentHighlight,
-        },
-
-        pillDark: {
-            backgroundColor: colorScheme.overlayAccentSoft,
-            borderRadius: 999,
-            paddingHorizontal: 11,
-            paddingVertical: 7,
-        },
-
-        pillDarkText: {
-            color: colorScheme.accentHighlight,
-            fontSize: 12,
-            fontWeight: "700",
-        },
-
-        primaryTitle: {
-            fontSize: 26,
-            lineHeight: 31,
-            fontWeight: "800",
-            color: colorScheme.whiteWarm,
-            marginBottom: 9,
-            maxWidth: "82%",
-        },
-
-        primaryDescription: {
-            fontSize: 14,
-            lineHeight: 21,
-            color: colorScheme.textOnDark,
-            maxWidth: "96%",
-            marginBottom: 18,
-        },
-
         summaryGrid: {
             gap: 8,
             marginBottom: 18,
         },
-
         summaryRow: {
             flexDirection: "row",
             justifyContent: "space-between",
@@ -1192,13 +977,11 @@ export function makeStyles(colorScheme) {
             gap: 10,
             paddingVertical: 3,
         },
-
         summaryKey: {
             fontSize: 14,
             color: colorScheme.textOnDark,
             fontWeight: "700",
         },
-
         summaryValue: {
             flex: 1,
             textAlign: "right",
@@ -1206,7 +989,6 @@ export function makeStyles(colorScheme) {
             color: colorScheme.whiteWarm,
             fontWeight: "700",
         },
-
         innerCreateButton: {
             backgroundColor: colorScheme.accentButton,
             borderRadius: 24,
@@ -1216,25 +998,21 @@ export function makeStyles(colorScheme) {
             justifyContent: "center",
             marginTop: "auto",
         },
-
         innerCreateButtonText: {
             fontSize: 15,
             fontWeight: "800",
             color: colorScheme.textDefault,
             letterSpacing: 0.2,
         },
-
         createButtonDisabled: {
             opacity: 0.72,
         },
-
         loadingWrap: {
             flex: 1,
             justifyContent: "center",
             paddingHorizontal: 20,
             backgroundColor: colorScheme.pageBackground,
         },
-
         loadingCard: {
             backgroundColor: colorScheme.whiteWarmCard,
             borderRadius: 28,
@@ -1244,14 +1022,12 @@ export function makeStyles(colorScheme) {
             borderWidth: 1,
             borderColor: colorScheme.borderLight,
         },
-
         loadingTitle: {
             marginTop: 16,
             fontSize: 20,
             fontWeight: "800",
             color: colorScheme.textDarkest,
         },
-
         loadingText: {
             marginTop: 8,
             fontSize: 14,
@@ -1259,23 +1035,6 @@ export function makeStyles(colorScheme) {
             color: colorScheme.textMuted,
             textAlign: "center",
         },
-
-        modalOverlay: {
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            paddingHorizontal: 18,
-            backgroundColor: colorScheme.overlayDarkSoft,
-        },
-
-        modalBackdrop: {
-            position: "absolute",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-        },
-
         calendarCard: {
             width: "100%",
             maxWidth: 420,
@@ -1285,125 +1044,12 @@ export function makeStyles(colorScheme) {
             borderWidth: 1,
             borderColor: colorScheme.borderLight,
         },
-
         calendarTitle: {
             fontSize: 18,
             fontWeight: "800",
             color: colorScheme.textDarkest,
             marginBottom: 12,
             textAlign: "center",
-        },
-
-        optionModalCard: {
-            width: "100%",
-            maxWidth: 430,
-            maxHeight: "70%",
-            backgroundColor: colorScheme.whiteWarmCard,
-            borderRadius: 28,
-            paddingHorizontal: 16,
-            paddingTop: 16,
-            paddingBottom: 14,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLight,
-        },
-
-        optionModalHeader: {
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 10,
-        },
-
-        optionModalTitle: {
-            fontSize: 18,
-            fontWeight: "800",
-            color: colorScheme.textDarkest,
-        },
-
-        closeButton: {
-            paddingHorizontal: 6,
-            paddingVertical: 2,
-        },
-
-        optionModalClose: {
-            fontSize: 18,
-            fontWeight: "800",
-            color: colorScheme.textAccentSoft,
-        },
-
-        optionModalList: {
-            maxHeight: 420,
-        },
-
-        optionModalListContent: {
-            paddingBottom: 8,
-        },
-
-        optionRow: {
-            backgroundColor: colorScheme.panelBackground,
-            borderRadius: 18,
-            paddingHorizontal: 14,
-            paddingVertical: 14,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLightAlt,
-            marginTop: 10,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-        },
-
-        optionRowSelected: {
-            backgroundColor: colorScheme.accentTint,
-            borderColor: colorScheme.textAccent,
-        },
-
-        optionRowPressed: {
-            opacity: 0.92,
-            transform: [{ scale: 0.99 }],
-        },
-
-        optionTextWrap: {
-            flex: 1,
-            paddingRight: 12,
-        },
-
-        optionLabel: {
-            fontSize: 15,
-            fontWeight: "700",
-            color: colorScheme.textDefault,
-        },
-
-        optionLabelSelected: {
-            color: colorScheme.textDarkest,
-        },
-
-        optionSubLabel: {
-            marginTop: 4,
-            fontSize: 12,
-            color: colorScheme.textAccentSoft,
-            fontWeight: "600",
-        },
-
-        optionSubLabelSelected: {
-            color: colorScheme.textAccent,
-        },
-
-        optionCheck: {
-            fontSize: 18,
-            fontWeight: "800",
-            color: colorScheme.textAccent,
-        },
-
-        emptyOptionText: {
-            fontSize: 14,
-            color: colorScheme.textMuted,
-            textAlign: "center",
-            paddingVertical: 22,
-        },
-
-        cardPressed: {
-            opacity: 0.93,
-            transform: [{ scale: 0.985 }],
         },
     });
 }

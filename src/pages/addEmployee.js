@@ -132,16 +132,17 @@ export function AddEmployeeScreen({ navigation }) {
             style={{ backgroundColor: colorScheme.pageBackground }}
             contentContainerStyle={[
                 commonUi.screen.pageMargins,
+                commonUi.screen.pageInnerGaps,
                 { paddingBottom: 32 },
             ]}
             keyboardShouldPersistTaps="handled"
         >
             <AdminBackBar navigation={navigation} />
 
-            <View style={styles.heroCard}>
-                <Text style={styles.kicker}>Team</Text>
-                <Text style={styles.title}>Employees</Text>
-                <Text style={styles.subtitle}>
+            <View style={commonUi.card.accentCard}>
+                <Text style={commonUi.card.kicker}>Team</Text>
+                <Text style={commonUi.card.cardTitle}>Employees</Text>
+                <Text style={commonUi.card.cardSubtitle}>
                     Add new staff or remove someone who no longer works at the salon.
                 </Text>
             </View>
@@ -151,7 +152,7 @@ export function AddEmployeeScreen({ navigation }) {
                     style={({ pressed }) => [
                         styles.segmentBtn,
                         mode === "add" && styles.segmentBtnActive,
-                        pressed && styles.pressed,
+                        pressed && commonUi.card.pressed,
                     ]}
                     onPress={() => setMode("add")}
                 >
@@ -168,23 +169,18 @@ export function AddEmployeeScreen({ navigation }) {
                     style={({ pressed }) => [
                         styles.segmentBtn,
                         mode === "remove" && styles.segmentBtnActive,
-                        pressed && styles.pressed,
+                        pressed && commonUi.card.pressed,
                     ]}
                     onPress={() => setMode("remove")}
                 >
-                    <Text
-                        style={[
-                            styles.segmentLabel,
-                            mode === "remove" && styles.segmentLabelActive,
-                        ]}
-                    >
+                    <Text style={[styles.segmentLabel, mode === "remove" && styles.segmentLabelActive]}>
                         Remove
                     </Text>
                 </Pressable>
             </View>
 
             {mode === "add" && (
-                <View style={styles.card}>
+                <View style={commonUi.card.pageCard}>
                     <View style={commonUi.auth.inputGroup}>
                         <Text style={commonUi.auth.inputLabel}>First name</Text>
                         <TextInput
@@ -236,38 +232,36 @@ export function AddEmployeeScreen({ navigation }) {
                         ]}
                         onPress={handleSubmit}
                     >
-                        <Text style={commonUi.auth.primaryButtonText}>
-                            Add employee
-                        </Text>
+                        <Text style={commonUi.auth.primaryButtonText}>Add employee</Text>
                     </Pressable>
                 </View>
             )}
 
             {mode === "remove" && (
-                <View style={styles.card}>
+                <View style={commonUi.card.pageCard}>
                     <Text style={commonUi.auth.inputLabel}>Employee</Text>
                     <Pressable
                         style={({ pressed }) => [
-                            styles.selectButton,
-                            pressed && styles.pressed,
+                            commonUi.form.selectButton,
+                            pressed && commonUi.card.pressed,
                         ]}
                         onPress={() => setShowEmployeeModal(true)}
                     >
                         <Text
                             style={[
-                                styles.selectValue,
-                                !selectedEmployeeId && styles.selectValueMuted,
+                                commonUi.form.selectValue,
+                                !selectedEmployeeId && commonUi.form.selectValueMuted,
                             ]}
                         >
                             {employeeFieldLabel}
                         </Text>
-                        <Text style={styles.selectChevron}>⌄</Text>
+                        <Text style={commonUi.form.selectChevron}>⌄</Text>
                     </Pressable>
 
                     <Pressable
                         style={({ pressed }) => [
                             styles.dangerBtn,
-                            pressed && styles.pressed,
+                            pressed && commonUi.card.pressed,
                         ]}
                         onPress={handleRemove}
                     >
@@ -296,41 +290,11 @@ export function AddEmployeeScreen({ navigation }) {
 
 function makeStyles(colorScheme) {
     return StyleSheet.create({
-        heroCard: {
-            borderRadius: 28,
-            paddingHorizontal: 20,
-            paddingVertical: 20,
-            backgroundColor: colorScheme.accentTint,
-            marginBottom: 16,
-            borderWidth: 1,
-            borderColor: colorScheme.borderAccentSoft,
-        },
-        kicker: {
-            fontSize: 12,
-            fontWeight: "700",
-            letterSpacing: 1.5,
-            textTransform: "uppercase",
-            color: colorScheme.textAccentSoft,
-            marginBottom: 8,
-        },
-        title: {
-            fontSize: 26,
-            fontWeight: "800",
-            color: colorScheme.textDarkest,
-            marginBottom: 8,
-        },
-        subtitle: {
-            fontSize: 14,
-            lineHeight: 21,
-            color: colorScheme.textSubtle,
-            maxWidth: "96%",
-        },
         segmentRow: {
             flexDirection: "row",
             backgroundColor: colorScheme.panelBackground,
             borderRadius: 999,
             padding: 4,
-            marginBottom: 16,
             borderWidth: 1,
             borderColor: colorScheme.borderLight,
         },
@@ -353,158 +317,17 @@ function makeStyles(colorScheme) {
         segmentLabelActive: {
             color: colorScheme.textDark,
         },
-        card: {
-            backgroundColor: colorScheme.whiteWarmCard,
-            borderRadius: 26,
-            padding: 20,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLight,
-        },
-        selectButton: {
-            backgroundColor: colorScheme.panelBackground,
-            borderRadius: 18,
-            paddingHorizontal: 16,
-            paddingVertical: 15,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLightAlt,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 16,
-        },
-        selectValue: {
-            flex: 1,
-            fontSize: 15,
-            fontWeight: "700",
-            color: colorScheme.textDefault,
-            paddingRight: 10,
-        },
-        selectValueMuted: {
-            color: colorScheme.textLabel,
-        },
-        selectChevron: {
-            fontSize: 24,
-            color: colorScheme.textAccentSoft,
-            marginTop: -2,
-        },
-        modalOverlay: {
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            paddingHorizontal: 18,
-            backgroundColor: colorScheme.overlayDarkSoft,
-        },
-        modalBackdrop: {
-            position: "absolute",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-        },
-        optionModalCard: {
-            width: "100%",
-            maxWidth: 430,
-            maxHeight: "70%",
-            backgroundColor: colorScheme.whiteWarmCard,
-            borderRadius: 28,
-            paddingHorizontal: 16,
-            paddingTop: 16,
-            paddingBottom: 14,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLight,
-        },
-        optionModalHeader: {
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 10,
-        },
-        optionModalTitle: {
-            fontSize: 18,
-            fontWeight: "800",
-            color: colorScheme.textDarkest,
-        },
-        closeButton: {
-            paddingHorizontal: 6,
-            paddingVertical: 2,
-        },
-        optionModalClose: {
-            fontSize: 18,
-            fontWeight: "800",
-            color: colorScheme.textAccentSoft,
-        },
-        optionModalList: {
-            maxHeight: 420,
-        },
-        optionModalListContent: {
-            paddingBottom: 8,
-        },
-        optionRow: {
-            backgroundColor: colorScheme.panelBackground,
-            borderRadius: 18,
-            paddingHorizontal: 14,
-            paddingVertical: 14,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLightAlt,
-            marginTop: 10,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-        },
-        optionRowSelected: {
-            backgroundColor: colorScheme.accentTint,
-            borderColor: colorScheme.textAccent,
-        },
-        optionRowPressed: {
-            opacity: 0.92,
-            transform: [{ scale: 0.99 }],
-        },
-        optionTextWrap: {
-            flex: 1,
-            paddingRight: 12,
-        },
-        optionLabel: {
-            fontSize: 15,
-            fontWeight: "700",
-            color: colorScheme.textDefault,
-        },
-        optionLabelSelected: {
-            color: colorScheme.textDarkest,
-        },
-        optionSubLabel: {
-            marginTop: 4,
-            fontSize: 12,
-            color: colorScheme.textAccentSoft,
-            fontWeight: "600",
-        },
-        optionSubLabelSelected: {
-            color: colorScheme.textAccent,
-        },
-        optionCheck: {
-            fontSize: 18,
-            fontWeight: "800",
-            color: colorScheme.textAccent,
-        },
-        emptyOptionText: {
-            fontSize: 14,
-            color: colorScheme.textMuted,
-            textAlign: "center",
-            paddingVertical: 22,
-        },
         dangerBtn: {
             backgroundColor: colorScheme.danger,
             borderRadius: 24,
             paddingVertical: 16,
             alignItems: "center",
+            marginTop: 14,
         },
         dangerBtnText: {
             color: colorScheme.whiteWarm,
             fontSize: 15,
             fontWeight: "800",
-        },
-        pressed: {
-            opacity: 0.92,
-            transform: [{ scale: 0.99 }],
         },
     });
 }

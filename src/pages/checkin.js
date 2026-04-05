@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Text, FlatList, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { Text, FlatList, Pressable, View, StyleSheet } from 'react-native';
 import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
 
 import {
