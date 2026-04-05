@@ -480,10 +480,9 @@ export function BookingScreen({ navigation }) {
         })
             .then((res) => res.json())
             .then(assertFetchSuccessful)
-            .then(() =>
-                showAppToast(TOAST_TYPE_ERROR, "Success", "Your appointment has been booked."),
-            )
+            .then(() => showAppToast(TOAST_TYPE_ERROR, "Success", "Your appointment has been booked."))
             .catch((err) => showAppToast(TOAST_TYPE_ERROR, "Server Error", err))
+            .finally(() => navigation.navigate(NAV_HOME, { toastMessage: `Appointment Created Successfully!`}))
             ;
     };
 
