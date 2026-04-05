@@ -810,7 +810,7 @@ export function BookingScreen({ navigation }) {
                         <View style={styles.summaryRow}>
                             <Text style={styles.summaryKey}>Price</Text>
                             <Text style={styles.summaryValue}>
-                                {formatPriceCad(selectedTask.price_cad_cent) || "Not selected"}
+                                {formatPriceCad(selectedTask?.price_cad_cent) || "CA$0.00"}
                             </Text>
                         </View>
                     </View>
