@@ -13,7 +13,7 @@ import { auth } from "../firebaseConfig";
 import { showAppToast } from "../utils";
 import { NAV_BOOKING, NAV_CHECKIN, NAV_LOGIN, NAV_SET_THEME, TOAST_TYPE_SUCCESS } from "../consts";
 import { useTheme } from "../styles";
-import { colorSchemeGreens } from "../colorScheme";
+import { colorSchemeGreens, MAP_COLOR_SCHEME } from "../colorScheme";
 
 function getGreeting() {
     const hour = new Date().getHours();
@@ -34,7 +34,7 @@ function getTodayLabel() {
 export function HomeScreen({ navigation, route }) {
 
     const commonUi = useTheme((state) => state.getCommonUi)();
-    const colorScheme = useTheme((state) => state.getScheme)() ?? colorSchemeGreens;
+    const colorScheme = MAP_COLOR_SCHEME[useTheme((state) => state.scheme)] ?? colorSchemeGreens;
 
     const { width, height } = useWindowDimensions();
 
