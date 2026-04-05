@@ -14,7 +14,8 @@ import {
 
 import { signOut } from "firebase/auth";
 import { auth } from "../firebaseConfig";
-import { NAV_BOOKING, NAV_CHECKIN, NAV_LOGIN, NAV_SET_THEME } from "../consts";
+import { showAppToast } from "../utils";
+import { NAV_BOOKING, NAV_CHECKIN, NAV_LOGIN, NAV_SET_THEME, TOAST_TYPE_SUCCESS } from "../consts";
 import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
 
@@ -41,7 +42,6 @@ export function HomeScreen({ navigation, route }) {
     const styles = useMemo(() => makeStyles(colorScheme), [colorScheme]);
 
     const { width, height } = useWindowDimensions();
-    const [loginToast, setLoginToast] = useState("");
 
     const float1 = useRef(new Animated.Value(0)).current;
     const float2 = useRef(new Animated.Value(0)).current;
@@ -94,21 +94,9 @@ export function HomeScreen({ navigation, route }) {
     }, [fadeIn, slideUp, float1, float2]);
 
     useEffect(() => {
-        const toastMessage = route?.params?.toastMessage;
-        // TODO replace with email in auth token (not route param).
-        const loggedInAs = route?.params?.loggedInAs;
-        const messageToShow = toastMessage || (loggedInAs ? `Logged in as ${loggedInAs}` : "");
-        if (!messageToShow) return;
-
-        setLoginToast(messageToShow);
-
-        const timer = setTimeout(() => {
-            setLoginToast("");
-            navigation.setParams({ loggedInAs: undefined, toastMessage: undefined });
-        }, 2200);
-
-        return () => clearTimeout(timer);
-    }, [route?.params?.loggedInAs, route?.params?.toastMessage, navigation]);
+        if (!route?.params?.toastMessage) return;
+        showAppToast(TOAST_TYPE_SUCCESS, route?.params?.toastMessage);
+    }, []);
 
     const blob1Y = float1.interpolate({
         inputRange: [0, 1],
@@ -121,12 +109,8 @@ export function HomeScreen({ navigation, route }) {
     });
 
     const handleLogout = async () => {
-        try {
-            await signOut(auth);
-            navigation.navigate(NAV_LOGIN);
-        } catch (error) {
-            console.log("Logout error:", error);
-        }
+        await signOut(auth);
+        navigation.navigate(NAV_LOGIN);
     };
 
     const heroMinHeight = Math.max(240, Math.min(height * 0.33, 310));
@@ -139,13 +123,6 @@ export function HomeScreen({ navigation, route }) {
                     transform: [{ translateY: slideUp }],
                 }]}
             >
-
-                {/* TODO remove in favor of global indicator */}
-                {loginToast ? (
-                    <View style={styles.toastWrap}>
-                        <Text style={styles.toastText}>{loginToast}</Text>
-                    </View>
-                ) : null}
 
                 <View style={ commonUi.hero.heroCard }>
 

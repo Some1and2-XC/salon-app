@@ -63,6 +63,9 @@ export function useCommonUi(scheme) {
             pageMargins: {
                 padding: 14,
             },
+            pageInnerGaps: {
+                gap: 14,
+            },
             scrollViewWeb: {
                 minHeight: 0,
             },
@@ -188,6 +191,7 @@ export function useCommonUi(scheme) {
                 transform: [{ scale: 0.98 }],
             },
             inlineCtaButton: {
+                alignItems: "center",
                 backgroundColor: scheme.accentTint,
                 borderRadius: 999,
                 paddingVertical: 12,
