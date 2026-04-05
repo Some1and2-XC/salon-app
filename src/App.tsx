@@ -100,7 +100,7 @@ export default function App() {
         <SafeAreaProvider>
             <SafeAreaView
                 style={commonUi.screen.safeArea}
-                edges={["left", "right"]}
+                edges={["left", "right", "top"]}
             >
                 <StatusBar translucent backgroundColor="transparent" />
 
