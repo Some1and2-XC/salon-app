@@ -984,7 +984,7 @@ export function makeStyles(colorScheme) {
         },
         summaryKey: {
             fontSize: 14,
-            color: colorScheme.textOnDark,
+            color: colorScheme.whiteWarm,
             fontWeight: "700",
         },
         summaryValue: {
