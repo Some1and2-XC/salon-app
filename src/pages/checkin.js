@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Text, FlatList, Pressable, View, StyleSheet } from 'react-native';
 import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
-import { NAV_QR, TOAST_TYPE_SUCCESS, TOAST_TYPE_ERROR } from "../consts";
+import { NAV_QR, NAV_HOME, TOAST_TYPE_SUCCESS, TOAST_TYPE_ERROR } from "../consts";
 import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
 
@@ -57,6 +57,16 @@ export function CheckinScreen({ navigation }) {
     return (
         <View style={[commonUi.screen.pageMargins, commonUi.screen.pageInnerGaps]}>
             <Text style={styles.heading}>Check In</Text>
+            <Pressable
+                style={({ pressed }) => [
+                    styles.backButton,
+                    pressed && commonUi.card.cardPressed,
+                ]}
+                onPress={() => navigation.navigate(NAV_HOME)}
+            >
+                <Text style={styles.backButtonArrow}>←</Text>
+                <Text style={styles.backButtonText}>Back to Home</Text>
+            </Pressable>
 
             <FlatList
                 data={appointments}
@@ -91,6 +101,28 @@ function makeStyles(colorScheme) {
         cardDate: {
             fontSize: 13,
             color: colorScheme.textMuted,
+        },
+        backButton: {
+            flexDirection: "row",
+            alignItems: "center",
+            alignSelf: "flex-start",
+            backgroundColor: colorScheme.whiteWarmCard,
+            borderRadius: 999,
+            paddingVertical: 10,
+            paddingHorizontal: 14,
+            borderWidth: 1,
+            borderColor: colorScheme.borderLight,
+        },
+        backButtonArrow: {
+            fontSize: 18,
+            color: colorScheme.textAccentSoft,
+            marginRight: 8,
+            fontWeight: "800",
+        },
+        backButtonText: {
+            fontSize: 14,
+            fontWeight: "700",
+            color: colorScheme.textDefault,
         },
     });
 }
