@@ -26,8 +26,10 @@ function OptionModal({
     onSelect,
     onClose,
     emptyText = "No options available",
-    styles,
 }) {
+
+    const colorScheme = useTheme((state) => state.getScheme)() ?? colorSchemeGreens;
+    const styles = makeStyles(colorScheme);
 
     return (
         <Modal
