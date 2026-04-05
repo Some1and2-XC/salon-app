@@ -24,6 +24,7 @@ const EMPLOYEE_OPTIONS = {
 };
 
 function getAvailableTimesForDay(day, availabilities, appointmentLength) {
+    const seen = new Set();
     const slots = [];
 
     for (const slot of availabilities) {
@@ -35,14 +36,18 @@ function getAvailableTimesForDay(day, availabilities, appointmentLength) {
 
         let current = startSeconds;
 
-        const step = 30 * 60; // 30-minute increments
+        const step = 30 * 60;
         const appointmentSeconds = appointmentLength * 60;
 
         while (current + appointmentSeconds <= endSeconds) {
             const hours = Math.floor(current / 3600);
             const minutes = Math.floor((current % 3600) / 60);
+            const timeStr = formatTime(hours * 60 + minutes);
 
-            slots.push(formatTime(hours * 60 + minutes));
+            if (!seen.has(timeStr)) {
+                seen.add(timeStr);
+                slots.push(timeStr);
+            }
 
             current += step;
         }
@@ -420,6 +425,11 @@ export function BookingScreen({ navigation }) {
         setSelectedTime(nextTimes.length > 0 ? nextTimes[0] : "");
     };
 
+    function formatPriceCad(cents) {
+        if (cents == null) return null;
+        return `CA$${(cents / 100).toFixed(2)}`;
+    }
+
     const handleCreateAppointment = async () => {
         if (!selectedTaskId) {
             showAppToast(TOAST_TYPE_ERROR, "No task selected", "Please select a task.");
@@ -495,7 +505,7 @@ export function BookingScreen({ navigation }) {
     const taskOptions = tasks.map((task) => ({
         label: task.name,
         value: String(task.id),
-        subLabel: `${(task.time_for_booking || 900) / 60} min`,
+        subLabel: `${(task.time_for_booking || 900) / 60} min${task.price_cad_cent != null ? ` · ${formatPriceCad(task.price_cad_cent)}` : ""}`,
     }));
 
     const employeeOptions = employees.map((employee) => ({
@@ -797,6 +807,12 @@ export function BookingScreen({ navigation }) {
                                 </Text>
                             </View>
                         )}
+                        <View style={styles.summaryRow}>
+                            <Text style={styles.summaryKey}>Price</Text>
+                            <Text style={styles.summaryValue}>
+                                {formatPriceCad(selectedTask?.price_cad_cent) || "CA$0.00"}
+                            </Text>
+                        </View>
                     </View>
 
                     <Pressable
@@ -968,7 +984,7 @@ export function makeStyles(colorScheme) {
         },
         summaryKey: {
             fontSize: 14,
-            color: colorScheme.textOnDark,
+            color: colorScheme.whiteWarm,
             fontWeight: "700",
         },
         summaryValue: {

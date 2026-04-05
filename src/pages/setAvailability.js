@@ -38,10 +38,10 @@ function generateTimes() {
 }
 
 function toSecondsFromWeekStart(date, time) {
-    const d = new Date(`${date}T${time}:00`);
-    const dayOfWeek = d.getDay();
-    const hours = d.getHours();
-    const minutes = d.getMinutes();
+    const dateObj = new Date(`${date}T${time}:00`);
+    const dayOfWeek = dateObj.getDay();
+    const hours = dateObj.getHours();
+    const minutes = dateObj.getMinutes();
     return dayOfWeek * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60;
 }
 
@@ -93,7 +93,6 @@ export function SetAvailabilityScreen({ navigation }) {
     const [selectedDate, setSelectedDate] = useState("");
     const [showCalendar, setShowCalendar] = useState(false);
     const [currentAvailability, setCurrentAvailability] = useState([]);
-    const [mode, setMode] = useState(null);
     const [startTime, setStartTime] = useState("");
     const [endTime, setEndTime] = useState("");
 
@@ -134,7 +133,6 @@ export function SetAvailabilityScreen({ navigation }) {
                 )
             )
             .catch(() => showAlert("Error", "Failed to load availability."));
-        setMode(null);
         setStartTime("");
         setEndTime("");
     }, [selectedEmployee]);
@@ -177,7 +175,6 @@ export function SetAvailabilityScreen({ navigation }) {
             .then((res) => res.json())
             .then((res) => {
                 setCurrentAvailability([...currentAvailability, res]);
-                setMode(null);
                 setStartTime("");
                 setEndTime("");
                 showAlert("Success", "Availability has been set.");
@@ -202,7 +199,6 @@ export function SetAvailabilityScreen({ navigation }) {
         setSelectedEmployee(value);
         setSelectedDate("");
         setCurrentAvailability([]);
-        setMode(null);
     };
 
     return (
@@ -262,12 +258,23 @@ export function SetAvailabilityScreen({ navigation }) {
                             </Text>
                         ) : (
                             currentAvailability.map((slot) => (
-                                <View key={slot.id} style={styles.slotRow}>
+                                <View key={slot.id} style={styles.removeBlock}>
                                     <Text style={styles.slotText}>
                                         {fromSecondsFromWeekStart(slot.start_time)}{" "}
                                         —{" "}
                                         {fromSecondsFromWeekStart(slot.end_time)}
                                     </Text>
+                                    <Pressable
+                                        style={({ pressed }) => [
+                                            styles.smallDanger,
+                                            pressed && commonUi.card.pressed,
+                                        ]}
+                                        onPress={() => handleRemoveAvailability(slot.id)}
+                                    >
+                                        <Text style={styles.smallDangerText}>
+                                            Remove
+                                        </Text>
+                                    </Pressable>
                                 </View>
                             ))
                         )}
@@ -297,28 +304,7 @@ export function SetAvailabilityScreen({ navigation }) {
                 </>
             ) : null}
 
-            {selectedEmployee !== "" && selectedDate !== "" ? (
-                <View style={styles.rowBtns}>
-                    <Pressable
-                        style={({ pressed }) => [styles.secondaryBtn, pressed && commonUi.card.pressed]}
-                        onPress={() => setMode("add")}
-                    >
-                        <Text style={styles.secondaryBtnText}>
-                            Add availability
-                        </Text>
-                    </Pressable>
-                    <Pressable
-                        style={({ pressed }) => [styles.secondaryBtn, pressed && commonUi.card.pressed]}
-                        onPress={() => setMode("remove")}
-                    >
-                        <Text style={styles.secondaryBtnText}>
-                            Remove availability
-                        </Text>
-                    </Pressable>
-                </View>
-            ) : null}
-
-            {mode === "add" && (
+            {selectedEmployee !== "" && selectedDate !== "" && (
                 <View style={commonUi.card.pageCard}>
                     <Text style={commonUi.auth.inputLabel}>Start time</Text>
                     <View style={styles.pickerWrap}>
@@ -360,52 +346,7 @@ export function SetAvailabilityScreen({ navigation }) {
                                 Save slot
                             </Text>
                         </Pressable>
-                        <Pressable
-                            style={({ pressed }) => [styles.ghostBtn, pressed && commonUi.card.pressed]}
-                            onPress={() => setMode(null)}
-                        >
-                            <Text style={styles.ghostBtnText}>Cancel</Text>
-                        </Pressable>
                     </View>
-                </View>
-            )}
-
-            {mode === "remove" && (
-                <View style={styles.card}>
-                    {currentAvailability.length === 0 ? (
-                        <Text style={styles.muted}>
-                            Nothing to remove for this employee.
-                        </Text>
-                    ) : (
-                        currentAvailability.map((slot) => (
-                            <View key={slot.id} style={styles.removeBlock}>
-                                <Text style={styles.slotText}>
-                                    {fromSecondsFromWeekStart(slot.start_time)}{" "}
-                                    —{" "}
-                                    {fromSecondsFromWeekStart(slot.end_time)}
-                                </Text>
-                                <Pressable
-                                    style={({ pressed }) => [
-                                        styles.smallDanger,
-                                        pressed && commonUi.card.pressed,
-                                    ]}
-                                    onPress={() =>
-                                        handleRemoveAvailability(slot.id)
-                                    }
-                                >
-                                    <Text style={styles.smallDangerText}>
-                                        Remove
-                                    </Text>
-                                </Pressable>
-                            </View>
-                        ))
-                    )}
-                    <Pressable
-                        style={({ pressed }) => [styles.ghostBtn, pressed && commonUi.card.pressed]}
-                        onPress={() => setMode(null)}
-                    >
-                        <Text style={styles.ghostBtnText}>Close</Text>
-                    </Pressable>
                 </View>
             )}
 
