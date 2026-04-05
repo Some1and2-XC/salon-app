@@ -14,23 +14,14 @@ import {
     useWindowDimensions,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
-import { apiFetch, assertFetchSuccessful } from "../utils";
-import { NAV_HOME } from "../consts";
+import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
+import { NAV_HOME, TOAST_TYPE_ERROR } from "../consts";
 import { useTheme } from "../styles";
 
 const EMPLOYEE_OPTIONS = {
     ANY: "ANY",
     SPECIFIC: "SPECIFIC",
 };
-
-// TODO remove
-function showAlert(title, message) {
-    if (Platform.OS === "web") {
-        window.alert(`${title}\n\n${message}`);
-    } else {
-        Alert.alert(title, message);
-    }
-}
 
 function getAvailableTimesForDay(day, availabilities, appointmentLength) {
     const slots = [];
@@ -431,17 +422,17 @@ export function BookingScreen({ navigation }) {
 
     const handleCreateAppointment = async () => {
         if (!selectedTaskId) {
-            showAlert("No task selected", "Please select a task.");
+            showAppToast(TOAST_TYPE_ERROR, "No task selected", "Please select a task.");
             return;
         }
 
         if (!selectedDate) {
-            showAlert("No date selected", "Please select a date.");
+            showAppToast(TOAST_TYPE_ERROR, "No date selected", "Please select a date.");
             return;
         }
 
         if (!selectedTime) {
-            showAlert("No time selected", "Please select an available time.");
+            showAppToast(TOAST_TYPE_ERROR, "No time selected", "Please select an available time.");
             return;
         }
 
@@ -457,7 +448,7 @@ export function BookingScreen({ navigation }) {
             );
 
             if (!employeeId) {
-                showAlert(
+                showAppToast(TOAST_TYPE_ERROR,
                     "No employee available",
                     "No employee is available for that time.",
                 );
@@ -467,7 +458,7 @@ export function BookingScreen({ navigation }) {
             employeePreference === EMPLOYEE_OPTIONS.SPECIFIC &&
             !selectedEmployeeId
         ) {
-            showAlert(
+            showAppToast(TOAST_TYPE_ERROR,
                 "No employee selected",
                 "Please select an employee or choose any.",
             );
@@ -490,14 +481,10 @@ export function BookingScreen({ navigation }) {
             .then((res) => res.json())
             .then(assertFetchSuccessful)
             .then(() =>
-                showAlert("Success", "Your appointment has been booked."),
+                showAppToast(TOAST_TYPE_ERROR, "Success", "Your appointment has been booked."),
             )
-            .catch((err) =>
-                showAlert(
-                    "Server Error",
-                    errorBody?.message || `Server error: ${response.status}`,
-                ),
-            );
+            .catch((err) => showAppToast(TOAST_TYPE_ERROR, "Server Error", err))
+            ;
     };
 
     const isFormComplete =
