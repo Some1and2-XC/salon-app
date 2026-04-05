@@ -98,7 +98,7 @@ export default function App() {
     };
 
     return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
+        <GestureHandlerRootView>
         <SafeAreaProvider>
             <SafeAreaView
                 style={commonUi.screen.safeArea}
