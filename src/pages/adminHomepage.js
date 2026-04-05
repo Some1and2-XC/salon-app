@@ -220,7 +220,7 @@ export function AdminHomepageScreen({ navigation }) {
                     </View>
                 </View>
 
-                {ADMIN_ACTIONS.map((action) =>
+                {ADMIN_ACTIONS.map((action) => (
                     <Pressable
                         key={action.route}
                         style={({ pressed }) => [
