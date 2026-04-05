@@ -21,7 +21,7 @@ export function AdminBackBar({ navigation }) {
             onPress={() => navigation.navigate(NAV_ADMIN_HOMEPAGE)}
         >
             <Text style={styles.arrow}>←</Text>
-            <Text style={styles.label}>Admin home</Text>
+            <Text style={styles.label}>Back</Text>
         </Pressable>
     );
 }
