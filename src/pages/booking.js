@@ -578,7 +578,7 @@ export function BookingScreen({ navigation }) {
                     onPress={() => navigation.navigate(NAV_HOME)}
                 >
                     <Text style={styles.backButtonArrow}>←</Text>
-                    <Text style={styles.backButtonText}>Back to Home</Text>
+                    <Text style={styles.backButtonText}>Back</Text>
                 </Pressable>
 
                 <View
