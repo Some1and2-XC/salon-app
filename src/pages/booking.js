@@ -24,6 +24,7 @@ const EMPLOYEE_OPTIONS = {
 };
 
 function getAvailableTimesForDay(day, availabilities, appointmentLength) {
+    const seen = new Set();
     const slots = [];
 
     for (const slot of availabilities) {
@@ -35,14 +36,18 @@ function getAvailableTimesForDay(day, availabilities, appointmentLength) {
 
         let current = startSeconds;
 
-        const step = 30 * 60; // 30-minute increments
+        const step = 30 * 60;
         const appointmentSeconds = appointmentLength * 60;
 
         while (current + appointmentSeconds <= endSeconds) {
             const hours = Math.floor(current / 3600);
             const minutes = Math.floor((current % 3600) / 60);
+            const timeStr = formatTime(hours * 60 + minutes);
 
-            slots.push(formatTime(hours * 60 + minutes));
+            if (!seen.has(timeStr)) {
+                seen.add(timeStr);
+                slots.push(timeStr);
+            }
 
             current += step;
         }
