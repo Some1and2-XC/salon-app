@@ -174,6 +174,8 @@ export function SetAvailabilityScreen({ navigation }) {
             .then(assertFetchSuccessful)
             .then((res) => res.json())
             .then((res) => {
+                        console.log("availability response:", JSON.stringify(d));
+
                 setCurrentAvailability([...currentAvailability, res]);
                 setStartTime("");
                 setEndTime("");
