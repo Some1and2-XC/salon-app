@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useTheme } from "../styles";
 import {
     View,
     Text,
@@ -7,11 +8,14 @@ import {
     Alert,
     Modal,
     TouchableOpacity,
+    ScrollView,
+    Pressable,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Calendar } from "react-native-calendars";
 import { apiFetch, assertFetchSuccessful } from "../utils";
 import { sty } from "../styles";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 
 function showAlert(title, message) {
     if (Platform.OS === "web") {
@@ -61,7 +65,122 @@ function fromSecondsFromWeekStart(seconds) {
     return `${days[day]} ${hours}:${minutes}`;
 }
 
+function TimeRangeSelector({ times, onSelect, scheme, commonUi }) {
+    const [startIdx, setStartIdx] = useState(null);
+    const [endIdx, setEndIdx] = useState(null);
+
+    const CELL_WIDTH = 72;
+
+    const updateSelection = (index) => {
+        if (index < 0 || index >= times.length) return;
+
+        if (startIdx === null) {
+            setStartIdx(index);
+            setEndIdx(index);
+            return;
+        }
+
+        setEndIdx(index);
+
+        const start = Math.min(startIdx, index);
+        const end = Math.max(startIdx, index);
+
+        onSelect(times[start], times[end]);
+    };
+
+    const pan = Gesture.Pan()
+        .onBegin((e) => {
+            const index = Math.floor(e.x / CELL_WIDTH);
+            setStartIdx(index);
+            setEndIdx(index);
+        })
+        .onUpdate((e) => {
+            const index = Math.floor(e.x / CELL_WIDTH);
+            updateSelection(index);
+        });
+
+    const tap = Gesture.Tap().onEnd((e) => {
+        const index = Math.floor(e.x / CELL_WIDTH);
+
+        if (startIdx === null) {
+            setStartIdx(index);
+            setEndIdx(index);
+        } else {
+            const start = Math.min(startIdx, index);
+            const end = Math.max(startIdx, index);
+
+            onSelect(times[start], times[end]);
+
+            setStartIdx(null);
+            setEndIdx(null);
+        }
+    });
+
+    return (
+        <GestureDetector gesture={Gesture.Simultaneous(pan, tap)}>
+            <View
+                style={{
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    marginTop: 10,
+                }}
+            >
+                {times.slice(0, 24).map((time, index) => {
+                    const isSelected =
+                        startIdx !== null &&
+                        endIdx !== null &&
+                        index >= Math.min(startIdx, endIdx) &&
+                        index <= Math.max(startIdx, endIdx);
+
+                    return (
+                        <View
+                            key={time}
+                            style={{
+                                width: CELL_WIDTH,
+                                height: 52,
+                                margin: 4,
+                                borderRadius: 18,
+
+                                justifyContent: "center",
+                                alignItems: "center",
+
+                                backgroundColor: isSelected
+                                    ? scheme.accentTint
+                                    : scheme.panelBackground,
+
+                                borderWidth: 1,
+                                borderColor: isSelected
+                                    ? scheme.textAccent
+                                    : scheme.borderLightAlt,
+
+                                shadowColor: "#000",
+                                shadowOpacity: isSelected ? 0.1 : 0,
+                                shadowRadius: 6,
+                                elevation: isSelected ? 2 : 0,
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    fontSize: 13,
+                                    fontWeight: "700",
+                                    color: isSelected
+                                        ? scheme.textDark
+                                        : scheme.textDefault,
+                                }}
+                            >
+                                {time}
+                            </Text>
+                        </View>
+                    );
+                })}
+            </View>
+        </GestureDetector>
+    );
+}
+
 export function SetAvailabilityScreen() {
+    const scheme = useTheme((state) => state.getScheme)();
+    const commonUi = useTheme((state) => state.getCommonUi)();
     const [employees, setEmployees] = useState([]);
     const [selectedEmployee, setSelectedEmployee] = useState("");
     const [selectedDate, setSelectedDate] = useState("");
@@ -150,152 +269,250 @@ export function SetAvailabilityScreen() {
     );
 
     return (
-        <View style={sty.container}>
-            <Text>Employee</Text>
-            <Picker
-                selectedValue={selectedEmployee}
-                onValueChange={(v) => {
-                    setSelectedEmployee(v);
-                    setSelectedDate("");
-                    setCurrentAvailability([]);
-                    setMode(null);
+    <ScrollView contentContainerStyle={commonUi.screen.pageInnerGaps}>
+
+        {/* Header */}
+        <View style={commonUi.auth.formCard}>
+            <Text style={commonUi.hero.heroTitle}>Set</Text>
+            <Text style={commonUi.hero.heroTitleAccent}>Availability</Text>
+            <Text style={commonUi.auth.formDescription}>
+                Manage employee schedules using gestures.
+            </Text>
+        </View>
+
+        {/* Employee Picker */}
+        <View style={commonUi.auth.formCard}>
+            <Text style={commonUi.auth.inputLabel}>Employee</Text>
+
+            <View
+                style={{
+                    borderRadius: 18,
+                    borderWidth: 1,
+                    borderColor: scheme.borderLightAlt,
+                    backgroundColor: scheme.panelBackground,
+                    overflow: "hidden",
                 }}
             >
-                <Picker.Item label="Select employee..." value="" />
-                {employees.map((emp) => (
-                    <Picker.Item
-                        key={emp.id}
-                        label={`${emp.first_name} ${emp.last_name}`}
-                        value={emp.id}
-                    />
-                ))}
-            </Picker>
+                <Picker
+                    selectedValue={selectedEmployee}
+                    onValueChange={(v) => {
+                        setSelectedEmployee(v);
+                        setSelectedDate("");
+                        setCurrentAvailability([]);
+                        setMode(null);
+                    }}
+                >
+                    <Picker.Item label="Select employee..." value="" />
+                    {employees.map((emp) => (
+                        <Picker.Item
+                            key={emp.id}
+                            label={`${emp.first_name} ${emp.last_name}`}
+                            value={emp.id}
+                        />
+                    ))}
+                </Picker>
+            </View>
+        </View>
 
-            {selectedEmployee && (
-                <>
-                    <Text>
-                        Current availability for{" "}
-                        {selectedEmployeeName
-                            ? `${selectedEmployeeName.first_name} ${selectedEmployeeName.last_name}`
-                            : selectedEmployee}
-                        :
+        {selectedEmployee && (
+            <>
+                {/* Availability List */}
+                <View style={commonUi.auth.formCard}>
+                    <Text style={commonUi.auth.formTitle}>
+                        Current Availability
                     </Text>
 
                     {currentAvailability.length === 0 ? (
-                        <Text>No availability set.</Text>
+                        <Text style={{ color: scheme.textMuted }}>
+                            No availability set.
+                        </Text>
                     ) : (
                         currentAvailability.map((slot) => (
-                            <View key={slot.id}>
-                                <Text>
-                                    {fromSecondsFromWeekStart(slot.start_time)}{" "}
-                                    — {fromSecondsFromWeekStart(slot.end_time)}
+                            <View
+                                key={slot.id}
+                                style={{
+                                    padding: 12,
+                                    borderRadius: 14,
+                                    backgroundColor: scheme.panelBackground,
+                                    marginTop: 8,
+                                    borderWidth: 1,
+                                    borderColor: scheme.borderLight,
+                                }}
+                            >
+                                <Text style={{ fontWeight: "600" }}>
+                                    {fromSecondsFromWeekStart(slot.start_time)} —{" "}
+                                    {fromSecondsFromWeekStart(slot.end_time)}
                                 </Text>
                             </View>
                         ))
                     )}
+                </View>
 
-                    <Text>Date</Text>
-                    <TouchableOpacity onPress={() => setShowCalendar(true)}>
-                        <Text>{selectedDate || "Tap to select a date"}</Text>
+                {/* Date Picker */}
+                <View style={commonUi.auth.formCard}>
+                    <Text style={commonUi.auth.inputLabel}>Date</Text>
+
+                    <TouchableOpacity
+                        style={{
+                            backgroundColor: scheme.panelBackground,
+                            padding: 16,
+                            borderRadius: 18,
+                            borderWidth: 1,
+                            borderColor: scheme.borderLightAlt,
+                        }}
+                        onPress={() => setShowCalendar(true)}
+                    >
+                        <Text style={{ fontWeight: "700" }}>
+                            {selectedDate || "Tap to select a date"}
+                        </Text>
                     </TouchableOpacity>
+                </View>
 
-                    <Modal
-                        visible={showCalendar}
-                        transparent={true}
-                        animationType="fade"
-                        onRequestClose={() => setShowCalendar(false)}
-                    >
-                        <TouchableOpacity
-                            style={{ flex: 1 }}
-                            onPress={() => setShowCalendar(false)}
-                        >
-                            <TouchableOpacity activeOpacity={1}>
-                                <Calendar
-                                    onDayPress={(day) => {
-                                        setSelectedDate(day.dateString);
-                                        setShowCalendar(false);
-                                    }}
-                                    markedDates={{
-                                        [selectedDate]: {
-                                            selected: true,
-                                            selectedColor: "#007AFF",
-                                        },
-                                    }}
-                                    minDate={
-                                        new Date().toISOString().split("T")[0]
-                                    }
-                                />
-                            </TouchableOpacity>
-                        </TouchableOpacity>
-                    </Modal>
-                </>
-            )}
-
-            {selectedEmployee !== "" && selectedDate !== "" && (
-                <>
-                    <Button
-                        title="Add Availability"
+                {/* Buttons */}
+                <View style={{ gap: 10 }}>
+                    <Pressable
+                        style={commonUi.auth.inlineCtaButton}
                         onPress={() => setMode("add")}
-                    />
-                    <Button
-                        title="Remove Availability"
+                    >
+                        <Text style={commonUi.auth.inlineCtaButtonText}>
+                            Add Availability
+                        </Text>
+                    </Pressable>
+
+                    <Pressable
+                        style={commonUi.auth.inlineCtaButton}
                         onPress={() => setMode("remove")}
-                    />
-                </>
-            )}
-
-            {mode === "add" && (
-                <>
-                    <Text>Start Time</Text>
-                    <Picker
-                        selectedValue={startTime}
-                        onValueChange={(v) => setStartTime(v)}
                     >
-                        <Picker.Item label="Select start time..." value="" />
-                        {times.map((t) => (
-                            <Picker.Item key={t} label={t} value={t} />
-                        ))}
-                    </Picker>
+                        <Text style={commonUi.auth.inlineCtaButtonText}>
+                            Remove Availability
+                        </Text>
+                    </Pressable>
+                </View>
+            </>
+        )}
 
-                    <Text>End Time</Text>
-                    <Picker
-                        selectedValue={endTime}
-                        onValueChange={(v) => setEndTime(v)}
+        {mode === "add" && (
+            <View style={commonUi.auth.formCard}>
+                <Text style={commonUi.auth.formTitle}>
+                    Select Availability
+                </Text>
+
+                <Text style={commonUi.auth.formDescription}>
+                    Tap or drag across time slots.
+                </Text>
+
+                <TimeRangeSelector
+                    times={times}
+                    scheme={scheme}
+                    commonUi={commonUi}
+                    onSelect={(start, end) => {
+                        setStartTime(start);
+                        setEndTime(end);
+                    }}
+                />
+
+                <Text style={{ marginTop: 10 }}>
+                    Selected: {startTime || "--"} → {endTime || "--"}
+                </Text>
+
+                <View style={{ marginTop: 10, gap: 10 }}>
+                    <Pressable
+                        style={commonUi.auth.primaryButton}
+                        onPress={handleSubmit}
                     >
-                        <Picker.Item label="Select end time..." value="" />
-                        {times.map((t) => (
-                            <Picker.Item key={t} label={t} value={t} />
-                        ))}
-                    </Picker>
+                        <Text style={commonUi.auth.primaryButtonText}>
+                            Submit
+                        </Text>
+                    </Pressable>
 
-                    <Button title="Submit" onPress={handleSubmit} />
-                    <Button title="Cancel" onPress={() => setMode(null)} />
-                </>
-            )}
+                    <Pressable
+                        style={commonUi.auth.inlineCtaButton}
+                        onPress={() => setMode(null)}
+                    >
+                        <Text style={commonUi.auth.inlineCtaButtonText}>
+                            Cancel
+                        </Text>
+                    </Pressable>
+                </View>
+            </View>
+        )}
 
-            {mode === "remove" && (
-                <>
-                    {currentAvailability.length === 0 ? (
-                        <Text>No availability to remove.</Text>
-                    ) : (
-                        currentAvailability.map((slot) => (
-                            <View key={slot.id}>
-                                <Text>
-                                    {fromSecondsFromWeekStart(slot.start_time)}{" "}
-                                    — {fromSecondsFromWeekStart(slot.end_time)}
+        {mode === "remove" && (
+            <View style={commonUi.auth.formCard}>
+                {currentAvailability.length === 0 ? (
+                    <Text>No availability to remove.</Text>
+                ) : (
+                    currentAvailability.map((slot) => (
+                        <View key={slot.id} style={{ marginBottom: 10 }}>
+                            <Text>
+                                {fromSecondsFromWeekStart(slot.start_time)} —{" "}
+                                {fromSecondsFromWeekStart(slot.end_time)}
+                            </Text>
+
+                            <Pressable
+                                style={commonUi.auth.inlineCtaButton}
+                                onPress={() =>
+                                    handleRemoveAvailability(slot.id)
+                                }
+                            >
+                                <Text style={commonUi.auth.inlineCtaButtonText}>
+                                    Remove
                                 </Text>
-                                <Button
-                                    title="Remove"
-                                    onPress={() =>
-                                        handleRemoveAvailability(slot.id)
-                                    }
-                                />
-                            </View>
-                        ))
-                    )}
-                    <Button title="Cancel" onPress={() => setMode(null)} />
-                </>
-            )}
-        </View>
-    );
+                            </Pressable>
+                        </View>
+                    ))
+                )}
+
+                <Pressable
+                    style={commonUi.auth.inlineCtaButton}
+                    onPress={() => setMode(null)}
+                >
+                    <Text style={commonUi.auth.inlineCtaButtonText}>
+                        Cancel
+                    </Text>
+                </Pressable>
+            </View>
+        )}
+
+        {/* Added a modal for calendar view */}
+        <Modal
+            visible={showCalendar}
+            transparent={true}
+            animationType="fade"
+            onRequestClose={() => setShowCalendar(false)}
+        >
+            <TouchableOpacity
+                style={{
+                    flex: 1,
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    justifyContent: "center",
+                    padding: 20,
+                }}
+                onPress={() => setShowCalendar(false)}
+            >
+                <TouchableOpacity
+                    activeOpacity={1}
+                    style={{ borderRadius: 20, overflow: "hidden" }}
+                >
+                    <Calendar
+                        onDayPress={(day) => {
+                            setSelectedDate(day.dateString);
+                            setShowCalendar(false);
+                        }}
+                        markedDates={{
+                            [selectedDate]: {
+                                selected: true,
+                                selectedColor: scheme.textAccent,
+                            },
+                        }}
+                        minDate={
+                            new Date().toISOString().split("T")[0]
+                        }
+                    />
+                </TouchableOpacity>
+            </TouchableOpacity>
+        </Modal>
+
+    </ScrollView>
+);
 }
