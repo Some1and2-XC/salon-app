@@ -288,9 +288,8 @@ export function AdminAppointmentTypesScreen({ navigation }) {
                     </Pressable>
                     <Pressable
                         style={({ pressed }) => [
-                            styles.dangerButton,
-                            styles.actionButton,
-                            pressed && styles.cardPressed,
+                            styles.dangerButton, styles.actionButton,
+                            pressed && commonUi.card.cardPressed,
                         ]}
                         onPress={() => confirmDeleteTask(item)}
                     >

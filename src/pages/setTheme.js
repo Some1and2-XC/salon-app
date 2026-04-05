@@ -3,17 +3,14 @@ import { MAP_COLOR_SCHEME } from "../colorScheme";
 // I knows this is sorta silly to do like this but it's fine
 import { makeStyles as makeBookingStyles, OptionModal } from "./booking";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
 export function SetThemeScreen({ navigation }) {
 
     const commonUi = useTheme((state) => state.getCommonUi)();
-    const colorScheme = useTheme((state) => state.getScheme)();
-    const colorSchemeSet = useTheme((state) => state.setScheme);
     const colorSchemeName = useTheme((state) => state.scheme);
-
-    const styles = useMemo(() => makeBookingStyles(colorScheme), [colorScheme]);
+    const colorSchemeSet = useTheme((state) => state.setScheme);
 
     const [showSelectionModal, setShowSelectionModal] = useState(false);
 
@@ -67,11 +64,8 @@ export function SetThemeScreen({ navigation }) {
                 selectedValue={colorSchemeName}
                 onSelect={colorSchemeSet}
                 onClose={() => setShowSelectionModal(false)}
-                styles={styles}
             />
 
         </ScrollView>
-
     );
-
 }
