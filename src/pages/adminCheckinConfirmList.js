@@ -12,7 +12,7 @@ import {
 import { NAV_CHECKIN_CONFIRM_ADMIN } from "../consts";
 import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
-import { apiFetch } from "../utils";
+import { apiFetch, assertFetchSuccessful } from "../utils";
 import { AdminBackBar } from "../components/AdminBackBar";
 
 export function AdminCheckinConfirmList({ navigation }) {
@@ -26,20 +26,23 @@ export function AdminCheckinConfirmList({ navigation }) {
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
 
-    const load = useCallback(async () => {
+    const load = useCallback(() => {
         setError(null);
-        try {
-            const res = await apiFetch("/appointments", { method: "GET" });
-            const data = await res.json();
+        apiFetch("/appointments", { method: "GET" })
+        .then(assertFetchSuccessful)
+        .then(res => res.json())
+        .then((data) => {
             setItems(Array.isArray(data) ? data : []);
-        } catch (e) {
+        })
+        .catch((e) => {
             console.error(e);
             setError("Could not load appointments.");
             setItems([]);
-        } finally {
+        })
+        .finally(() => {
             setLoading(false);
             setRefreshing(false);
-        }
+        })
     }, []);
 
     useEffect(() => {
@@ -52,6 +55,7 @@ export function AdminCheckinConfirmList({ navigation }) {
     };
 
     const renderItem = ({ item }) => {
+        console.log(item);
         const updated = item?.last_modified
             ? new Date(Number(item.last_modified)).toLocaleString()
             : "—";
@@ -63,7 +67,7 @@ export function AdminCheckinConfirmList({ navigation }) {
             >
                 <View style={styles.cardTop}>
                     <Text style={styles.cardTitle}>
-                        Appointment #{String(item?.uuid ?? item?.id ?? "—")}
+                        {String(item?.uuid ?? item?.id ?? "—")}
                     </Text>
                     <Text style={styles.cardChevron}>→</Text>
                 </View>
