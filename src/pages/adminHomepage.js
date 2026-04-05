@@ -200,7 +200,7 @@ export function AdminHomepageScreen({ navigation }) {
                     <View style={commonUi.hero.heroTextBlock}>
                         <Text style={commonUi.hero.heroTitle}>Salon Studio</Text>
                         <Text style={commonUi.hero.heroTitleAccent}>Admin</Text>
-                        <Text style={styles.heroText}>
+                        <Text style={commonUi.hero.heroText}>
                             Manage staff, services, and front-desk tools from one
                             dashboard.
                         </Text>
