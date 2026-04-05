@@ -23,6 +23,7 @@ const EMPLOYEE_OPTIONS = {
     SPECIFIC: "SPECIFIC",
 };
 
+// TODO remove
 function showAlert(title, message) {
     if (Platform.OS === "web") {
         window.alert(`${title}\n\n${message}`);
@@ -231,8 +232,10 @@ function InfoSelectCard({
     meta,
     onPress,
     disabled = false,
-    styles,
 }) {
+
+    const commonUi = useTheme((state) => state.getCommonUi)();
+
     return (
         <View style={commonUi.card.secondaryActionCard}>
             <View style={commonUi.card.smallTopRow}>
