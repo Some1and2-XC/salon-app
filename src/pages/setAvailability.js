@@ -276,7 +276,6 @@ export function SetAvailabilityScreen({ navigation }) {
                                         </Text>
                                     </Pressable>
                                 </View>
-                                
                             ))
                         )}
                     </View>
