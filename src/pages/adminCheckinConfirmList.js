@@ -26,18 +26,25 @@ export function AdminCheckinConfirmList({ navigation }) {
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
 
+    const [appointmentUserMap, setAppointmentUserMap] = useState({});
+
     const load = useCallback(() => {
         setError(null);
         apiFetch("/appointments", { method: "GET" })
         .then(assertFetchSuccessful)
         .then(res => res.json())
         .then((data) => {
-            setItems(Array.isArray(data) ? data : []);
+            const appointments = Array.isArray(data) ? data : [];
+            setItems(appointments);
+            return appointments;
         })
+        .then (appointments => getUsersForAppointments(appointments))
+        .then(map => setAppointmentUserMap(map))
         .catch((e) => {
             console.error(e);
             setError("Could not load appointments.");
             setItems([]);
+            setAppointmentUserMap({});
         })
         .finally(() => {
             setLoading(false);
@@ -54,11 +61,46 @@ export function AdminCheckinConfirmList({ navigation }) {
         load();
     };
 
+    // maps appointment uuids to user objects 
+
+    const getUsersForAppointments = (data) => {
+
+        if(!data) {
+            return Promise.resolve({});
+        }
+
+        const map = {};
+
+        const promises = data.map((appt) => {
+            if (!appt.user_uuid) return Promise.resolve();
+
+            return(
+                apiFetch(`/users/${appt.user_uuid}`, { method: 'GET' })
+                    .then(assertFetchSuccessful)
+                    .then(res => res.json())
+                    .then((user) => {
+                        console.log(user);
+                        map[appt.uuid] = user
+                    })
+                    .catch((e) => {
+                        console.error(e);
+                    })
+            )
+        })
+
+        return Promise.all(promises).then(() => map);           
+    };
+
+
     const renderItem = ({ item }) => {
-        console.log(item);
         const updated = item?.last_modified
             ? new Date(Number(item.last_modified)).toLocaleString()
             : "—";
+
+        const user = appointmentUserMap[item?.uuid];
+
+        const name = [user?.first_name, user?.last_name].filter(Boolean).join(" ");
+        const email = user?.email ? ` (${user?.email})` : "";
 
         return (
             <Pressable
@@ -67,7 +109,7 @@ export function AdminCheckinConfirmList({ navigation }) {
             >
                 <View style={styles.cardTop}>
                     <Text style={styles.cardTitle}>
-                        {String(item?.uuid ?? item?.id ?? "—")}
+                        {`${name} ${email}`}
                     </Text>
                     <Text style={styles.cardChevron}>→</Text>
                 </View>
