@@ -24,7 +24,6 @@ import { AdminBackBar } from "../components/AdminBackBar";
  * Admin confirm/deny for an appointment. Pass the appointment via route.params,
  * or the first open appointment is loaded when params are omitted (dev / debug).
  */
-
 export function AdminCheckinConfirm({ navigation, route }) {
 
     const commonUi = useTheme((state) => state.getCommonUi)();
@@ -40,7 +39,6 @@ export function AdminCheckinConfirm({ navigation, route }) {
 
     // Check if you have been passed an appointment object or no
     // If not then render the first appointment from the booked appointments 
-
     useEffect(() => {
 
         if (appointment) {
@@ -48,7 +46,6 @@ export function AdminCheckinConfirm({ navigation, route }) {
             return;
         }
 
-        let cancelled = false;
         setLoadingAppointment(true);
         setLoadError(null);
 
@@ -56,61 +53,41 @@ export function AdminCheckinConfirm({ navigation, route }) {
             .then(assertFetchSuccessful)
             .then((res) => res.json())
             .then((arr) => {
-                if (cancelled) return;
                 if (Array.isArray(arr) && arr[0]) {
                     setAppointment(arr[0]);
                 } else {
                     setLoadError("No appointments found.");
                 }
             })
-            .catch(() => {
-                if (!cancelled) setLoadError("Could not load appointments.");
-            })
-            .finally(() => {
-                if (!cancelled) setLoadingAppointment(false);
-            });
-
-        return () => {
-            cancelled = true;
-        };
+            .catch(() => setLoadError("Could not load appointments."))
+            .finally(() => setLoadingAppointment(false))
+            ;
     }, []);
 
     // User Fetching Effect
-
     useEffect(() => {
         if (!appointment || !appointment.user_uuid) {
             setUser(null);
             return;
         }
 
-        let cancelled = false;
         setLoadingUser(true);
         setLoadError(null);
 
         // Needs to pass the user token to validate the admin (only the admin can access the list of users)
-
         apiFetch(`/users/${appointment.user_uuid}`, { 
             method: "GET"
         })
             .then(assertFetchSuccessful)
             .then((res) => res.json())
-            .then((user) => {
-                if (!cancelled) setUser(user);
-            })
-            .catch(() => {
-                if (!cancelled) setLoadError("Could not load customer details.");
-            })
-            .finally(() => {
-                if (!cancelled) setLoadingUser(false);
-            });
+            .then((user) => setUser(user))
+            .catch(() => setLoadError("Could not load customer details."))
+            .finally(() => setLoadingUser(false))
+            ;
 
-        return () => {
-            cancelled = true;
-        };
     }, [appointment]);
 
     // Appointment Fetching Effect
-
     const handleResponse = async (confirmed) => {
         const fetch_body = {
             method: "PATCH",
@@ -169,22 +146,23 @@ export function AdminCheckinConfirm({ navigation, route }) {
             style={{ backgroundColor: colorScheme.pageBackground }}
             contentContainerStyle={[
                 commonUi.screen.pageMargins,
+                commonUi.screen.pageInnerGaps,
                 { paddingBottom: 28 },
             ]}
         >
             <AdminBackBar navigation={navigation} />
 
-            <View style={styles.heroCard}>
-                <View style={styles.blobSoft} />
-                <Text style={styles.kicker}>Front desk</Text>
-                <Text style={styles.title}>Confirm booking</Text>
-                <Text style={styles.subtitle}>
+            <View style={commonUi.card.accentCard}>
+                <View style={commonUi.card.accentCardBlob} />
+                <Text style={commonUi.card.kicker}>Front desk</Text>
+                <Text style={commonUi.card.cardTitle}>Confirm booking</Text>
+                <Text style={commonUi.card.cardSubtitle}>
                     Review the visit below, then accept or decline the check-in.
                 </Text>
             </View>
 
             {loadError ? (
-                <View style={styles.panel}>
+                <View style={commonUi.card.pageCard}>
                     <Text style={styles.errorText}>{loadError}</Text>
                 </View>
             ) : null}
@@ -197,7 +175,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
                     />
                 </View>
             ) : (
-                <View style={styles.panel}>
+                <View style={commonUi.card.pageCard}>
                     <View style={styles.row}>
                         <Text style={styles.label}>Customer</Text>
                         <Text style={styles.value}>{customerLine}</Text>
@@ -209,19 +187,13 @@ export function AdminCheckinConfirm({ navigation, route }) {
 
                     <View style={styles.actions}>
                         <Pressable
-                            style={({ pressed }) => [
-                                styles.btnConfirm,
-                                pressed && styles.pressed,
-                            ]}
+                            style={({ pressed }) => [styles.btnConfirm, pressed && commonUi.card.pressed]}
                             onPress={() => handleResponse(true)}
                         >
                             <Text style={styles.btnConfirmText}>Confirm</Text>
                         </Pressable>
                         <Pressable
-                            style={({ pressed }) => [
-                                styles.btnDeny,
-                                pressed && styles.pressed,
-                            ]}
+                            style={({ pressed }) => [styles.btnDeny, pressed && commonUi.card.pressed]}
                             onPress={() => handleResponse(false)}
                         >
                             <Text style={styles.btnDenyText}>Deny</Text>
@@ -235,57 +207,6 @@ export function AdminCheckinConfirm({ navigation, route }) {
 
 function makeStyles(colorScheme) {
     return StyleSheet.create({
-        heroCard: {
-            position: "relative",
-            overflow: "hidden",
-            borderRadius: 28,
-            paddingHorizontal: 20,
-            paddingVertical: 22,
-            backgroundColor: colorScheme.accentTint,
-            marginBottom: 16,
-            borderWidth: 1,
-            borderColor: colorScheme.borderAccentSoft,
-        },
-        blobSoft: {
-            position: "absolute",
-            width: 120,
-            height: 120,
-            borderRadius: 60,
-            backgroundColor: colorScheme.accentBlob,
-            right: -30,
-            top: -20,
-            opacity: 0.25,
-        },
-        kicker: {
-            fontSize: 12,
-            fontWeight: "700",
-            letterSpacing: 1.5,
-            textTransform: "uppercase",
-            color: colorScheme.textAccentSoft,
-            marginBottom: 8,
-            zIndex: 1,
-        },
-        title: {
-            fontSize: 26,
-            fontWeight: "800",
-            color: colorScheme.textDarkest,
-            marginBottom: 8,
-            zIndex: 1,
-        },
-        subtitle: {
-            fontSize: 14,
-            lineHeight: 21,
-            color: colorScheme.textSubtle,
-            maxWidth: "95%",
-            zIndex: 1,
-        },
-        panel: {
-            backgroundColor: colorScheme.whiteWarmCard,
-            borderRadius: 24,
-            padding: 18,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLight,
-        },
         row: {
             marginBottom: 14,
         },
@@ -344,10 +265,5 @@ function makeStyles(colorScheme) {
             fontSize: 15,
             fontWeight: "800",
         },
-        pressed: {
-            opacity: 0.92,
-            transform: [{ scale: 0.99 }],
-        },
     });
 }
-

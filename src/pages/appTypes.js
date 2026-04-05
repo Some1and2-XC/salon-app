@@ -26,8 +26,10 @@ function OptionModal({
     onSelect,
     onClose,
     emptyText = "No options available",
-    styles,
 }) {
+
+    const colorScheme = useTheme((state) => state.getScheme)() ?? colorSchemeGreens;
+    const styles = makeStyles(colorScheme);
 
     return (
         <Modal
@@ -249,13 +251,11 @@ export function AdminAppointmentTypesScreen({ navigation }) {
                             <Text style={styles.categoryChipText}>{categoryName}</Text>
                         </View>
                     </View>
-
-                    <View style={styles.metaChip}>
-                        <Text style={styles.metaChipText}>
+                    <View style={commonUi.hero.metaChip}>
+                        <Text style={commonUi.hero.metaChipText}>
                             ${(item.price_cad_cent / 100).toFixed(2)}
                         </Text>
                     </View>
-
                 </View>
 
                 <View style={styles.detailRow}>
@@ -264,14 +264,12 @@ export function AdminAppointmentTypesScreen({ navigation }) {
                         {Math.round(item.time_for_booking / 60)} minutes
                     </Text>
                 </View>
-
                 <View style={styles.detailRow}>
                     <Text style={styles.detailLabel}>Created</Text>
                     <Text style={styles.detailValue}>
                         {new Date(Number(item.date_created)).toLocaleString()}
                     </Text>
                 </View>
-
                 <View style={styles.detailRow}>
                     <Text style={styles.detailLabel}>Updated</Text>
                     <Text style={styles.detailValue}>
@@ -290,12 +288,10 @@ export function AdminAppointmentTypesScreen({ navigation }) {
                     >
                         <Text style={styles.secondaryButtonText}>Edit</Text>
                     </Pressable>
-
                     <Pressable
                         style={({ pressed }) => [
-                            styles.dangerButton,
-                            styles.actionButton,
-                            pressed && styles.cardPressed,
+                            styles.dangerButton, styles.actionButton,
+                            pressed && commonUi.card.cardPressed,
                         ]}
                         onPress={() => confirmDeleteTask(item)}
                     >
@@ -307,8 +303,10 @@ export function AdminAppointmentTypesScreen({ navigation }) {
     };
 
     return (
-        <ScrollView style={commonUi.screen.pageMargins}>
-
+        <ScrollView
+            style={commonUi.screen.pageMargins}
+            contentContainerStyle={commonUi.screen.pageInnerGaps}
+        >
             <AdminBackBar navigation={navigation} />
 
             <View style={commonUi.hero.heroCard}>
@@ -344,7 +342,6 @@ export function AdminAppointmentTypesScreen({ navigation }) {
                 >
                     <Text style={commonUi.auth.primaryButtonText}>Add New Service</Text>
                 </Pressable>
-
             </View>
 
             <Text style={styles.sectionTitle}>All Services</Text>
@@ -364,7 +361,7 @@ export function AdminAppointmentTypesScreen({ navigation }) {
                             style={({ pressed }) => [
                                 commonUi.auth.primaryButton,
                                 commonUi.auth.emptyButton,
-                                pressed && styles.cardPressed,
+                                pressed && commonUi.card.cardPressed,
                             ]}
                             onPress={openCreateModal}
                         >
@@ -426,20 +423,20 @@ export function AdminAppointmentTypesScreen({ navigation }) {
                                 <Text style={commonUi.auth.inputLabel}>Category</Text>
                                 <Pressable
                                     style={({ pressed }) => [
-                                        styles.selectButton,
+                                        commonUi.form.selectButton,
                                         pressed && commonUi.auth.cardPressed,
                                     ]}
                                     onPress={() => setShowCategoryModal(true)}
                                 >
                                     <Text
                                         style={[
-                                            styles.selectValue,
-                                            category === "" && styles.selectValueMuted,
+                                            commonUi.form.selectValue,
+                                            category === "" && commonUi.form.selectValueMuted,
                                         ]}
                                     >
                                         {selectedCategoryName}
                                     </Text>
-                                    <Text style={styles.selectChevron}>⌄</Text>
+                                    <Text style={commonUi.form.selectChevron}>⌄</Text>
                                 </Pressable>
                             </View>
                         </ScrollView>
@@ -447,7 +444,7 @@ export function AdminAppointmentTypesScreen({ navigation }) {
                         <View style={styles.modalActionRow}>
                             <Pressable
                                 style={({ pressed }) => [
-                                    styles.primaryButton,
+                                    commonUi.auth.primaryButton,
                                     !canSave && styles.primaryButtonDisabled,
                                     pressed && commonUi.auth.cardPressed,
                                 ]}
@@ -516,52 +513,13 @@ export function AdminAppointmentTypesScreen({ navigation }) {
                 onSelect={setCategory}
                 onClose={() => setShowCategoryModal(false)}
                 emptyText="No categories available"
-                styles={styles}
             />
         </ScrollView>
     );
 }
 
 function makeStyles(colorScheme) {
-
     return StyleSheet.create({
-
-        // safeArea: commonUi.screen.safeArea,
-        // safeAreaWeb: commonUi.screen.safeAreaWeb,
-        // scrollView: commonUi.screen.scrollView,
-        // scrollViewWeb: commonUi.screen.scrollViewWeb,
-
-        pageWrap: {
-            marginBottom: 10,
-        },
-
-        // blobOne: commonUi.hero.blobOne,
-        // blobTwo: commonUi.hero.blobTwo,
-        // kicker: commonUi.hero.kicker,
-        // formTitle: commonUi.auth.formTitle,
-        // formDescription: commonUi.auth.formDescription,
-        // inputGroup: commonUi.auth.inputGroup,
-        // inputLabel: commonUi.auth.inputLabel,
-        // input: commonUi.auth.input,
-
-        heroText: {
-            fontSize: 14,
-            lineHeight: 21,
-            color: colorScheme.textSubtle,
-            marginTop: 10,
-            marginBottom: 14,
-            maxWidth: "94%",
-        },
-        heroMetaRow: {
-            flexDirection: "row",
-            flexWrap: "wrap",
-            marginBottom: 14,
-            zIndex: 2,
-        },
-        heroButton: {
-            marginTop: 0,
-        },
-
         sectionTitle: {
             fontSize: 22,
             fontWeight: "800",
@@ -569,7 +527,6 @@ function makeStyles(colorScheme) {
             marginBottom: 10,
             marginTop: 2,
         },
-
         taskCard: {
             backgroundColor: colorScheme.whiteWarmCard,
             borderRadius: 24,
@@ -605,7 +562,6 @@ function makeStyles(colorScheme) {
             fontSize: 12.5,
             fontWeight: "700",
         },
-
         detailRow: {
             flexDirection: "row",
             justifyContent: "space-between",
@@ -627,7 +583,6 @@ function makeStyles(colorScheme) {
             flex: 1.4,
             textAlign: "right",
         },
-
         cardActionRow: {
             flexDirection: "row",
             gap: 10,
@@ -636,7 +591,6 @@ function makeStyles(colorScheme) {
         actionButton: {
             flex: 1,
         },
-
         emptyWrap: {
             backgroundColor: colorScheme.whiteWarmCard,
             borderRadius: 24,
@@ -644,7 +598,6 @@ function makeStyles(colorScheme) {
             borderColor: colorScheme.borderLight,
             padding: 22,
             alignItems: "center",
-            marginTop: 4,
         },
         emptyTitle: {
             fontSize: 18,
@@ -660,10 +613,6 @@ function makeStyles(colorScheme) {
             lineHeight: 20,
             marginBottom: 14,
         },
-        emptyButton: {
-            alignSelf: "stretch",
-        },
-
         formModalBackdrop: {
             flex: 1,
             backgroundColor: colorScheme.overlayDarkStrong,
@@ -680,14 +629,6 @@ function makeStyles(colorScheme) {
             alignSelf: "center",
             width: "100%",
         },
-
-        confirmCard: {
-            backgroundColor: colorScheme.whiteWarmCard,
-            borderRadius: 24,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLight,
-            padding: 18,
-        },
         confirmTitle: {
             fontSize: 20,
             fontWeight: "800",
@@ -700,58 +641,18 @@ function makeStyles(colorScheme) {
             lineHeight: 21,
             marginBottom: 14,
         },
-
         rowInputs: {
             overflow: "visible",
             flexDirection: "row",
             gap: 10,
         },
-
-        selectButton: {
-            backgroundColor: colorScheme.panelBackground,
-            borderRadius: 18,
-            paddingHorizontal: 16,
-            paddingVertical: 15,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLightAlt,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-        },
-        selectValue: {
-            flex: 1,
-            fontSize: 15,
-            fontWeight: "700",
-            color: colorScheme.textDefault,
-            paddingRight: 10,
-        },
-        selectValueMuted: {
-            color: colorScheme.textLabel,
-        },
-        selectChevron: {
-            fontSize: 24,
-            color: colorScheme.textAccentSoft,
-            marginTop: -2,
-        },
-
         modalActionRow: {
             gap: 10,
             marginTop: 10,
         },
-
-        // primaryButton: commonUi.auth.primaryButton,
-        // primaryButtonText: commonUi.auth.primaryButtonText,
         primaryButtonDisabled: {
             opacity: 0.55,
         },
-
-        primaryButton: {
-            backgroundColor: colorScheme.darkSurface,
-            borderRadius: 24,
-            paddingVertical: 16,
-            alignItems: "center",
-        },
-
         secondaryButton: {
             backgroundColor: colorScheme.panelBackgroundAlt,
             borderRadius: 24,
@@ -763,7 +664,6 @@ function makeStyles(colorScheme) {
             fontSize: 14,
             fontWeight: "700",
         },
-
         dangerButton: {
             backgroundColor: colorScheme.danger,
             borderRadius: 24,
@@ -775,95 +675,5 @@ function makeStyles(colorScheme) {
             fontSize: 14,
             fontWeight: "800",
         },
-
-        modalBackdrop: {
-            position: "absolute",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-        },
-
-        optionModalTitle: {
-            fontSize: 18,
-            fontWeight: "800",
-            color: colorScheme.textDarkest,
-        },
-        closeButton: {
-            paddingHorizontal: 6,
-            paddingVertical: 2,
-        },
-        optionModalClose: {
-            fontSize: 18,
-            fontWeight: "800",
-            color: colorScheme.textAccentSoft,
-        },
-        optionModalList: {
-            maxHeight: 420,
-        },
-        optionModalListContent: {
-            paddingBottom: 8,
-        },
-        optionRow: {
-            backgroundColor: colorScheme.panelBackground,
-            borderRadius: 18,
-            paddingHorizontal: 14,
-            paddingVertical: 14,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLightAlt,
-            marginTop: 10,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-        },
-        optionRowSelected: {
-            backgroundColor: colorScheme.accentTint,
-            borderColor: colorScheme.textAccent,
-        },
-        optionRowPressed: {
-            opacity: 0.92,
-            transform: [{ scale: 0.99 }],
-        },
-        optionTextWrap: {
-            flex: 1,
-            paddingRight: 12,
-        },
-        optionLabel: {
-            fontSize: 15,
-            fontWeight: "700",
-            color: colorScheme.textDefault,
-        },
-        optionLabelSelected: {
-            color: colorScheme.textDarkest,
-        },
-        optionSubLabel: {
-            marginTop: 4,
-            fontSize: 12,
-            color: colorScheme.textAccentSoft,
-            fontWeight: "600",
-        },
-        optionSubLabelSelected: {
-            color: colorScheme.textAccent,
-        },
-        optionCheck: {
-            fontSize: 18,
-            fontWeight: "800",
-            color: colorScheme.textAccent,
-        },
-        emptyOptionText: {
-            fontSize: 14,
-            color: colorScheme.textMuted,
-            textAlign: "center",
-            paddingVertical: 22,
-        },
-
-        cardPressed: {
-            opacity: 0.93,
-            transform: [{ scale: 0.985 }],
-        },
-
-        // metaChip: commonUi.hero.metaChip,
-        // metaChipText: commonUi.hero.metaChipText,
-        // cardPressed: commonUi.auth.cardPressed,
     });
 }

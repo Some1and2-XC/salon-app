@@ -58,13 +58,8 @@ export function AdminCheckinConfirmList({ navigation }) {
 
         return (
             <Pressable
-                style={({ pressed }) => [
-                    styles.card,
-                    pressed && styles.cardPressed,
-                ]}
-                onPress={() =>
-                    navigation.navigate(NAV_CHECKIN_CONFIRM_ADMIN, item)
-                }
+                style={({ pressed }) => [styles.card, pressed && commonUi.auth.cardPressed]}
+                onPress={() => navigation.navigate(NAV_CHECKIN_CONFIRM_ADMIN, item)}
             >
                 <View style={styles.cardTop}>
                     <Text style={styles.cardTitle}>
@@ -92,16 +87,15 @@ export function AdminCheckinConfirmList({ navigation }) {
                 }
                 renderItem={renderItem}
                 ListHeaderComponent={
-                    <View style={styles.headerBlock}>
+                    <View style={{ marginBottom: 6 }}>
                         <AdminBackBar navigation={navigation} />
 
-                        <View style={styles.heroCard}>
-                            <View style={styles.blobSoft} />
-                            <Text style={styles.kicker}>Operations</Text>
-                            <Text style={styles.title}>Check-in queue</Text>
-                            <Text style={styles.subtitle}>
-                                Select an appointment to open the confirmation
-                                screen.
+                        <View style={commonUi.card.accentCard}>
+                            <View style={commonUi.card.accentCardBlob} />
+                            <Text style={commonUi.card.kicker}>Operations</Text>
+                            <Text style={commonUi.card.cardTitle}>Check-in queue</Text>
+                            <Text style={commonUi.card.cardSubtitle}>
+                                Select an appointment to open the confirmation screen.
                             </Text>
                         </View>
 
@@ -134,6 +128,7 @@ export function AdminCheckinConfirmList({ navigation }) {
                 }
                 contentContainerStyle={[
                     commonUi.screen.pageMargins,
+                    commonUi.screen.pageInnerGaps,
                     { paddingBottom: 28 },
                 ]}
                 refreshControl={
@@ -150,53 +145,6 @@ export function AdminCheckinConfirmList({ navigation }) {
 
 function makeStyles(colorScheme) {
     return StyleSheet.create({
-        headerBlock: {
-            marginBottom: 6,
-        },
-        heroCard: {
-            position: "relative",
-            overflow: "hidden",
-            borderRadius: 28,
-            paddingHorizontal: 20,
-            paddingVertical: 22,
-            backgroundColor: colorScheme.accentTint,
-            marginBottom: 16,
-            borderWidth: 1,
-            borderColor: colorScheme.borderAccentSoft,
-        },
-        blobSoft: {
-            position: "absolute",
-            width: 120,
-            height: 120,
-            borderRadius: 60,
-            backgroundColor: colorScheme.accentBlob,
-            right: -30,
-            top: -20,
-            opacity: 0.25,
-        },
-        kicker: {
-            fontSize: 12,
-            fontWeight: "700",
-            letterSpacing: 1.5,
-            textTransform: "uppercase",
-            color: colorScheme.textAccentSoft,
-            marginBottom: 8,
-            zIndex: 1,
-        },
-        title: {
-            fontSize: 26,
-            fontWeight: "800",
-            color: colorScheme.textDarkest,
-            marginBottom: 8,
-            zIndex: 1,
-        },
-        subtitle: {
-            fontSize: 14,
-            lineHeight: 21,
-            color: colorScheme.textSubtle,
-            maxWidth: "95%",
-            zIndex: 1,
-        },
         loaderWrap: {
             paddingVertical: 20,
             alignItems: "center",
@@ -205,7 +153,6 @@ function makeStyles(colorScheme) {
             backgroundColor: colorScheme.panelBackground,
             borderRadius: 16,
             padding: 12,
-            marginBottom: 12,
             borderWidth: 1,
             borderColor: colorScheme.borderLight,
         },
@@ -221,11 +168,6 @@ function makeStyles(colorScheme) {
             padding: 16,
             borderWidth: 1,
             borderColor: colorScheme.borderLight,
-            marginBottom: 12,
-        },
-        cardPressed: {
-            opacity: 0.93,
-            transform: [{ scale: 0.99 }],
         },
         cardTop: {
             flexDirection: "row",
