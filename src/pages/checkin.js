@@ -55,11 +55,12 @@ export function CheckinScreen({ navigation }) {
     };
 
     return (
-        <View style={[commonUi.screen.pageMargins, commonUi.screen.pageInnerGaps, { flex: 1 }]}>
+        <View style={[commonUi.screen.pageMargins, commonUi.screen.pageInnerGaps]}>
             <Text style={styles.heading}>Check In</Text>
 
             <FlatList
                 data={appointments}
+                contentContainerStyle={commonUi.screen.pageInnerGaps}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={renderItem}
             />
