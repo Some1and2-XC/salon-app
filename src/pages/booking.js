@@ -425,6 +425,11 @@ export function BookingScreen({ navigation }) {
         setSelectedTime(nextTimes.length > 0 ? nextTimes[0] : "");
     };
 
+    function formatPriceCad(cents) {
+        if (cents == null) return null;
+        return `CA$${(cents / 100).toFixed(2)}`;
+    }
+
     const handleCreateAppointment = async () => {
         if (!selectedTaskId) {
             showAppToast(TOAST_TYPE_ERROR, "No task selected", "Please select a task.");
@@ -500,7 +505,7 @@ export function BookingScreen({ navigation }) {
     const taskOptions = tasks.map((task) => ({
         label: task.name,
         value: String(task.id),
-        subLabel: `${(task.time_for_booking || 900) / 60} min`,
+        subLabel: `${(task.time_for_booking || 900) / 60} min${task.price_cad_cent != null ? ` · ${formatPriceCad(task.price_cad_cent)}` : ""}`,
     }));
 
     const employeeOptions = employees.map((employee) => ({
@@ -802,6 +807,12 @@ export function BookingScreen({ navigation }) {
                                 </Text>
                             </View>
                         )}
+                        <View style={styles.summaryRow}>
+                            <Text style={styles.summaryKey}>Price</Text>
+                            <Text style={styles.summaryValue}>
+                                {formatPriceCad(selectedTask.price_cad_cent) || "Not selected"}
+                            </Text>
+                        </View>
                     </View>
 
                     <Pressable
