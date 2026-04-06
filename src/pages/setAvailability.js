@@ -69,10 +69,26 @@ function TimeRangeSelector({ times, onSelect, scheme }) {
     const [startIdx, setStartIdx] = useState(null);
     const [endIdx, setEndIdx] = useState(null);
 
+    const visibleTimes = times.slice(0, 24);
+
     const CELL_WIDTH = 72;
+    const CELL_HEIGHT = 52;
+    const NUM_COLUMNS = 4;
+
+    const getIndex = (e) => {
+        const fullWidth = CELL_WIDTH + 8;   // margin: 4 + 4
+        const fullHeight = CELL_HEIGHT + 8;
+
+        const col = Math.floor(e.x / fullWidth);
+        const row = Math.floor(e.y / fullHeight);
+
+        const index = row * NUM_COLUMNS + col;
+
+        return Math.max(0, Math.min(index, visibleTimes.length - 1));
+    };
 
     const updateSelection = (index) => {
-        if (index < 0 || index >= times.length) return;
+        if (index < 0 || index >= visibleTimes.length) return;
 
         if (startIdx === null) {
             setStartIdx(index);
@@ -80,27 +96,29 @@ function TimeRangeSelector({ times, onSelect, scheme }) {
             return;
         }
 
+        if (index === endIdx) return; // 🔥 prevents unnecessary re-renders
+
         setEndIdx(index);
 
         const start = Math.min(startIdx, index);
         const end = Math.max(startIdx, index);
 
-        onSelect(times[start], times[end]);
+        onSelect(visibleTimes[start], visibleTimes[end]);
     };
 
     const pan = Gesture.Pan()
         .onBegin((e) => {
-            const index = Math.floor(e.x / CELL_WIDTH);
+            const index = getIndex(e);
             setStartIdx(index);
             setEndIdx(index);
         })
         .onUpdate((e) => {
-            const index = Math.floor(e.x / CELL_WIDTH);
+            const index = getIndex(e);
             updateSelection(index);
         });
 
     const tap = Gesture.Tap().onEnd((e) => {
-        const index = Math.floor(e.x / CELL_WIDTH);
+        const index = getIndex(e);
 
         if (startIdx === null) {
             setStartIdx(index);
@@ -109,7 +127,7 @@ function TimeRangeSelector({ times, onSelect, scheme }) {
             const start = Math.min(startIdx, index);
             const end = Math.max(startIdx, index);
 
-            onSelect(times[start], times[end]);
+            onSelect(visibleTimes[start], visibleTimes[end]);
 
             setStartIdx(null);
             setEndIdx(null);
@@ -125,7 +143,7 @@ function TimeRangeSelector({ times, onSelect, scheme }) {
                     marginTop: 10,
                 }}
             >
-                {times.slice(0, 24).map((time, index) => {
+                {visibleTimes.map((time, index) => {
                     const isSelected =
                         startIdx !== null &&
                         endIdx !== null &&
@@ -137,7 +155,7 @@ function TimeRangeSelector({ times, onSelect, scheme }) {
                             key={time}
                             style={{
                                 width: CELL_WIDTH,
-                                height: 52,
+                                height: CELL_HEIGHT,
                                 margin: 4,
                                 borderRadius: 18,
 
