@@ -210,7 +210,6 @@ export function AdminCheckinConfirmList({ navigation }) {
                     String(item?.uuid ?? item?.id ?? index)
                 }
                 renderItem={renderItem}
-                style={commonUi.screen.screenInner}
                 ListEmptyComponent={
                     !loading ? (
                         <View style={styles.empty}>
@@ -222,10 +221,7 @@ export function AdminCheckinConfirmList({ navigation }) {
                         </View>
                     ) : null
                 }
-                contentContainerStyle={[
-                    commonUi.screen.pageMargins,
-                    commonUi.screen.pageInnerGaps,
-                ]}
+                contentContainerStyle={commonUi.screen.pageInnerGaps}
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}
