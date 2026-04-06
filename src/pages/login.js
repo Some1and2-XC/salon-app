@@ -114,6 +114,7 @@ export function LoginScreen({ navigation }) {
                             onChangeText={setEmail}
                             autoCapitalize="none"
                             keyboardType="email-address"
+                            returnKeyType="next"
                         />
                     </View>
 
@@ -127,11 +128,21 @@ export function LoginScreen({ navigation }) {
                             value={password}
                             onChangeText={setPassword}
                             secureTextEntry
+                            returnKeyType="done"
+                            onSubmitEditing={onLogin}
                         />
 
-                        <Pressable onPress={onForgotPassword}>
-                            <Text style={commonUi.auth.forgotPasswordText}>Forgot Password?</Text>
-                        </Pressable>
+                        <View style={{ alignItems: "flex-end", marginTop: 8 }}>
+                            <Pressable
+                                onPress={onForgotPassword}
+                                style={{ alignSelf: "flex-start", paddingVertical: 2, paddingHorizontal: 2 }}
+                                hitSlop={6}
+                            >
+                                <Text style={commonUi.auth.forgotPasswordText}>
+                                    Forgot Password?
+                                </Text>
+                            </Pressable>
+                        </View>
                     </View>
 
                     <Pressable
