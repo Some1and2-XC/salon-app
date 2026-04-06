@@ -611,7 +611,6 @@ export function useCommonUi(scheme) {
                 paddingTop: 24,
                 paddingBottom: 32,
                 backgroundColor: scheme.accentTint,
-                marginBottom: 14,
                 justifyContent: "space-between",
                 width: "100%",
             },
