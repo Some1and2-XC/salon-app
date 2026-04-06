@@ -109,7 +109,6 @@ export function AdminCheckinConfirmList({ navigation }) {
 
         const fetch_body = {
             method: "PATCH",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 appointment_state_id: confirmed
                     ? APPOINTMENT_STATE_CONFIRMED
@@ -161,18 +160,18 @@ export function AdminCheckinConfirmList({ navigation }) {
                     <Text style={styles.cardChevron}>→</Text>
                 </View>
                 <Text style={styles.cardMeta}>Updated {updated}</Text>
-                <View style={styles.actions}>
+                <View style={commonUi.card.actions}>
                     <Pressable
-                        style={({ pressed }) => [styles.btnConfirm, pressed && commonUi.card.pressed]}
+                        style={({ pressed }) => [commonUi.card.btnConfirm, pressed && commonUi.card.pressed]}
                         onPress={() => handleResponse(true, item)}
                     >
-                        <Text style={styles.btnConfirmText}>Confirm</Text>
+                        <Text style={commonUi.card.btnConfirmText}>Confirm</Text>
                     </Pressable>
                     <Pressable
-                        style={({ pressed }) => [styles.btnDeny, pressed && commonUi.card.pressed]}
+                        style={({ pressed }) => [commonUi.card.btnDeny, pressed && commonUi.card.pressed]}
                         onPress={() => handleResponse(false, item)}
                     >
-                        <Text style={styles.btnDenyText}>Deny</Text>
+                        <Text style={commonUi.card.btnDenyText}>Deny</Text>
                     </Pressable>
                 </View>
             </View>
@@ -323,37 +322,6 @@ function makeStyles(colorScheme) {
             color: colorScheme.textMuted,
             textAlign: "center",
             lineHeight: 21,
-        },
-        actions: {
-            flexDirection: "row",
-            gap: 12,
-            marginTop: 8,
-        },
-        btnConfirm: {
-            flex: 1,
-            backgroundColor: colorScheme.darkSurface,
-            borderRadius: 24,
-            paddingVertical: 16,
-            alignItems: "center",
-        },
-        btnConfirmText: {
-            color: colorScheme.whiteWarm,
-            fontSize: 15,
-            fontWeight: "800",
-        },
-        btnDeny: {
-            flex: 1,
-            backgroundColor: colorScheme.panelBackgroundAlt,
-            borderRadius: 24,
-            paddingVertical: 16,
-            alignItems: "center",
-            borderWidth: 1,
-            borderColor: colorScheme.borderLight,
-        },
-        btnDenyText: {
-            color: colorScheme.danger,
-            fontSize: 15,
-            fontWeight: "800",
         },
     });
 }

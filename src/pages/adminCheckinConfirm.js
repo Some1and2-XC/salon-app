@@ -184,18 +184,18 @@ export function AdminCheckinConfirm({ navigation, route }) {
                         <Text style={styles.value}>{lastModifiedLabel}</Text>
                     </View>
 
-                    <View style={styles.actions}>
+                    <View style={commonUi.card.actions}>
                         <Pressable
-                            style={({ pressed }) => [styles.btnConfirm, pressed && commonUi.card.pressed]}
+                            style={({ pressed }) => [commonUi.card.btnConfirm, pressed && commonUi.card.pressed]}
                             onPress={() => handleResponse(true)}
                         >
-                            <Text style={styles.btnConfirmText}>Confirm</Text>
+                            <Text style={commonUi.card.btnConfirmText}>Confirm</Text>
                         </Pressable>
                         <Pressable
-                            style={({ pressed }) => [styles.btnDeny, pressed && commonUi.card.pressed]}
+                            style={({ pressed }) => [commonUi.card.btnDeny, pressed && commonUi.card.pressed]}
                             onPress={() => handleResponse(false)}
                         >
-                            <Text style={styles.btnDenyText}>Deny</Text>
+                            <Text style={commonUi.card.btnDenyText}>Deny</Text>
                         </Pressable>
                     </View>
                 </View>
@@ -232,37 +232,6 @@ function makeStyles(colorScheme) {
         centerPad: {
             paddingVertical: 32,
             alignItems: "center",
-        },
-        actions: {
-            flexDirection: "row",
-            gap: 12,
-            marginTop: 8,
-        },
-        btnConfirm: {
-            flex: 1,
-            backgroundColor: colorScheme.darkSurface,
-            borderRadius: 24,
-            paddingVertical: 16,
-            alignItems: "center",
-        },
-        btnConfirmText: {
-            color: colorScheme.whiteWarm,
-            fontSize: 15,
-            fontWeight: "800",
-        },
-        btnDeny: {
-            flex: 1,
-            backgroundColor: colorScheme.panelBackgroundAlt,
-            borderRadius: 24,
-            paddingVertical: 16,
-            alignItems: "center",
-            borderWidth: 1,
-            borderColor: colorScheme.borderLight,
-        },
-        btnDenyText: {
-            color: colorScheme.danger,
-            fontSize: 15,
-            fontWeight: "800",
         },
     });
 }
