@@ -9,13 +9,8 @@ import {
 } from "react-native";
 import {
     signInWithEmailAndPassword,
-    sendPasswordResetEmail,
-    GoogleAuthProvider,
-    signInWithPopup,
-    getAuth,
+    sendPasswordResetEmail
 } from "firebase/auth";
-import { initializeApp, getApps } from "firebase/app";
-
 import { auth } from "../firebaseConfig";
 import { apiFetch, showAppToast } from "../utils";
 import { useTheme } from "../styles";
@@ -28,21 +23,6 @@ import {
     TOAST_TYPE_ERROR,
 } from "../consts";
 
-const webGoogleApp =
-    getApps().find((a) => a.name === "google-web-auth") ??
-    initializeApp(
-        {
-            apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
-            authDomain: "csci4176groupproject.firebaseapp.com",
-            projectId: "csci4176groupproject",
-            storageBucket: "csci4176groupproject.firebasestorage.app",
-            messagingSenderId: "763370449450",
-            appId: "1:763370449450:web:b10053e60f6fca0632b153",
-        },
-        "google-web-auth"
-    );
-
-const webAuth = getAuth(webGoogleApp);
 
 export function LoginScreen({ navigation }) {
     const commonUi = useTheme((state) => state.getCommonUi)();
@@ -111,50 +91,6 @@ export function LoginScreen({ navigation }) {
             );
     };
 
-    const onGoogleLogin = async () => {
-        try {
-            const provider = new GoogleAuthProvider();
-            const result = await signInWithPopup(webAuth, provider);
-            const user = result.user;
-            const googleEmail = user.email?.trim();
-
-            const res = await apiFetch("/users/me");
-            const userData = await res.json();
-
-            console.log(userData.email);
-
-            if (!googleEmail == userData.email) {
-                throw new Error("Google account did not return an email.");
-            }
-
-            if (!res.ok) {
-                await webAuth.signOut();
-
-                showAppToast(
-                    TOAST_TYPE_ERROR,
-                    "Account Not Found",
-                    "No account exists in our system. Please sign up first."
-                );
-                return;
-            }
-
-            showAppToast(
-                TOAST_TYPE_SUCCESS,
-                "Success",
-                `Logged in as ${user.email}`
-            );
-
-            navigation.navigate(NAV_HOME);
-        } catch (error) {
-            console.error(error);
-            showAppToast(
-                TOAST_TYPE_ERROR,
-                "Google Sign In Failed",
-                error.message || "Could not sign in with Google."
-            );
-        }
-    };
-
     return (
         <KeyboardAvoidingView>
             <ScrollView style={commonUi.screen.pageMargins}>
@@ -206,18 +142,6 @@ export function LoginScreen({ navigation }) {
                         onPress={onLogin}
                     >
                         <Text style={commonUi.auth.primaryButtonText}>Log In</Text>
-                    </Pressable>
-
-                    <Pressable
-                        style={({ pressed }) => [
-                            commonUi.auth.primaryButton,
-                            pressed && commonUi.auth.cardPressed,
-                        ]}
-                        onPress={onGoogleLogin}
-                    >
-                        <Text style={commonUi.auth.primaryButtonText}>
-                            Sign In with Google
-                        </Text>
                     </Pressable>
 
                     <View style={commonUi.auth.dividerWrap}>
