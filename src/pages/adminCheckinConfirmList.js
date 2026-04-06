@@ -35,32 +35,32 @@ export function AdminCheckinConfirmList({ navigation }) {
     const load = useCallback(() => {
         setError(null);
         apiFetch("/appointments", { method: "GET" })
-        .then(assertFetchSuccessful)
-        .then(res => res.json())
-        .then((data) => {
-            const appointments = Array.isArray(data) ? data : [];
+            .then(assertFetchSuccessful)
+            .then(res => res.json())
+            .then((data) => {
+                const appointments = Array.isArray(data) ? data : [];
 
-            // filter appointments to only show those that have not been confirmed 
+                // filter appointments to only show those that have not been confirmed 
 
-            const filtered = appointments.filter(
-                (appt) => ![APPOINTMENT_STATE_CONFIRMED, APPOINTMENT_STATE_CANCELLED].
-                includes(appt.appointment_state_id)
-            );
-            setItems(filtered);
-            return appointments;
-        })
-        .then (appointments => getUsersForAppointments(appointments))
-        .then(map => setAppointmentUserMap(map))
-        .catch((e) => {
-            console.error(e);
-            setError("Could not load appointments.");
-            setItems([]);
-            setAppointmentUserMap({});
-        })
-        .finally(() => {
-            setLoading(false);
-            setRefreshing(false);
-        })
+                const filtered = appointments.filter(
+                    (appt) => ![APPOINTMENT_STATE_CONFIRMED, APPOINTMENT_STATE_CANCELLED].
+                    includes(appt.appointment_state_id)
+                );
+                setItems(filtered);
+                return appointments;
+            })
+            .then (appointments => getUsersForAppointments(appointments))
+            .then(map => setAppointmentUserMap(map))
+            .catch((e) => {
+                console.error(e);
+                setError("Could not load appointments.");
+                setItems([]);
+                setAppointmentUserMap({});
+            })
+            .finally(() => {
+                setLoading(false);
+                setRefreshing(false);
+            })
     }, []);
 
     // filter appointments to only show those that have not been confirmed 
@@ -121,7 +121,7 @@ export function AdminCheckinConfirmList({ navigation }) {
                 .then(assertFetchSuccessful)
                 .then(res => res.json())
                 .then(() => {
-                    load();
+                    setItems((prev) => prev.filter((appt) => appt.uuid !== item.uuid));
                 })
                 .catch((e) => {
                     console.error(e);
@@ -184,7 +184,7 @@ export function AdminCheckinConfirmList({ navigation }) {
         <View
             style={[
                 commonUi.screen.screenInner,
-                { flex: 1, backgroundColor: colorScheme.pageBackground },
+                { backgroundColor: colorScheme.pageBackground },
             ]}
         >
             <FlatList
