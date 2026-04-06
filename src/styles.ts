@@ -96,14 +96,6 @@ export function useCommonUi(scheme) {
             },
         },
         auth: {
-            salonTitle: {
-                fontSize: 34,
-                fontWeight: "800",
-                textAlign: "center",
-                color: scheme.textDefault,
-                marginBottom: 14,
-                letterSpacing: 1,
-            },
             formCard: {
                 backgroundColor: scheme.whiteWarmCard,
                 borderRadius: 26,
