@@ -15,7 +15,7 @@ import {
     TOAST_TYPE_SUCCESS,
  } from "../consts";
 
-import { useTheme, showAppToast } from "../styles";
+import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
 import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
 import { BackButton } from "../components/BackButton";
