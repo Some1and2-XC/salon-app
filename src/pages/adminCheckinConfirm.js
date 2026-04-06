@@ -54,8 +54,8 @@ export function AdminCheckinConfirm({ navigation, route }) {
             .then((arr) => {
                 if (Array.isArray(arr) && arr.size != 0) {
                     const filtered = arr.filter(
-                        (appt) => ![APPOINTMENT_STATE_CONFIRMED, APPOINTMENT_STATE_CANCELLED].
-                            includes(appt.appointment_state_id)
+                        (appt) => ![APPOINTMENT_STATE_CONFIRMED, APPOINTMENT_STATE_CANCELLED]
+                            .includes(appt.appointment_state_id)
                         );
                     setAppointment(filtered[0]);
                 } else {
