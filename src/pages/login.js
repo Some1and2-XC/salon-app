@@ -1,71 +1,91 @@
 import React, { useState } from "react";
 import {
-    StyleSheet,
     Text,
     View,
     TextInput,
-    Alert,
     Pressable,
-    SafeAreaView,
-    StatusBar,
     KeyboardAvoidingView,
-    Platform,
     ScrollView,
 } from "react-native";
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import {
+    signInWithEmailAndPassword,
+    sendPasswordResetEmail,
+    GoogleAuthProvider,
+    signInWithPopup,
+    getAuth,
+} from "firebase/auth";
+import { initializeApp, getApps } from "firebase/app";
 
 import { auth } from "../firebaseConfig";
-import { apiFetch } from "../utils";
-import { sty } from "../styles";
+import { apiFetch, showAppToast } from "../utils";
 import { useTheme } from "../styles";
-import { NAV_HOME, NAV_SIGNUP, FIREBASE_AUTH_ERROR_MESSAGES  } from "../consts";
-import { colorScheme } from "../colorScheme";
+import {
+    NAV_HOME,
+    NAV_SIGNUP,
+    FIREBASE_AUTH_ERROR_MESSAGES,
+    TOAST_TYPE_SUCCESS,
+    TOAST_TYPE_ERROR,
+} from "../consts";
+
+const webGoogleApp =
+    getApps().find((a) => a.name === "google-web-auth") ??
+    initializeApp(
+        {
+            apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+            authDomain: "csci4176groupproject.firebaseapp.com",
+            projectId: "csci4176groupproject",
+            storageBucket: "csci4176groupproject.firebasestorage.app",
+            messagingSenderId: "763370449450",
+            appId: "1:763370449450:web:b10053e60f6fca0632b153",
+        },
+        "google-web-auth"
+    );
+
+const webAuth = getAuth(webGoogleApp);
 
 export function LoginScreen({ navigation }) {
-
     const commonUi = useTheme((state) => state.getCommonUi)();
     const scheme = useTheme((state) => state.scheme);
     const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeBrown;
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [feedbackMessage, setFeedbackMessage] = useState("");
-    const [feedbackType, setFeedbackType] = useState("");
 
     const onLogin = async () => {
-        // TODO centralize email + password validation.
         const trimmedEmail = email.trim();
-        setFeedbackMessage("");
-        setFeedbackType("");
+
         if (!trimmedEmail || !password) {
-            setFeedbackMessage("Please enter your email and password.");
-            setFeedbackType("error");
+            showAppToast(
+                TOAST_TYPE_ERROR,
+                "Missing Fields",
+                "Please enter your email and password."
+            );
             return;
         }
 
         signInWithEmailAndPassword(auth, trimmedEmail, password)
             .then(() => apiFetch("/users/me"))
             .then((res) => res.json())
-            // TODO replace loggedInAs with just pulling from the firebase token itself.
-            .then((res) => navigation.navigate(NAV_HOME, { loggedInAs: trimmedEmail }))
-            // TODO replace with global popup
-            .catch((error) => {
-                console.error("Login Failed", error);
-                // TODO while replacing with global popup, fixing the inconsistency between the feedback for this
-                // vs feedback for onForgotPassword
-                setFeedbackMessage(FIREBASE_AUTH_ERROR_MESSAGES[error.code] ?? "Could not send password reset email. Please try again.");
-                setFeedbackType("error");
-            })
-            ;
-
+            .then(() =>
+                navigation.navigate(NAV_HOME, {
+                    toastMessage: `Logged in as ${trimmedEmail}`,
+                })
+            )
+            .catch((error) =>
+                showAppToast(
+                    TOAST_TYPE_ERROR,
+                    "Login Failed",
+                    FIREBASE_AUTH_ERROR_MESSAGES[error.code] ?? "Login failed. Please try again."
+                )
+            );
     };
 
     const onForgotPassword = async () => {
         const trimmedEmail = email.trim();
 
         if (!trimmedEmail) {
-            // TODO replace with global popup
-            Alert.alert(
+            showAppToast(
+                TOAST_TYPE_ERROR,
                 "Enter Email",
                 "Type your email above first, then tap Forgot Password."
             );
@@ -73,14 +93,65 @@ export function LoginScreen({ navigation }) {
         }
 
         sendPasswordResetEmail(auth, trimmedEmail)
-            .then(() => Alert.alert("Reset Email Sent", "If an account exists for this email, a password reset link has been sent."))
-            // TODO replace with global popup
-            .catch((error) => Alert.alert(
-                "Password Reset",
-                FIREBASE_AUTH_ERROR_MESSAGES[error.code] ?? "Could not send password reset email. Please try again."
-            ))
-            ;
+            .then(() =>
+                showAppToast(
+                    TOAST_TYPE_SUCCESS,
+                    "Reset Email Sent",
+                    "If an account exists for this email, a password reset link has been sent."
+                )
+            )
+            .catch((error) =>
+                showAppToast(
+                    TOAST_TYPE_ERROR,
+                    "Password Reset",
+                    FIREBASE_AUTH_ERROR_MESSAGES[error.code] ??
+                        "Could not send password reset email. Please try again."
+                )
+            );
+    };
 
+    const onGoogleLogin = async () => {
+        try {
+            const provider = new GoogleAuthProvider();
+            const result = await signInWithPopup(webAuth, provider);
+            const user = result.user;
+            const googleEmail = user.email?.trim();
+
+            const res = await apiFetch("/users/me");
+            const userData = await res.json();
+
+            console.log(userData.email);
+
+            if (!googleEmail == userData.email) {
+                throw new Error("Google account did not return an email.");
+            }
+
+            if (!res.ok) {
+                await webAuth.signOut();
+
+                showAppToast(
+                    TOAST_TYPE_ERROR,
+                    "Account Not Found",
+                    "No account exists in our system. Please sign up first."
+                );
+                return;
+            }
+
+            showAppToast(
+                TOAST_TYPE_SUCCESS,
+                "Success",
+                `Logged in as ${user.email}`
+            );
+
+            navigation.navigate(NAV_HOME);
+        } catch (error) {
+            console.error(error);
+            showAppToast(
+                TOAST_TYPE_ERROR,
+                "Google Sign In Failed",
+                error.message || "Could not sign in with Google."
+            );
+        }
     };
 
     return (
@@ -120,20 +191,11 @@ export function LoginScreen({ navigation }) {
                             onChangeText={setPassword}
                             secureTextEntry
                         />
-                    </View>
 
-                    {feedbackMessage ? (
-                        <Text
-                            style={[
-                                commonUi.auth.feedbackText,
-                                feedbackType === "success"
-                                    ? commonUi.auth.feedbackSuccess
-                                    : commonUi.auth.feedbackError,
-                            ]}
-                        >
-                            {feedbackMessage}
-                        </Text>
-                    ) : null}
+                        <Pressable onPress={onForgotPassword}>
+                            <Text style={commonUi.auth.forgotPasswordText}>Forgot Password?</Text>
+                        </Pressable>
+                    </View>
 
                     <Pressable
                         style={({ pressed }) => [
@@ -145,6 +207,18 @@ export function LoginScreen({ navigation }) {
                         <Text style={commonUi.auth.primaryButtonText}>Log In</Text>
                     </Pressable>
 
+                    <Pressable
+                        style={({ pressed }) => [
+                            commonUi.auth.primaryButton,
+                            pressed && commonUi.auth.cardPressed,
+                        ]}
+                        onPress={onGoogleLogin}
+                    >
+                        <Text style={commonUi.auth.primaryButtonText}>
+                            Sign In with Google
+                        </Text>
+                    </Pressable>
+
                     <View style={commonUi.auth.dividerWrap}>
                         <View style={commonUi.auth.dividerLine} />
                         <Text style={commonUi.auth.dividerText}>OR</Text>
@@ -153,7 +227,7 @@ export function LoginScreen({ navigation }) {
 
                     <View style={{ alignItems: "center" }}>
                         <Text style={commonUi.auth.inlineCtaPromptText}>
-                            Don&apos;t have an account?
+                            Don't have an account?
                         </Text>
 
                         <Pressable

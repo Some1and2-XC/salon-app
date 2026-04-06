@@ -12,12 +12,29 @@ import {
     ScrollView,
 } from "react-native";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-
+import { initializeApp, getApps } from "firebase/app";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../firebaseConfig";
-import { apiFetch } from "../utils";
+import { apiFetch, showAppToast } from "../utils";
 import { useTheme } from "../styles";
-import { NAV_HOME, NAV_LOGIN, FIREBASE_AUTH_ERROR_MESSAGES } from "../consts";
+import { NAV_HOME, NAV_SIGNUP, FIREBASE_AUTH_ERROR_MESSAGES, TOAST_TYPE_SUCCESS, TOAST_TYPE_ERROR, NAV_LOGIN } from "../consts";
 import { colorScheme } from "../colorScheme";
+
+const webGoogleApp =
+    getApps().find((a) => a.name === "google-web-auth") ??
+    initializeApp(
+        {
+            apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+            authDomain: "csci4176groupproject.firebaseapp.com",
+            projectId: "csci4176groupproject",
+            storageBucket: "csci4176groupproject.firebasestorage.app",
+            messagingSenderId: "763370449450",
+            appId: "1:763370449450:web:b10053e60f6fca0632b153",
+        },
+        "google-web-auth"
+    );
+
+const webAuth = getAuth(webGoogleApp);
 
 export function SignupScreen({ navigation }) {
 
@@ -30,16 +47,12 @@ export function SignupScreen({ navigation }) {
     const [lastName, setLastName] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [feedbackMessage, setFeedbackMessage] = useState("");
-    const [feedbackType, setFeedbackType] = useState("");
 
     const onSignUp = async () => {
         // TODO centralize email + password validation.
         const trimmedEmail = email.trim();
         const trimmedFirstName = firstName.trim();
         const trimmedLastName = lastName.trim();
-        setFeedbackMessage("");
-        setFeedbackType("");
 
         if (
             !trimmedEmail ||
@@ -48,32 +61,27 @@ export function SignupScreen({ navigation }) {
             !trimmedLastName ||
             !confirmPassword
         ) {
-            setFeedbackMessage("Please fill in all fields.");
-            setFeedbackType("error");
+            showAppToast(TOAST_TYPE_ERROR, "Please fill in all fields.");
             return;
         }
 
         if (trimmedFirstName.length < 2) {
-            setFeedbackMessage("First name must be at least 2 characters.");
-            setFeedbackType("error");
+            showAppToast(TOAST_TYPE_ERROR, "First name must be at least 2 characters.");
             return;
         }
 
         if (trimmedLastName.length < 2) {
-            setFeedbackMessage("Last name must be at least 2 characters.");
-            setFeedbackType("error");
+            showAppToast(TOAST_TYPE_ERROR, "Last name must be at least 2 characters.");
             return;
         }
 
         if (password.length < 6) {
-            setFeedbackMessage("Password must be at least 6 characters.");
-            setFeedbackType("error");
+            showAppToast(TOAST_TYPE_ERROR, "Password must be at least 6 characters.");
             return;
         }
 
         if (password !== confirmPassword) {
-            setFeedbackMessage("Passwords do not match.");
-            setFeedbackType("error");
+            showAppToast(TOAST_TYPE_ERROR, "Passwords do not match.");
             return;
         }
 
@@ -88,18 +96,49 @@ export function SignupScreen({ navigation }) {
                 }),
             }))
             .then((res) => res.json())
-            // TODO replace loggedInAs with just pulling from the firebase token itself.
             .then((res) => navigation.navigate(NAV_HOME, {
                 toastMessage: `Account created for ${trimmedEmail}`,
             }))
-            .catch((error) => {
-                // TODO replace with global popup
-                console.error("Sign Up Failed", error);
-                setFeedbackMessage(FIREBASE_AUTH_ERROR_MESSAGES[error.code] ?? "Sign up failed. Please try again.");
-                setFeedbackType("error");
-            })
+            .catch((error) => showAppToast(TOAST_TYPE_ERROR, "Sign Up Failed", FIREBASE_AUTH_ERROR_MESSAGES[error.code] ?? "Sign up failed. Please try again."))
             ;
 
+    };
+
+    const onGoogleSignUp = async () => {
+        try {
+            const provider = new GoogleAuthProvider();
+            const result = await signInWithPopup(webAuth, provider);
+            const user = result.user;
+
+            const googleFirstName = user.displayName?.split(" ")[0] ?? "";
+            const googleLastName =
+                user.displayName?.split(" ").slice(1).join(" ") ?? "";
+
+            await apiFetch("/users", {
+                method: "POST",
+                body: JSON.stringify({
+                    email: user.email,
+                    first_name: googleFirstName,
+                    last_name: googleLastName,
+                    phone: null,
+                }),
+            });
+
+            showAppToast(
+                TOAST_TYPE_SUCCESS,
+                "Success",
+                `Signed up as ${user.email}`
+            );
+
+            navigation.navigate(NAV_HOME);
+        } catch (error) {
+            console.error(error);
+            showAppToast(
+                TOAST_TYPE_ERROR,
+                "Google Sign Up Failed",
+                error.message || "Could not sign up with Google."
+            );
+        }
     };
 
     return (
@@ -107,6 +146,18 @@ export function SignupScreen({ navigation }) {
             <ScrollView style={commonUi.screen.pageMargins}>
 
                 <Text style={commonUi.auth.salonTitle}>SALON APP</Text>
+
+                <Pressable
+                    style={({ pressed }) => [
+                        commonUi.auth.backButton,
+                        pressed && commonUi.card.cardPressed,
+                    ]}
+                    onPress={() => navigation.navigate(NAV_LOGIN)}
+                >
+                    <Text style={commonUi.auth.backButtonArrow}>←</Text>
+                    <Text style={commonUi.auth.backButtonText}>Back</Text>
+                </Pressable>
+
 
                 <View style={commonUi.auth.formCard}>
                     <Text style={commonUi.auth.formTitle}>Create Account</Text>
@@ -183,19 +234,6 @@ export function SignupScreen({ navigation }) {
                         />
                     </View>
 
-                    {feedbackMessage ? (
-                        <Text
-                            style={[
-                                commonUi.auth.feedbackText,
-                                feedbackType === "success"
-                                    ? commonUi.auth.feedbackSuccess
-                                    : commonUi.auth.feedbackError,
-                            ]}
-                        >
-                            {feedbackMessage}
-                        </Text>
-                    ) : null}
-
                     <Pressable
                         style={({ pressed }) => [
                             commonUi.auth.primaryButton,
@@ -205,6 +243,18 @@ export function SignupScreen({ navigation }) {
                     >
                         <Text style={commonUi.auth.primaryButtonText}>
                             Sign Up
+                        </Text>
+                    </Pressable>
+
+                    <Pressable
+                        style={({ pressed }) => [
+                            commonUi.auth.primaryButton,
+                            pressed && commonUi.auth.cardPressed,
+                        ]}
+                        onPress={onGoogleSignUp}
+                    >
+                        <Text style={commonUi.auth.primaryButtonText}>
+                            Sign Up with Google
                         </Text>
                     </Pressable>
 

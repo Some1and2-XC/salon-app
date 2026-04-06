@@ -1,12 +1,8 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
-    StyleSheet,
     Text,
     View,
     Pressable,
-    SafeAreaView,
-    Platform,
-    StatusBar,
     ScrollView,
     Animated,
     useWindowDimensions,
@@ -14,7 +10,8 @@ import {
 
 import { signOut } from "firebase/auth";
 import { auth } from "../firebaseConfig";
-import { NAV_BOOKING, NAV_CHECKIN, NAV_LOGIN, NAV_SET_THEME } from "../consts";
+import { showAppToast } from "../utils";
+import { NAV_BOOKING, NAV_CHECKIN, NAV_LOGIN, NAV_SET_THEME, TOAST_TYPE_SUCCESS } from "../consts";
 import { useTheme } from "../styles";
 import { colorSchemeGreens, MAP_COLOR_SCHEME } from "../colorScheme";
 
@@ -39,10 +36,8 @@ export function HomeScreen({ navigation, route }) {
     const commonUi = useTheme((state) => state.getCommonUi)();
     const scheme = useTheme((state) => state.scheme);
     const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeBrown;
-    const styles = useMemo(() => makeStyles(colorScheme), [colorScheme]);
 
     const { width, height } = useWindowDimensions();
-    const [loginToast, setLoginToast] = useState("");
 
     const float1 = useRef(new Animated.Value(0)).current;
     const float2 = useRef(new Animated.Value(0)).current;
@@ -95,21 +90,9 @@ export function HomeScreen({ navigation, route }) {
     }, [fadeIn, slideUp, float1, float2]);
 
     useEffect(() => {
-        const toastMessage = route?.params?.toastMessage;
-        // TODO replace with email in auth token (not route param).
-        const loggedInAs = route?.params?.loggedInAs;
-        const messageToShow = toastMessage || (loggedInAs ? `Logged in as ${loggedInAs}` : "");
-        if (!messageToShow) return;
-
-        setLoginToast(messageToShow);
-
-        const timer = setTimeout(() => {
-            setLoginToast("");
-            navigation.setParams({ loggedInAs: undefined, toastMessage: undefined });
-        }, 2200);
-
-        return () => clearTimeout(timer);
-    }, [route?.params?.loggedInAs, route?.params?.toastMessage, navigation]);
+        if (!route?.params?.toastMessage) return;
+        showAppToast(TOAST_TYPE_SUCCESS, route?.params?.toastMessage);
+    }, []);
 
     const blob1Y = float1.interpolate({
         inputRange: [0, 1],
@@ -122,31 +105,20 @@ export function HomeScreen({ navigation, route }) {
     });
 
     const handleLogout = async () => {
-        try {
-            await signOut(auth);
-            navigation.navigate(NAV_LOGIN);
-        } catch (error) {
-            console.log("Logout error:", error);
-        }
+        await signOut(auth);
+        navigation.navigate(NAV_LOGIN);
     };
 
     const heroMinHeight = Math.max(240, Math.min(height * 0.33, 310));
 
     return (
-        <ScrollView>
+        <ScrollView style={ commonUi.screen.pageMargins }>
             <Animated.View
-                style={[ commonUi.screen.pageMargins, {
+                style={[ commonUi.screen.pageInnerGaps, {
                     opacity: fadeIn,
                     transform: [{ translateY: slideUp }],
                 }]}
             >
-
-                {/* TODO remove in favor of global indicator */}
-                {loginToast ? (
-                    <View style={styles.toastWrap}>
-                        <Text style={styles.toastText}>{loginToast}</Text>
-                    </View>
-                ) : null}
 
                 <View style={ commonUi.hero.heroCard }>
 
@@ -199,286 +171,70 @@ export function HomeScreen({ navigation, route }) {
 
                 <Pressable
                     style={({ pressed }) => [
-                        styles.primaryActionCard,
-                        pressed && styles.cardPressed,
+                        commonUi.card.primaryActionCard,
+                        pressed && commonUi.card.cardPressed,
                     ]}
                     onPress={() => navigation.navigate(NAV_CHECKIN)}
-                    >
-                    <View style={styles.cardGlow} />
-                    <View style={styles.cardHeaderRow}>
-                        <View style={styles.iconWrapLarge}>
-                            <Text style={styles.iconLarge}>✦</Text>
+                >
+                    <View style={commonUi.card.cardGlow} />
+                    <View style={commonUi.card.cardHeaderRow}>
+                        <View style={commonUi.card.iconWrapLarge}>
+                            <Text style={commonUi.card.iconLarge}>✦</Text>
                         </View>
-                        <View style={styles.pillDark}>
-                            <Text style={styles.pillDarkText}>Front Desk</Text>
+                        <View style={commonUi.card.pillDark}>
+                            <Text style={commonUi.card.pillDarkText}>Front Desk</Text>
                         </View>
                     </View>
-                    <Text style={styles.primaryTitle}>Customer Check In</Text>
-                    <Text style={styles.primaryDescription}>
-                        Quickly confirm a client’s arrival and keep the check-in
+                    <Text style={commonUi.card.primaryTitle}>Customer Check In</Text>
+                    <Text style={commonUi.card.primaryDescription}>
+                        Quickly confirm a client's arrival and keep the check-in
                         experience fast and organized.
                     </Text>
-
-                    <View style={styles.primaryFooter}>
-                        <Text style={styles.primaryFooterText}>Open check-in</Text>
-                        <Text style={styles.primaryArrow}>→</Text>
+                    <View style={commonUi.card.primaryFooter}>
+                        <Text style={commonUi.card.primaryFooterText}>Open check-in</Text>
+                        <Text style={commonUi.card.primaryArrow}>→</Text>
                     </View>
-
                 </Pressable>
 
                 <Pressable
                     style={({ pressed }) => [
-                        styles.secondaryActionCardFull,
-                        pressed && styles.cardPressed,
+                        commonUi.card.secondaryActionCard,
+                        pressed && commonUi.card.cardPressed,
                     ]}
                     onPress={() => navigation.navigate(NAV_BOOKING)}
-                    >
-                    <View style={styles.smallTopRow}>
-                        <View style={styles.iconWrapSmall}>
-                            <Text style={styles.iconSmall}>◎</Text>
+                >
+                    <View style={commonUi.card.smallTopRow}>
+                        <View style={commonUi.card.iconWrapSmall}>
+                            <Text style={commonUi.card.iconSmall}>◎</Text>
                         </View>
-                        <Text style={styles.cornerText}>Schedule</Text>
+                        <Text style={commonUi.card.cornerText}>Schedule</Text>
                     </View>
-
-                    <Text style={styles.secondaryTitle}>Book Appointment</Text>
-                    <Text style={styles.secondaryDescription}>
+                    <Text style={commonUi.card.secondaryTitle}>Book Appointment</Text>
+                    <Text style={commonUi.hero.heroText}>
                         Create a new booking with a smoother scheduling flow.
                     </Text>
                 </Pressable>
 
-                <View style={styles.bottomSpacer} />
-
                 <Pressable
                     style={({ pressed }) => [
-                        styles.logoutBar,
-                        pressed && styles.logoutBarPressed,
+                        commonUi.auth.inlineCtaButton,
+                        pressed && commonUi.auth.cardPressed,
                     ]}
                     onPress={() => navigation.navigate(NAV_SET_THEME) }
                 >
-                    <Text style={styles.logoutBarText}>Set Theme &#x1F3A8;</Text>
+                    <Text style={commonUi.auth.inlineCtaButtonText}>Set Theme &#x1F3A8;</Text>
                 </Pressable>
-
-                <View style={styles.bottomSpacer} />
 
                 <Pressable
                     style={({ pressed }) => [
-                        styles.logoutBar,
-                        pressed && styles.logoutBarPressed,
+                        commonUi.auth.inlineCtaButton,
+                        pressed && commonUi.auth.cardPressed,
                     ]}
                     onPress={handleLogout}
                 >
-                    <Text style={styles.logoutBarText}>Log Out</Text>
+                    <Text style={commonUi.auth.inlineCtaButtonText}>Log Out</Text>
                 </Pressable>
-
             </Animated.View>
         </ScrollView>
     );
-}
-
-function makeStyles(colorScheme) {
-
-    return StyleSheet.create({
-
-        toastWrap: {
-            alignSelf: "center",
-            marginBottom: 10,
-            backgroundColor: colorScheme.feedbackSuccess,
-            borderRadius: 999,
-            paddingHorizontal: 14,
-            paddingVertical: 8,
-        },
-        toastText: {
-            color: colorScheme.white,
-            fontSize: 12.5,
-            fontWeight: "700",
-        },
-
-        heroText: {
-            fontSize: 15,
-            lineHeight: 22,
-            color: colorScheme.textSubtle,
-            maxWidth: "78%",
-        },
-
-        primaryActionCard: {
-            position: "relative",
-            overflow: "hidden",
-            backgroundColor: colorScheme.darkSurface,
-            borderRadius: 28,
-            paddingHorizontal: 18,
-            paddingTop: 18,
-            paddingBottom: 18,
-            marginBottom: 14,
-            minHeight: 205,
-            width: "100%",
-        },
-
-        cardGlow: {
-            position: "absolute",
-            width: 170,
-            height: 170,
-            borderRadius: 85,
-            backgroundColor: colorScheme.accentGlow,
-            top: -40,
-            right: -30,
-            opacity: 0.13,
-        },
-
-        cardHeaderRow: {
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 18,
-        },
-
-        iconWrapLarge: {
-            width: 52,
-            height: 52,
-            borderRadius: 26,
-            backgroundColor: colorScheme.overlayWhiteSoft,
-            alignItems: "center",
-            justifyContent: "center",
-        },
-
-        iconLarge: {
-            fontSize: 22,
-            color: colorScheme.accentHighlight,
-        },
-
-        pillDark: {
-            backgroundColor: colorScheme.overlayAccentSoft,
-            borderRadius: 999,
-            paddingHorizontal: 11,
-            paddingVertical: 7,
-        },
-
-        pillDarkText: {
-            color: colorScheme.accentHighlight,
-            fontSize: 12,
-            fontWeight: "700",
-        },
-
-        primaryTitle: {
-            fontSize: 26,
-            lineHeight: 31,
-            fontWeight: "800",
-            color: colorScheme.whiteWarm,
-            marginBottom: 9,
-            maxWidth: "82%",
-        },
-
-        primaryDescription: {
-            fontSize: 14,
-            lineHeight: 21,
-            color: colorScheme.textOnDark,
-            maxWidth: "94%",
-            marginBottom: 18,
-        },
-
-        primaryFooter: {
-            marginTop: "auto",
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-        },
-
-        primaryFooterText: {
-            color: colorScheme.whiteWarm,
-            fontWeight: "700",
-            fontSize: 14.5,
-        },
-
-        primaryArrow: {
-            color: colorScheme.accentHighlight,
-            fontSize: 22,
-            fontWeight: "700",
-        },
-
-        secondaryActionCardFull: {
-            backgroundColor: colorScheme.whiteWarmCard,
-            borderRadius: 28,
-            paddingHorizontal: 18,
-            paddingTop: 18,
-            paddingBottom: 18,
-            minHeight: 150,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLight,
-            width: "100%",
-        },
-
-        smallTopRow: {
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 12,
-        },
-
-        iconWrapSmall: {
-            width: 40,
-            height: 40,
-            borderRadius: 20,
-            backgroundColor: colorScheme.panelBackgroundAlt,
-            alignItems: "center",
-            justifyContent: "center",
-        },
-
-        iconSmall: {
-            fontSize: 18,
-            color: colorScheme.textAccentSoft,
-        },
-
-        cornerText: {
-            fontSize: 12,
-            fontWeight: "700",
-            color: colorScheme.textLabel,
-        },
-
-        secondaryTitle: {
-            fontSize: 22,
-            lineHeight: 26,
-            fontWeight: "800",
-            color: colorScheme.textDark,
-            marginBottom: 6,
-        },
-
-        secondaryDescription: {
-            fontSize: 13.5,
-            lineHeight: 20,
-            color: colorScheme.textMuted,
-            maxWidth: "92%",
-        },
-
-        bottomSpacer: {
-            height: 10,
-        },
-
-        logoutBar: {
-            backgroundColor: colorScheme.accentButton,
-            borderRadius: 28,
-            paddingVertical: 16,
-            paddingHorizontal: 18,
-            alignItems: "center",
-            justifyContent: "center",
-            marginTop: 6,
-            width: "100%",
-        },
-
-        logoutBarPressed: {
-            opacity: 0.92,
-            transform: [{ scale: 0.99 }],
-        },
-
-        logoutBarText: {
-            fontSize: 15,
-            fontWeight: "800",
-            color: colorScheme.textDefault,
-            letterSpacing: 0.2,
-        },
-
-        cardPressed: {
-            opacity: 0.93,
-            transform: [{ scale: 0.985 }],
-        },
-    });
-
 }
