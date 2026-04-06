@@ -9,10 +9,14 @@ import {
     RefreshControl,
 } from "react-native";
 
-import { NAV_CHECKIN_CONFIRM_ADMIN } from "../consts";
+import { 
+    APPOINTMENT_STATE_CANCELLED,
+    TOAST_TYPE_SUCCESS,
+    APPOINTMENT_STATE_CONFIRMED
+ } from "../consts";
 import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
-import { apiFetch, assertFetchSuccessful } from "../utils";
+import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
 import { AdminBackBar } from "../components/AdminBackBar";
 
 export function AdminCheckinConfirmList({ navigation }) {
@@ -35,7 +39,14 @@ export function AdminCheckinConfirmList({ navigation }) {
         .then(res => res.json())
         .then((data) => {
             const appointments = Array.isArray(data) ? data : [];
-            setItems(appointments);
+
+            // filter appointments to only show those that have not been confirmed 
+
+            const filtered = appointments.filter(
+                (appt) => ![APPOINTMENT_STATE_CONFIRMED, APPOINTMENT_STATE_CANCELLED].
+                includes(appt.appointment_state_id)
+            );
+            setItems(filtered);
             return appointments;
         })
         .then (appointments => getUsersForAppointments(appointments))
@@ -51,6 +62,8 @@ export function AdminCheckinConfirmList({ navigation }) {
             setRefreshing(false);
         })
     }, []);
+
+    // filter appointments to only show those that have not been confirmed 
 
     useEffect(() => {
         load();
@@ -79,7 +92,6 @@ export function AdminCheckinConfirmList({ navigation }) {
                     .then(assertFetchSuccessful)
                     .then(res => res.json())
                     .then((user) => {
-                        console.log(user);
                         map[appt.uuid] = user
                     })
                     .catch((e) => {
@@ -91,6 +103,44 @@ export function AdminCheckinConfirmList({ navigation }) {
         return Promise.all(promises).then(() => map);           
     };
 
+    // Handle Confirm/Deny Buttons on each Appointment Card
+
+    const handleResponse = async (confirmed, item) => {
+
+        const fetch_body = {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                appointment_state_id: confirmed
+                    ? APPOINTMENT_STATE_CONFIRMED
+                    : APPOINTMENT_STATE_CANCELLED,
+            }),
+        };
+        if (item.uuid) {
+            apiFetch(`/appointments/${item.uuid}`, fetch_body)
+                .then(assertFetchSuccessful)
+                .then(res => res.json())
+                .then(() => {
+                    load();
+                })
+                .catch((e) => {
+                    console.error(e);
+                })
+        } else {
+            console.error(
+                "Attempted to update appointment state but appointment.uuid is not set!"
+            );
+        }
+
+        if(confirmed) {
+            showAppToast(TOAST_TYPE_SUCCESS, "Confirmed!", "Successfully confirmed customer check in!");
+        }
+        else {
+            showAppToast(TOAST_TYPE_SUCCESS, "Denied!", "Denied Customer Check In");
+        }
+    };
+
+    // Render Each card
 
     const renderItem = ({ item }) => {
         const updated = item?.last_modified
@@ -103,10 +153,7 @@ export function AdminCheckinConfirmList({ navigation }) {
         const email = user?.email ? ` (${user?.email})` : "";
 
         return (
-            <Pressable
-                style={({ pressed }) => [styles.card, pressed && commonUi.auth.cardPressed]}
-                onPress={() => navigation.navigate(NAV_CHECKIN_CONFIRM_ADMIN, item)}
-            >
+            <View style={commonUi.card.pageCard}>
                 <View style={styles.cardTop}>
                     <Text style={styles.cardTitle}>
                         {`${name} ${email}`}
@@ -114,8 +161,22 @@ export function AdminCheckinConfirmList({ navigation }) {
                     <Text style={styles.cardChevron}>→</Text>
                 </View>
                 <Text style={styles.cardMeta}>Updated {updated}</Text>
-                <Text style={styles.cardHint}>Tap to review confirm / deny</Text>
-            </Pressable>
+                <View style={styles.actions}>
+                    <Pressable
+                        style={({ pressed }) => [styles.btnConfirm, pressed && commonUi.card.pressed]}
+                        onPress={() => handleResponse(true, item)}
+                    >
+                        <Text style={styles.btnConfirmText}>Confirm</Text>
+                    </Pressable>
+                    <Pressable
+                        style={({ pressed }) => [styles.btnDeny, pressed && commonUi.card.pressed]}
+                        onPress={() => handleResponse(false, item)}
+                    >
+                        <Text style={styles.btnDenyText}>Deny</Text>
+                    </Pressable>
+                </View>
+            </View>
+
         );
     };
 
@@ -123,7 +184,7 @@ export function AdminCheckinConfirmList({ navigation }) {
         <View
             style={[
                 commonUi.screen.screenInner,
-                { backgroundColor: colorScheme.pageBackground },
+                { flex: 1, backgroundColor: colorScheme.pageBackground },
             ]}
         >
             <FlatList
@@ -262,6 +323,37 @@ function makeStyles(colorScheme) {
             color: colorScheme.textMuted,
             textAlign: "center",
             lineHeight: 21,
+        },
+        actions: {
+            flexDirection: "row",
+            gap: 12,
+            marginTop: 8,
+        },
+        btnConfirm: {
+            flex: 1,
+            backgroundColor: colorScheme.darkSurface,
+            borderRadius: 24,
+            paddingVertical: 16,
+            alignItems: "center",
+        },
+        btnConfirmText: {
+            color: colorScheme.whiteWarm,
+            fontSize: 15,
+            fontWeight: "800",
+        },
+        btnDeny: {
+            flex: 1,
+            backgroundColor: colorScheme.panelBackgroundAlt,
+            borderRadius: 24,
+            paddingVertical: 16,
+            alignItems: "center",
+            borderWidth: 1,
+            borderColor: colorScheme.borderLight,
+        },
+        btnDenyText: {
+            color: colorScheme.danger,
+            fontSize: 15,
+            fontWeight: "800",
         },
     });
 }

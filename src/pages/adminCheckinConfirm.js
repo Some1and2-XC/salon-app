@@ -55,6 +55,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
             .then((arr) => {
                 if (Array.isArray(arr) && arr[0]) {
                     setAppointment(arr[0]);
+                    console.log("setting checkin ", arr[0].uuid);
                 } else {
                     setLoadError("No appointments found.");
                 }
@@ -91,7 +92,6 @@ export function AdminCheckinConfirm({ navigation, route }) {
     const handleResponse = async (confirmed) => {
         const fetch_body = {
             method: "PATCH",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 appointment_state_id: confirmed
                     ? APPOINTMENT_STATE_ACCEPTED
@@ -100,7 +100,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
         };
 
         if (appointment.uuid) {
-            apiFetch(`/appointments/${appointment.uuid}`, fetch_body)
+            apiFetch(`/appointments/${appointment.uuid.trim()}`, fetch_body)
                 .then(assertFetchSuccessful)
                 .then(res => res.json())
                 .catch((e) => {
@@ -118,15 +118,12 @@ export function AdminCheckinConfirm({ navigation, route }) {
         else {
             showAppToast(TOAST_TYPE_SUCCESS, "Denied!", "Denied Customer Check In");
         }
-
-        navigation.navigate(NAV_CHECKIN_CONFIRM_ADMIN_LIST);
     };
 
     const customerLine = (() => {
         if (loadingUser) return "Loading customer…";
         if (!user) return "—";
 
-        console.log("user", user);
         const name = [user.first_name, user.last_name].filter(Boolean).join(" ");
         const email = user.email ? ` (${user.email})` : "";
         return `${name || "Customer"}${email}`;
