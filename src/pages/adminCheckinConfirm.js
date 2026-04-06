@@ -37,7 +37,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
     const [loadError, setLoadError] = useState(null);
 
     // Check if you have been passed an appointment object or no
-    // If not then render the first appointment from the booked appointments 
+    // If not then render the first appointment from the booked appointments.
     useEffect(() => {
 
         if (appointment) {
@@ -78,7 +78,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
         setLoadError(null);
 
         // Needs to pass the user token to validate the admin (only the admin can access the list of users)
-        apiFetch(`/users/${appointment.user_uuid}`, { 
+        apiFetch(`/users/${appointment.user_uuid}`, {
             method: "GET"
         })
             .then(assertFetchSuccessful)
