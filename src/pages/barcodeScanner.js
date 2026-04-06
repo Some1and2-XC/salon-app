@@ -79,10 +79,10 @@ export function BarcodeScannerScreen({ navigation }) {
                 <AdminBackBar navigation={navigation} />
 
                 <View style={commonUi.card.accentCard}>
-                    <Text style={commonUi.card.kicker}>Tools</Text>
-                    <Text style={commonUi.card.cardTitle}>Camera access</Text>
+                    <Text style={commonUi.card.kicker}>Operations</Text>
+                    <Text style={commonUi.card.cardTitle}>Check-In QR Scanner</Text>
                     <Text style={commonUi.card.cardSubtitle}>
-                        Allow the camera so you can scan QR codes and barcodes at the desk.
+                        Allow the camera so you can scan QR codes.
                     </Text>
                 </View>
 
