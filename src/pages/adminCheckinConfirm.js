@@ -12,7 +12,6 @@ import {
     APPOINTMENT_STATE_ACCEPTED,
     APPOINTMENT_STATE_CONFIRMED,
     APPOINTMENT_STATE_CANCELLED,
-    APPOINTMENT_STATE_UNCONFIRMED,
     TOAST_TYPE_SUCCESS
 } from "../consts";
 import { useTheme } from "../styles";
@@ -55,7 +54,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
             .then((res) => res.json())
             .then((arr) => {
                 if (Array.isArray(arr) && arr.size != 0) {
-                    const filtered = arr.filter((appt) => appt.appointment_state_id == APPOINTMENT_STATE_UNCONFIRMED);
+                    const filtered = arr.filter((appt) => appt.appointment_state_id == APPOINTMENT_STATE_ACCEPTED);
                     setAppointment(filtered[0]);
                 } else {
                     setLoadError("No appointments found.");
@@ -96,7 +95,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
             method: "PATCH",
             body: JSON.stringify({
                 appointment_state_id: confirmed
-                    ? APPOINTMENT_STATE_ACCEPTED
+                    ? APPOINTMENT_STATE_CONFIRMED
                     : APPOINTMENT_STATE_CANCELLED,
             }),
         };
