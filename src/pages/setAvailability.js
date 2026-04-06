@@ -12,10 +12,10 @@ import {
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { apiFetch, assertFetchSuccessful } from "../utils";
-import { colorSchemeGreens } from "../colorScheme";
+import { colorSchemeGreens, MAP_COLOR_SCHEME } from "../colorScheme";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { makeStyles as makeBookingStyles, OptionModal } from "../pages/booking";
-import { AdminBackBar } from "../components/AdminBackBar";
+import { makeStyles as makeBookingStyles } from "../pages/booking";
+import { OptionModal } from "../components/OptionModal";
 
 function showAlert(title, message) {
     if (Platform.OS === "web") {
@@ -197,15 +197,13 @@ function TimeRangeSelector({ times, onSelect, scheme }) {
 }
 
 export function SetAvailabilityScreen({ navigation }) {
+
     const commonUi = useTheme((state) => state.getCommonUi)();
-    const colorScheme =
-        useTheme((state) => state.getScheme)() ?? colorSchemeGreens;
+    const scheme = useTheme((state) => state.scheme);
+    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeDefault;
 
     const styles = useMemo(
-        () => ({
-            ...makeBookingStyles(colorScheme),
-            ...makeAvailabilityStyles(colorScheme),
-        }),
+        () => makeAvailabilityStyles(colorScheme),
         [colorScheme],
     );
 

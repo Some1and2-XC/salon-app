@@ -15,7 +15,7 @@ import { apiFetch, assertFetchSuccessful } from "../utils";
 import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
 import { AdminBackBar } from "../components/AdminBackBar";
-import { OptionModal } from "./booking";
+import { OptionModal } from "../components/OptionModal";
 
 function showAlert(title, message) {
     if (Platform.OS === "web") {

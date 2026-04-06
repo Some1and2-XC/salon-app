@@ -1,7 +1,6 @@
 import { useTheme } from "../styles";
 import { MAP_COLOR_SCHEME } from "../colorScheme";
-// I knows this is sorta silly to do like this but it's fine
-import { makeStyles as makeBookingStyles, OptionModal } from "./booking";
+import { OptionModal } from "../components/OptionModal";
 
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
