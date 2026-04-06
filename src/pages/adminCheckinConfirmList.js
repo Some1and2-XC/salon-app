@@ -11,10 +11,11 @@ import {
 
 import {
     APPOINTMENT_STATE_CANCELLED,
-    TOAST_TYPE_SUCCESS,
     APPOINTMENT_STATE_CONFIRMED
+    TOAST_TYPE_SUCCESS,
  } from "../consts";
-import { useTheme } from "../styles";
+
+import { useTheme, showAppToast } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
 import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
 import { BackButton } from "../components/BackButton";
@@ -107,36 +108,30 @@ export function AdminCheckinConfirmList({ navigation }) {
 
     const handleResponse = async (confirmed, item) => {
 
-        const fetch_body = {
+        if (!item.uuid) {
+            console.error("Attempted to update appointment state but appointment.uuid is not set!");
+            showAppToast(TOAST_TYPE_ERROR, "Confirmed", "Attempted to update appointment state but appointment.uuid is not set!");
+            return;
+        }
+
+        apiFetch(`/appointments/${item.uuid}`, {
             method: "PATCH",
             body: JSON.stringify({
                 appointment_state_id: confirmed
                     ? APPOINTMENT_STATE_CONFIRMED
                     : APPOINTMENT_STATE_CANCELLED,
             }),
-        };
-        if (item.uuid) {
-            apiFetch(`/appointments/${item.uuid}`, fetch_body)
-                .then(assertFetchSuccessful)
-                .then(res => res.json())
-                .then(() => {
-                    setItems((prev) => prev.filter((appt) => appt.uuid !== item.uuid));
-                })
-                .catch((e) => {
-                    console.error(e);
-                })
-        } else {
-            console.error(
-                "Attempted to update appointment state but appointment.uuid is not set!"
-            );
-        }
+        })
+            .then(assertFetchSuccessful)
+            .then(res => res.json())
+            .then(() => setItems((prev) => prev.filter((appt) => appt.uuid !== item.uuid)))
+            .catch((err) => showAppToast(TOAST_TYPE_ERROR, "Server Error", err))
+            .finally(() => {
+                if (confirmed) showAppToast(TOAST_TYPE_SUCCESS, "Confirmed!", "Successfully confirmed customer check in!");
+                else showAppToast(TOAST_TYPE_SUCCESS, "Denied!", "Denied Customer Check In");
+            })
+            ;
 
-        if(confirmed) {
-            showAppToast(TOAST_TYPE_SUCCESS, "Confirmed!", "Successfully confirmed customer check in!");
-        }
-        else {
-            showAppToast(TOAST_TYPE_SUCCESS, "Denied!", "Denied Customer Check In");
-        }
     };
 
     // Render Each card
