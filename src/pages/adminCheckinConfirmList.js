@@ -11,9 +11,10 @@ import {
 
 import {
     APPOINTMENT_STATE_CANCELLED,
+    APPOINTMENT_STATE_CONFIRMED,
     TOAST_TYPE_SUCCESS,
-    APPOINTMENT_STATE_CONFIRMED
  } from "../consts";
+
 import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
 import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
@@ -107,36 +108,30 @@ export function AdminCheckinConfirmList({ navigation }) {
 
     const handleResponse = async (confirmed, item) => {
 
-        const fetch_body = {
+        if (!item.uuid) {
+            console.error("Attempted to update appointment state but appointment.uuid is not set!");
+            showAppToast(TOAST_TYPE_ERROR, "Confirmed", "Attempted to update appointment state but appointment.uuid is not set!");
+            return;
+        }
+
+        apiFetch(`/appointments/${item.uuid}`, {
             method: "PATCH",
             body: JSON.stringify({
                 appointment_state_id: confirmed
                     ? APPOINTMENT_STATE_CONFIRMED
                     : APPOINTMENT_STATE_CANCELLED,
             }),
-        };
-        if (item.uuid) {
-            apiFetch(`/appointments/${item.uuid}`, fetch_body)
-                .then(assertFetchSuccessful)
-                .then(res => res.json())
-                .then(() => {
-                    setItems((prev) => prev.filter((appt) => appt.uuid !== item.uuid));
-                })
-                .catch((e) => {
-                    console.error(e);
-                })
-        } else {
-            console.error(
-                "Attempted to update appointment state but appointment.uuid is not set!"
-            );
-        }
+        })
+            .then(assertFetchSuccessful)
+            .then(res => res.json())
+            .then(() => setItems((prev) => prev.filter((appt) => appt.uuid !== item.uuid)))
+            .catch((err) => showAppToast(TOAST_TYPE_ERROR, "Server Error", err))
+            .finally(() => {
+                if (confirmed) showAppToast(TOAST_TYPE_SUCCESS, "Confirmed!", "Successfully confirmed customer check in!");
+                else showAppToast(TOAST_TYPE_SUCCESS, "Denied!", "Denied Customer Check In");
+            })
+            ;
 
-        if(confirmed) {
-            showAppToast(TOAST_TYPE_SUCCESS, "Confirmed!", "Successfully confirmed customer check in!");
-        }
-        else {
-            showAppToast(TOAST_TYPE_SUCCESS, "Denied!", "Denied Customer Check In");
-        }
     };
 
     // Render Each card
@@ -180,47 +175,41 @@ export function AdminCheckinConfirmList({ navigation }) {
     };
 
     return (
-        <View
-            style={[
-                commonUi.screen.screenInner,
-                { backgroundColor: colorScheme.pageBackground },
-            ]}
-        >
+        <View style={[commonUi.screen.pageMargins, commonUi.screen.pageInnerGaps ]}>
+
+            <BackButton navigation={navigation} />
+
+            <View style={commonUi.card.accentCard}>
+                <View style={commonUi.card.accentCardBlob} />
+                <Text style={commonUi.card.kicker}>Operations</Text>
+                <Text style={commonUi.card.cardTitle}>Waiting Room</Text>
+                <Text style={commonUi.card.cardSubtitle}>
+                    Confirm or Deny Appointment Requests.
+                </Text>
+            </View>
+
+            {loading ? (
+                <View style={styles.loaderWrap}>
+                    <ActivityIndicator
+                        size="large"
+                        color={colorScheme.textAccent}
+                    />
+                </View>
+            ) : null}
+
+            {error ? (
+                <View style={styles.banner}>
+                    <Text style={styles.bannerText}>{error}</Text>
+                </View>
+            ) : null}
+
+
             <FlatList
                 data={items}
                 keyExtractor={(item, index) =>
                     String(item?.uuid ?? item?.id ?? index)
                 }
                 renderItem={renderItem}
-                ListHeaderComponent={
-                    <View style={{ marginBottom: 6 }}>
-                        <BackButton navigation={navigation} />
-
-                        <View style={commonUi.card.accentCard}>
-                            <View style={commonUi.card.accentCardBlob} />
-                            <Text style={commonUi.card.kicker}>Operations</Text>
-                            <Text style={commonUi.card.cardTitle}>Waiting Room</Text>
-                            <Text style={commonUi.card.cardSubtitle}>
-                                Confirm or Deny Appointment Requests.
-                            </Text>
-                        </View>
-
-                        {loading ? (
-                            <View style={styles.loaderWrap}>
-                                <ActivityIndicator
-                                    size="large"
-                                    color={colorScheme.textAccent}
-                                />
-                            </View>
-                        ) : null}
-
-                        {error ? (
-                            <View style={styles.banner}>
-                                <Text style={styles.bannerText}>{error}</Text>
-                            </View>
-                        ) : null}
-                    </View>
-                }
                 ListEmptyComponent={
                     !loading ? (
                         <View style={styles.empty}>
@@ -232,11 +221,7 @@ export function AdminCheckinConfirmList({ navigation }) {
                         </View>
                     ) : null
                 }
-                contentContainerStyle={[
-                    commonUi.screen.pageMargins,
-                    commonUi.screen.pageInnerGaps,
-                    { paddingBottom: 28 },
-                ]}
+                contentContainerStyle={commonUi.screen.pageInnerGaps}
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}

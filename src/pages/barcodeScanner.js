@@ -100,44 +100,36 @@ export function BarcodeScannerScreen({ navigation }) {
     }
 
     return (
-        <View
-            style={[
-                styles.root,
-                { backgroundColor: colorScheme.pageBackground },
-            ]}
-        >
-            <View style={commonUi.screen.pageMargins}>
-                <BackButton navigation={navigation} />
+        <View style={[ commonUi.screen.pageMargins, commonUi.screen.pageInnerGaps, { flex: 1 } ]}>
 
-                <View style={commonUi.card.accentCard}>
-                    <Text style={commonUi.card.kicker}>Tools</Text>
-                    <Text style={commonUi.card.cardTitle}>Barcode scanner</Text>
-                    <Text style={commonUi.card.cardSubtitle}>
-                        Point the camera at a QR code. Results appear in an alert.
-                    </Text>
-                </View>
+            <BackButton navigation={navigation} />
+
+            <View style={commonUi.card.accentCard}>
+                <Text style={commonUi.card.kicker}>Tools</Text>
+                <Text style={commonUi.card.cardTitle}>Barcode scanner</Text>
+                <Text style={commonUi.card.cardSubtitle}>
+                    Point the camera at a QR code. Results appear in an alert.
+                </Text>
             </View>
 
             <View style={styles.cameraShell}>
                 {isFocused && <CameraView
-                    style={StyleSheet.absoluteFill}
                     facing="back"
                     autoFocus="on"
+                    style={{ flex: 1 }}
                     barCodeScannerSettings={{
                         barCodeTypes: ["qr"],
                     }}
                     onBarcodeScanned={handleBarCodeScanned}
                 />}
             </View>
+
         </View>
     );
 }
 
 function makeStyles(colorScheme) {
     return StyleSheet.create({
-        root: {
-            flex: 1,
-        },
         loaderWrap: {
             flex: 1,
             justifyContent: "center",
@@ -145,8 +137,6 @@ function makeStyles(colorScheme) {
         },
         cameraShell: {
             flex: 1,
-            marginHorizontal: 14,
-            marginBottom: 14,
             borderRadius: 28,
             overflow: "hidden",
             borderWidth: 1,

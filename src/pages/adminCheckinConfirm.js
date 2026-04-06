@@ -65,6 +65,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
             .catch(() => setLoadError("Could not load appointments."))
             .finally(() => setLoadingAppointment(false))
             ;
+
     }, [appointment]);
 
     // User Fetching Effect
@@ -101,29 +102,26 @@ export function AdminCheckinConfirm({ navigation, route }) {
             }),
         };
 
-        if (appointment.uuid) {
-            apiFetch(`/appointments/${appointment.uuid.trim()}`, fetch_body)
-                .then(assertFetchSuccessful)
-                .then(res => res.json())
-                .then((data) => {
-                    console.log(data);
-                    setAppointment(null);
-                })
-                .catch((e) => {
-                    console.error(e);
-                })
-        } else {
-            console.error(
-                "Attempted to update appointment state but appointment.uuid is not set!"
-            );
+        if (!appointment.uuid) {
+            console.error("Attempted to update appointment state but appointment.uuid is not set!");
+            showAppToast(TOAST_TYPE_ERROR, "Confirmed", "Attempted to update appointment state but appointment.uuid is not set!");
+            return;
         }
 
-        if(confirmed) {
-            showAppToast(TOAST_TYPE_SUCCESS, "Confirmed!", "Successfully confirmed customer check in!");
-        }
-        else {
-            showAppToast(TOAST_TYPE_SUCCESS, "Denied!", "Denied Customer Check In");
-        }
+        apiFetch(`/appointments/${appointment.uuid.trim()}`, fetch_body)
+            .then(assertFetchSuccessful)
+            .then(res => res.json())
+            .then((data) => {
+                console.log(data);
+                setAppointment(null);
+            })
+            .catch((err) => showAppToast(TOAST_TYPE_ERROR, "Server Error", err))
+            .finally(() => {
+                if (confirmed) showAppToast(TOAST_TYPE_SUCCESS, "Confirmed!", "Successfully confirmed customer check in!");
+                else showAppToast(TOAST_TYPE_SUCCESS, "Denied!", "Denied Customer Check In");
+            })
+            ;
+
     };
 
     const customerLine = (() => {
@@ -146,13 +144,12 @@ export function AdminCheckinConfirm({ navigation, route }) {
 
     return (
         <ScrollView
-            style={{ backgroundColor: colorScheme.pageBackground }}
             contentContainerStyle={[
                 commonUi.screen.pageMargins,
                 commonUi.screen.pageInnerGaps,
-                { paddingBottom: 28 },
             ]}
         >
+
             <BackButton navigation={navigation} />
 
             <View style={commonUi.card.accentCard}>

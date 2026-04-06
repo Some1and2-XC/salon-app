@@ -19,6 +19,8 @@ import { BackButton } from "../components/BackButton";
 
 export function CheckinScreen({ navigation }) {
 
+    const SHOW_UNUSED_VALUES = false;
+
     const commonUi = useTheme((state) => state.getCommonUi)();
     const colorScheme = useTheme((state) => state.getScheme)() ?? colorSchemeGreens;
     const styles = useMemo(() => makeStyles(colorScheme), [colorScheme]);
@@ -26,26 +28,35 @@ export function CheckinScreen({ navigation }) {
     const [appointments, setAppointments] = useState([]);
     const [appointmentsSorted, setAppointmentsSorted] = useState([]);
 
-
     // Effect that gets triggered per update of the appointment data.
     // This is used to always have the data sorted.
     useEffect(() => {
+
         if (!appointments) return;
         const appointment_state_id_order = [
+            APPOINTMENT_STATE_UNCONFIRMED,
             APPOINTMENT_STATE_ACCEPTED,
             APPOINTMENT_STATE_CONFIRMED,
-            APPOINTMENT_STATE_UNCONFIRMED,
             APPOINTMENT_STATE_CANCELLED,
             APPOINTMENT_STATE_COMPLETED,
         ];
-        const sorted = [...appointments].sort((a, b) => {
+        var sorted = [...appointments].sort((a, b) => {
             // Compares the state ID
             const state_diff = appointment_state_id_order.indexOf(a.appointment_state_id) - appointment_state_id_order.indexOf(b.appointment_state_id);
             if (state_diff != 0) return state_diff;
             // Compares start time
             return a.start_time - b.start_time;
-        })
+        });
+
+        if (!SHOW_UNUSED_VALUES) {
+            sorted = [...sorted].filter((item) =>
+                item.appointment_state_id != APPOINTMENT_STATE_CANCELLED &&
+                item.appointment_state_id != APPOINTMENT_STATE_COMPLETED
+            );
+        }
+
         setAppointmentsSorted(sorted);
+
     }, [appointments]);
 
 
