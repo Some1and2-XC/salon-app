@@ -78,8 +78,7 @@ export function CheckinScreen({ navigation }) {
                     <Text style={commonUi.hero.heroTitle}>Your Appointments</Text>
                     <Text style={commonUi.hero.heroTitleAccent}>Dashboard</Text>
                     <Text style={commonUi.hero.heroText}>
-                        Manage check-ins and book appointments in one clean, smooth
-                        workspace.
+                        Manage and view upcoming appointments in one clean, smooth workspace.
                     </Text>
                 </View>
 

@@ -21,7 +21,7 @@ export function QRScreen({ route, navigation }) {
 
             <BackButton navigation={navigation} />
 
-            <Text style={commonUi.card.kicker}>Check-in ready! Show this QR to the admin.</Text>
+            <Text style={commonUi.card.kicker}>Check-in ready! Show this QR Code to the admin.</Text>
 
             <View style={commonUi.screen.centerWrap}>
                 <QRCode value={qrValue} size={250} />
