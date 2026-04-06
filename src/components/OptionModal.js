@@ -23,7 +23,7 @@ export function OptionModal({
 
     const commonUi = useTheme((state) => state.getCommonUi)();
     const scheme = useTheme((state) => state.scheme);
-    const styles = MAP_COLOR_SCHEME[scheme] ?? colorSchemeDefault;
+    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeDefault;
 
     return (
         <Modal
@@ -32,50 +32,49 @@ export function OptionModal({
             animationType="fade"
             onRequestClose={onClose}
         >
+            <View style={commonUi.modal.overlay}>
+                <Pressable style={commonUi.modal.backdrop} onPress={onClose} />
 
-            <View style={styles.formModalBackdrop}>
+                <View style={commonUi.modal.card}>
+                    <View style={commonUi.modal.header}>
+                        <Text style={commonUi.modal.title}>{title}</Text>
 
-                <View style={[ styles.modalCard, {maxWidth: 420} ]}>
-                    <Pressable style={ styles.modalBackdrop } onPress={onClose} />
-
-                    <View style={styles.optionModalHeader}>
-                        <Text style={styles.optionModalTitle}>{title}</Text>
-
-                        <Pressable onPress={onClose} style={styles.closeButton}>
-                            <Text style={styles.optionModalClose}>✕</Text>
+                        <Pressable onPress={onClose} style={commonUi.modal.closeButton}>
+                            <Text style={commonUi.modal.closeText}>✕</Text>
                         </Pressable>
                     </View>
 
                     <ScrollView
-                        style={styles.optionModalList}
-                        contentContainerStyle={styles.optionModalListContent}
+                        style={commonUi.modal.list}
+                        contentContainerStyle={commonUi.modal.listContent}
                         showsVerticalScrollIndicator={true}
                         nestedScrollEnabled={true}
                     >
                         {options.length === 0 ? (
-                            <Text style={styles.emptyOptionText}>{emptyText}</Text>
+                            <Text style={commonUi.modal.emptyText}>{emptyText}</Text>
                         ) : (
                             options.map((option) => {
-                                const isSelected = option.value === selectedValue;
+                                const isSelected =
+                                    option.value === selectedValue;
 
                                 return (
                                     <Pressable
                                         key={String(option.value)}
                                         style={({ pressed }) => [
-                                            styles.optionRow,
-                                            isSelected && styles.optionRowSelected,
-                                            pressed && styles.optionRowPressed,
+                                            commonUi.modal.optionRow,
+                                            isSelected && commonUi.modal.optionRowSelected,
+                                            pressed && commonUi.modal.optionRowPressed,
                                         ]}
                                         onPress={() => {
                                             onSelect(option.value);
                                             onClose();
                                         }}
                                     >
-                                        <View style={styles.optionTextWrap}>
+                                        <View style={commonUi.modal.optionTextWrap}>
                                             <Text
                                                 style={[
-                                                    styles.optionLabel,
-                                                    isSelected && styles.optionLabelSelected,
+                                                    commonUi.modal.optionLabel,
+                                                    isSelected && commonUi.modal.optionLabelSelected,
                                                 ]}
                                             >
                                                 {option.label}
@@ -84,9 +83,8 @@ export function OptionModal({
                                             {!!option.subLabel && (
                                                 <Text
                                                     style={[
-                                                        styles.optionSubLabel,
-                                                        isSelected &&
-                                                            styles.optionSubLabelSelected,
+                                                        commonUi.modal.optionSubLabel,
+                                                        isSelected && commonUi.modal.optionSubLabelSelected,
                                                     ]}
                                                 >
                                                     {option.subLabel}
@@ -95,7 +93,7 @@ export function OptionModal({
                                         </View>
 
                                         {isSelected && (
-                                            <Text style={styles.optionCheck}>✓</Text>
+                                            <Text style={commonUi.modal.optionCheck}>✓</Text>
                                         )}
                                     </Pressable>
                                 );
@@ -106,4 +104,5 @@ export function OptionModal({
             </View>
         </Modal>
     );
+
 }

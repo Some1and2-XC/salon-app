@@ -5,7 +5,6 @@ import {
     View,
     Alert,
     Platform,
-    Modal,
     Pressable,
     ScrollView,
     ActivityIndicator,
