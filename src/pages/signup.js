@@ -12,7 +12,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { apiFetch, showAppToast } from "../utils";
 import { useTheme } from "../styles";
-import { NAV_HOME, NAV_SIGNUP, FIREBASE_AUTH_ERROR_MESSAGES, TOAST_TYPE_SUCCESS, TOAST_TYPE_ERROR, NAV_LOGIN } from "../consts";
+import { NAV_HOME, NAV_ADMIN_HOMEPAGE, FIREBASE_AUTH_ERROR_MESSAGES, TOAST_TYPE_SUCCESS, TOAST_TYPE_ERROR, NAV_LOGIN } from "../consts";
 import { colorSchemeDefault, MAP_COLOR_SCHEME } from "../colorScheme";
 
 export function SignupScreen({ navigation }) {
@@ -75,9 +75,14 @@ export function SignupScreen({ navigation }) {
                 }),
             }))
             .then((res) => res.json())
-            .then((res) => navigation.navigate(NAV_HOME, {
-                toastMessage: `Account created for ${trimmedEmail}`,
-            }))
+            .then((user) => 
+                navigation.navigate(
+                    user.admin ? NAV_ADMIN_HOMEPAGE : NAV_HOME,
+                    {
+                        toastMessage: `Account created for ${trimmedEmail}`,
+                    }
+                )
+            )
             .catch((error) => showAppToast(TOAST_TYPE_ERROR, "Sign Up Failed", FIREBASE_AUTH_ERROR_MESSAGES[error.code] ?? "Sign up failed. Please try again."))
             ;
 
@@ -178,7 +183,7 @@ export function SignupScreen({ navigation }) {
                             onChangeText={setConfirmPassword}
                             secureTextEntry
                             returnKeyType="done"
-                            onSubmitEditing={onLogin}
+                            onSubmitEditing={onSignUp}
                         />
                     </View>
 

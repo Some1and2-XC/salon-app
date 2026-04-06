@@ -17,6 +17,7 @@ import { useTheme } from "../styles";
 import { colorSchemeDefault, MAP_COLOR_SCHEME } from "../colorScheme";
 import {
     NAV_HOME,
+    NAV_ADMIN_HOMEPAGE,
     NAV_SIGNUP,
     FIREBASE_AUTH_ERROR_MESSAGES,
     TOAST_TYPE_SUCCESS,
@@ -47,10 +48,13 @@ export function LoginScreen({ navigation }) {
         signInWithEmailAndPassword(auth, trimmedEmail, password)
             .then(() => apiFetch("/users/me"))
             .then((res) => res.json())
-            .then(() =>
-                navigation.navigate(NAV_HOME, {
-                    toastMessage: `Logged in as ${trimmedEmail}`,
-                })
+            .then((user) =>
+                navigation.navigate(
+                    user.admin ? NAV_ADMIN_HOMEPAGE : NAV_HOME,
+                    {
+                        toastMessage: `Logged in as ${trimmedEmail}`,
+                    }
+                )
             )
             .catch((error) =>
                 showAppToast(
