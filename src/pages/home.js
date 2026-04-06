@@ -182,16 +182,15 @@ export function HomeScreen({ navigation, route }) {
                             <Text style={commonUi.card.iconLarge}>✦</Text>
                         </View>
                         <View style={commonUi.card.pillDark}>
-                            <Text style={commonUi.card.pillDarkText}>Front Desk</Text>
+                            <Text style={commonUi.card.pillDarkText}>Bookings</Text>
                         </View>
                     </View>
-                    <Text style={commonUi.card.primaryTitle}>Customer Check In</Text>
+                    <Text style={commonUi.card.primaryTitle}>Appointments</Text>
                     <Text style={commonUi.card.primaryDescription}>
-                        Quickly confirm a client's arrival and keep the check-in
-                        experience fast and organized.
+                        View your Upcoming and Scheduled Appointments.
                     </Text>
                     <View style={commonUi.card.primaryFooter}>
-                        <Text style={commonUi.card.primaryFooterText}>Open check-in</Text>
+                        <Text style={commonUi.card.primaryFooterText}>Open Appointments</Text>
                         <Text style={commonUi.card.primaryArrow}>→</Text>
                     </View>
                 </Pressable>
