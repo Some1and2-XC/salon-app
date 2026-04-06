@@ -135,11 +135,11 @@ export function AdminCheckinConfirm({ navigation, route }) {
         return `${name || "Customer"}${email}`;
     })();
 
-    const lastModifiedMs = appointment?.last_modified
-        ? Number(appointment.last_modified)
+    const startTime = appointment?.start_time
+        ? Number(appointment.start_time)
         : NaN;
-    const lastModifiedLabel = Number.isFinite(lastModifiedMs)
-        ? new Date(lastModifiedMs).toLocaleString()
+    const startTimeLabel = Number.isFinite(startTime)
+        ? new Date(startTime * 1000).toLocaleString()
         : "—";
 
     const showSpinner = loadingAppointment || (appointment && loadingUser);
@@ -184,8 +184,8 @@ export function AdminCheckinConfirm({ navigation, route }) {
                         <Text style={styles.value}>{customerLine}</Text>
                     </View>
                     <View style={styles.row}>
-                        <Text style={styles.label}>Last updated</Text>
-                        <Text style={styles.value}>{lastModifiedLabel}</Text>
+                        <Text style={styles.label}>Appointment Date</Text>
+                        <Text style={styles.value}>{startTimeLabel}</Text>
                     </View>
 
                     <View style={commonUi.card.actions}>
