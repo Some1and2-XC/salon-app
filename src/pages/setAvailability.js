@@ -15,6 +15,7 @@ import { apiFetch, assertFetchSuccessful } from "../utils";
 import { colorSchemeGreens } from "../colorScheme";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { makeStyles as makeBookingStyles, OptionModal } from "../pages/booking";
+import { AdminBackBar } from "../components/AdminBackBar"; 
 
 function showAlert(title, message) {
     if (Platform.OS === "web") {
@@ -333,7 +334,7 @@ export function SetAvailabilityScreen({ navigation }) {
 
     return (
         <ScrollView
-            style={{ backgroundColor: colorScheme.pageBackground }}
+            style={commonUi.screen.pageBackground}
             contentContainerStyle={[
                 commonUi.screen.pageMargins,
                 commonUi.screen.pageInnerGaps,
@@ -341,16 +342,7 @@ export function SetAvailabilityScreen({ navigation }) {
             ]}
             keyboardShouldPersistTaps="handled"
         >
-            <Pressable
-                style={({ pressed }) => [
-                    styles.backButton,
-                    pressed && styles.cardPressed,
-                ]}
-                onPress={() => navigation.goBack()}
-            >
-                <Text style={styles.backButtonArrow}>←</Text>
-                <Text style={styles.backButtonText}>Back</Text>
-            </Pressable>
+            <AdminBackBar navigation={navigation} />
 
             <View style={commonUi.auth.formCard}>
                 <Text style={commonUi.hero.kicker}>Scheduling</Text>
@@ -365,27 +357,27 @@ export function SetAvailabilityScreen({ navigation }) {
                 <Text style={commonUi.auth.inputLabel}>Employee</Text>
                 <Pressable
                     style={({ pressed }) => [
-                        styles.selectButton,
-                        pressed && styles.cardPressed,
+                        commonUi.auth.inputField,
+                        pressed && commonUi.auth.cardPressed,
                     ]}
                     onPress={() => setShowEmployeeModal(true)}
                 >
                     <Text
                         style={[
-                            styles.selectValue,
-                            !selectedEmployee && styles.selectValueMuted,
+                            commonUi.auth.inputText,
+                            !selectedEmployee && commonUi.auth.inputPlaceholder,
                         ]}
                     >
                         {employeeFieldLabel}
                     </Text>
-                    <Text style={styles.selectChevron}>⌄</Text>
+                    <Text style={commonUi.auth.inputChevron}>⌄</Text>
                 </Pressable>
             </View>
 
             {selectedEmployee ? (
                 <>
                     <View style={commonUi.auth.formCard}>
-                        <Text style={styles.sectionHeading}>
+                        <Text style={commonUi.auth.formTitle}>
                             Current availability
                             {selectedEmployeeName
                                 ? ` · ${selectedEmployeeName.first_name} ${selectedEmployeeName.last_name}`
@@ -393,13 +385,18 @@ export function SetAvailabilityScreen({ navigation }) {
                         </Text>
 
                         {currentAvailability.length === 0 ? (
-                            <Text style={styles.muted}>
+                            <Text
+                                style={[
+                                    commonUi.auth.formDescription,
+                                    { color: colorScheme.textMuted },
+                                ]}
+                            >
                                 No availability set yet.
                             </Text>
                         ) : (
                             currentAvailability.map((slot) => (
                                 <View key={slot.id} style={styles.removeBlock}>
-                                    <Text style={styles.slotText}>
+                                    <Text style={commonUi.auth.formDescription}>
                                         {fromSecondsFromWeekStart(
                                             slot.start_time,
                                         )}{" "}
@@ -416,7 +413,7 @@ export function SetAvailabilityScreen({ navigation }) {
                         <Pressable
                             style={({ pressed }) => [
                                 styles.dateField,
-                                pressed && styles.cardPressed,
+                                pressed && commonUi.auth.cardPressed,
                             ]}
                             onPress={() => setShowCalendar(true)}
                         >
@@ -484,7 +481,7 @@ export function SetAvailabilityScreen({ navigation }) {
                         }}
                     />
 
-                    <Text style={{ marginTop: 10 }}>
+                    <Text style={[commonUi.auth.formDescription, { marginTop: 10 }]}>
                         Selected: {startTime || "--"} → {endTime || "--"}
                     </Text>
 
@@ -519,13 +516,18 @@ export function SetAvailabilityScreen({ navigation }) {
             {mode === "remove" && selectedEmployee ? (
                 <View style={commonUi.auth.formCard}>
                     {currentAvailability.length === 0 ? (
-                        <Text style={styles.muted}>
+                        <Text
+                            style={[
+                                commonUi.auth.formDescription,
+                                { color: colorScheme.textMuted },
+                            ]}
+                        >
                             No availability to remove.
                         </Text>
                     ) : (
                         currentAvailability.map((slot) => (
                             <View key={slot.id} style={styles.removeBlock}>
-                                <Text style={styles.slotText}>
+                                <Text style={commonUi.auth.formDescription}>
                                     {fromSecondsFromWeekStart(slot.start_time)}{" "}
                                     —{" "}
                                     {fromSecondsFromWeekStart(slot.end_time)}
@@ -533,7 +535,7 @@ export function SetAvailabilityScreen({ navigation }) {
                                 <Pressable
                                     style={({ pressed }) => [
                                         styles.smallDanger,
-                                        pressed && styles.cardPressed,
+                                        pressed && commonUi.auth.cardPressed,
                                     ]}
                                     onPress={() =>
                                         handleRemoveAvailability(slot.id)
@@ -603,13 +605,13 @@ export function SetAvailabilityScreen({ navigation }) {
                         />
                         <Pressable
                             style={({ pressed }) => [
-                                styles.ghostBtn,
+                                commonUi.auth.inlineCtaButton,
                                 { marginTop: 12 },
-                                pressed && styles.cardPressed,
+                                pressed && commonUi.auth.cardPressed,
                             ]}
                             onPress={() => setShowCalendar(false)}
                         >
-                            <Text style={styles.ghostBtnText}>Cancel</Text>
+                            <Text style={commonUi.auth.inlineCtaButtonText}>Cancel</Text>
                         </Pressable>
                     </View>
                 </View>
@@ -620,22 +622,12 @@ export function SetAvailabilityScreen({ navigation }) {
 
 function makeAvailabilityStyles(colorScheme) {
     return StyleSheet.create({
-        sectionHeading: {
-            fontSize: 16,
-            fontWeight: "800",
-            color: colorScheme.textDark,
-            marginBottom: 10,
-        },
         muted: {
             fontSize: 14,
             color: colorScheme.textMuted,
             lineHeight: 21,
         },
-        slotText: {
-            fontSize: 14,
-            color: colorScheme.textDefault,
-            fontWeight: "600",
-        },
+
         dateField: {
             flexDirection: "row",
             alignItems: "center",
@@ -648,43 +640,52 @@ function makeAvailabilityStyles(colorScheme) {
             borderColor: colorScheme.borderLightAlt,
             marginTop: 6,
         },
+
         dateFieldText: {
             fontSize: 15,
             fontWeight: "700",
             color: colorScheme.textDefault,
         },
+
         datePlaceholder: {
             fontSize: 15,
             fontWeight: "600",
             color: colorScheme.textLabel,
         },
+
         dateChevron: {
             fontSize: 22,
             color: colorScheme.textAccentSoft,
         },
+
         rowBtns: {
             flexDirection: "row",
             gap: 10,
         },
+
         inlineActions: {
             gap: 10,
             marginTop: 8,
         },
+
         ghostBtn: {
             alignItems: "center",
             paddingVertical: 12,
         },
+
         ghostBtnText: {
             fontSize: 15,
             fontWeight: "700",
             color: colorScheme.textAccent,
         },
+
         removeBlock: {
             marginBottom: 14,
             paddingBottom: 14,
             borderBottomWidth: 1,
             borderBottomColor: colorScheme.dividerLight,
         },
+
         smallDanger: {
             marginTop: 8,
             alignSelf: "flex-start",
@@ -693,17 +694,20 @@ function makeAvailabilityStyles(colorScheme) {
             paddingVertical: 8,
             paddingHorizontal: 16,
         },
+
         smallDangerText: {
             color: colorScheme.whiteWarm,
             fontWeight: "800",
             fontSize: 13,
         },
+
         calendarModalRoot: {
             flex: 1,
             backgroundColor: colorScheme.overlayDarkStrong,
             justifyContent: "center",
             paddingHorizontal: 14,
         },
+
         calendarModalCard: {
             backgroundColor: colorScheme.whiteWarmCard,
             borderRadius: 26,
