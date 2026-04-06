@@ -242,7 +242,6 @@ export function useCommonUi(scheme) {
                 color: scheme.textAccent,
                 fontWeight: "600",
                 marginTop: 6,
-                alignSelf: "flex-end",
             },
         },
         card: {
