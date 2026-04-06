@@ -43,13 +43,13 @@ export function AdminCheckinConfirmList({ navigation }) {
 
                 // filter appointments to only show those that have not been confirmed
 
-                // const filtered = appointments.filter(
-                //     (appt) => ![APPOINTMENT_STATE_CONFIRMED, APPOINTMENT_STATE_CANCELLED].
-                //     includes(appt.appointment_state_id)
-                // );
+                const filtered = appointments.filter(
+                    (appt) => ![APPOINTMENT_STATE_CONFIRMED, APPOINTMENT_STATE_CANCELLED]
+                        .includes(appt.appointment_state_id)
+                );
 
-                setItems(appointments);
-                return appointments;
+                setItems(filtered);
+                return filtered;
             })
             .then(appointments => getUsersForAppointments(appointments))
             .then(map => setAppointmentUserMap(map))
