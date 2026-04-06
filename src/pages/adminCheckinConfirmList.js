@@ -47,7 +47,6 @@ export function AdminCheckinConfirmList({ navigation }) {
                     (appt) => ![APPOINTMENT_STATE_CONFIRMED, APPOINTMENT_STATE_CANCELLED]
                         .includes(appt.appointment_state_id)
                 );
-
                 setItems(filtered);
                 return filtered;
             })
