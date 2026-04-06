@@ -2,6 +2,7 @@ import { useTheme } from "../styles";
 import { MAP_COLOR_SCHEME } from "../colorScheme";
 import { OptionModal } from "../components/OptionModal";
 import { BackButton } from "../components/BackButton";
+import { IconPalette } from "../icons";
 
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
@@ -41,9 +42,12 @@ export function SetThemeScreen({ navigation }) {
                 ]}
                 onPress={() => setShowSelectionModal(true) }
             >
-                <Text style={commonUi.auth.inlineCtaButtonText}>
-                    Set Theme &#x1F3A8;
-                </Text>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Text style={commonUi.auth.inlineCtaButtonText}>
+                        Set Theme
+                    </Text>
+                    <IconPalette size={16} style={{ marginLeft: 6 }} />
+                </View>
             </Pressable>
 
             <OptionModal
