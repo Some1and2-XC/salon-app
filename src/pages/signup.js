@@ -75,7 +75,7 @@ export function SignupScreen({ navigation }) {
                 }),
             }))
             .then((res) => res.json())
-            .then((user) => 
+            .then((user) =>
                 navigation.navigate(
                     user.admin ? NAV_ADMIN_HOMEPAGE : NAV_HOME,
                     {
