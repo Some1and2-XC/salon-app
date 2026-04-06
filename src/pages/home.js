@@ -210,7 +210,7 @@ export function HomeScreen({ navigation, route }) {
                     </View>
                     <Text style={commonUi.card.secondaryTitle}>Book Appointment</Text>
                     <Text style={commonUi.hero.heroText}>
-                        Create a new booking with a smoother scheduling flow.
+                        Create a new appointment booking.
                     </Text>
                 </Pressable>
 
