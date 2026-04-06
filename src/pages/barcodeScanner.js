@@ -10,15 +10,17 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { NAV_CHECKIN_CONFIRM_ADMIN } from "../consts";
 
 import { useTheme } from "../styles";
-import { colorSchemeGreens } from "../colorScheme";
+import { colorSchemeDefault, MAP_COLOR_SCHEME } from "../colorScheme";
 import { AdminBackBar } from "../components/AdminBackBar";
 import { useIsFocused } from '@react-navigation/native';
 import { showAppToast } from "../utils";
 
 export function BarcodeScannerScreen({ navigation }) {
+
     const commonUi = useTheme((state) => state.getCommonUi)();
-    const colorScheme =
-        useTheme((state) => state.getScheme)() ?? colorSchemeGreens;
+    const scheme = useTheme((state) => state.scheme);
+    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeDefault;
+
     const styles = useMemo(() => makeStyles(colorScheme), [colorScheme]);
 
     const [permission, requestPermission] = useCameraPermissions();

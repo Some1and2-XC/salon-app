@@ -15,7 +15,7 @@ import {
 
 import { useTheme } from "../styles";
 import { apiFetch } from "../utils";
-import { colorSchemeGreens } from "../colorScheme";
+import { colorSchemeDefault, MAP_COLOR_SCHEME } from "../colorScheme";
 import { AdminBackBar } from "../components/AdminBackBar";
 
 function OptionModal({
@@ -28,7 +28,7 @@ function OptionModal({
     emptyText = "No options available",
 }) {
 
-    const colorScheme = useTheme((state) => state.getScheme)() ?? colorSchemeGreens;
+    const colorScheme = useTheme((state) => state.getScheme)() ?? colorSchemeDefault;
     const styles = makeStyles(colorScheme);
 
     return (
@@ -118,9 +118,8 @@ export function AdminAppointmentTypesScreen({ navigation }) {
 
     const commonUi = useTheme((state) => state.getCommonUi)();
     const scheme = useTheme((state) => state.scheme);
-    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeBrown;
+    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeDefault;
     const styles = useMemo(() => makeStyles(colorScheme), [colorScheme]);
-
 
     const [tasks, setTasks] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);

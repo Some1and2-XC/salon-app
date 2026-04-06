@@ -729,34 +729,36 @@ export const colorSchemePurpleDark = {
     chipTextDark: "#d4b8f0",
 } as const;
 
-export const COLOR_SCHEME_BROWN           : string = "brown";
-export const COLOR_SCHEME_PINK            : string = "pink";
-export const COLOR_SCHEME_SEASIDE         : string = "seaside";
-export const COLOR_SCHEME_BLUE_AND_YELLOW : string = "blue_and_yellow";
-export const COLOR_SCHEME_BLUES_AND_RES   : string = "blues_and_res";
-export const COLOR_SCHEME_GREENS          : string = "greens";
-export const COLOR_SCHEME_PURPLES         : string = "purples";
-export const COLOR_SCHEME_ISS_YELLOW      : string = "iss_yellow";
-export const COLOR_SCHEME_YELLOW          : string = "yellow";
-export const COLOR_SCHEME_BLUE            : string = "blue";
-export const COLOR_SCHEME_PINK_DARK       : string = "pink_dark";
-export const COLOR_SCHEME_BLUE_DARK       : string = "blue_dark";
-export const COLOR_SCHEME_GREEN_DARK      : string = "green_dark";
-export const COLOR_SCHEME_PURPLE_DARK     : string = "purple_dark";
+export const colorSchemeDefault = colorSchemePink;
+
+export const COLOR_SCHEME_BROWN           : string = "Coffee";
+export const COLOR_SCHEME_PINK            : string = "Pink";
+export const COLOR_SCHEME_SEASIDE         : string = "Seaside";
+export const COLOR_SCHEME_BLUE_AND_YELLOW : string = "Blue and Yellow";
+export const COLOR_SCHEME_BLUES_AND_RES   : string = "Blues and Reds";
+export const COLOR_SCHEME_GREENS          : string = "Greens";
+export const COLOR_SCHEME_PURPLES         : string = "Purples";
+export const COLOR_SCHEME_ISS_YELLOW      : string = "Iss Yellow";
+export const COLOR_SCHEME_YELLOW          : string = "Yellow";
+export const COLOR_SCHEME_BLUE            : string = "Blue";
+export const COLOR_SCHEME_PINK_DARK       : string = "Pink Dark";
+export const COLOR_SCHEME_BLUE_DARK       : string = "Blue Dark";
+export const COLOR_SCHEME_GREEN_DARK      : string = "Green Dark";
+export const COLOR_SCHEME_PURPLE_DARK     : string = "Purple Dark";
 
 export const MAP_COLOR_SCHEME = {
-    "brown"           : colorSchemeBrown,
-    "pink"            : colorSchemePink,
-    "seaside"         : colorSchemeSeaside,
-    "blue_and_yellow" : colorSchemeBlueAndYellow,
-    "blues_and_reds"  : colorSchemeBluesAndReds,
-    "greens"          : colorSchemeGreens,
-    "purples"         : colorSchemePurples,
-    "iss_yellow"      : colorSchemeIssYellow,
-    "yellow"          : colorSchemeYellow,
-    "blue"            : colorSchemeBlue,
-    "pink_dark"       : colorSchemePinkDark,
-    "blue_dark"       : colorSchemeBlueDark,
-    "green_dark"      : colorSchemeGreenDark,
-    "purple_dark"     : colorSchemePurpleDark,
+    "Pink"            : colorSchemePink,
+    "Coffee"           : colorSchemeBrown,
+    "Purples"         : colorSchemePurples,
+    "Seaside"         : colorSchemeSeaside,
+    "Greens"          : colorSchemeGreens,
+    "Blue"            : colorSchemeBlue,
+    "Yellow"          : colorSchemeYellow,
+    "Pink Dark"       : colorSchemePinkDark,
+    "Blue Dark"       : colorSchemeBlueDark,
+    "Green Dark"      : colorSchemeGreenDark,
+    "Purple Dark"     : colorSchemePurpleDark,
+    "Blue and Yellow" : colorSchemeBlueAndYellow,
+    "Blues and Reds"  : colorSchemeBluesAndReds,
+    "Space Yellow"    : colorSchemeIssYellow,
 };

@@ -61,7 +61,7 @@ export function SetThemeScreen({ navigation }) {
                 visible={showSelectionModal}
                 title="Choose a color Scheme"
                 options={colorSchemeOptions}
-                selectedValue={scheme}
+                selectedValue={colorSchemeName}
                 onSelect={colorSchemeSet}
                 onClose={() => setShowSelectionModal(false)}
             />

@@ -19,6 +19,7 @@ import { initializeApp, getApps } from "firebase/app";
 import { auth } from "../firebaseConfig";
 import { apiFetch, showAppToast } from "../utils";
 import { useTheme } from "../styles";
+import { colorSchemeDefault, MAP_COLOR_SCHEME } from "../colorScheme";
 import {
     NAV_HOME,
     NAV_SIGNUP,
@@ -26,6 +27,7 @@ import {
     TOAST_TYPE_SUCCESS,
     TOAST_TYPE_ERROR,
 } from "../consts";
+import { colorSchemeDefault } from "../colorScheme";
 
 const webGoogleApp =
     getApps().find((a) => a.name === "google-web-auth") ??
@@ -46,7 +48,7 @@ const webAuth = getAuth(webGoogleApp);
 export function LoginScreen({ navigation }) {
     const commonUi = useTheme((state) => state.getCommonUi)();
     const scheme = useTheme((state) => state.scheme);
-    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeBrown;
+    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeDefault;
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");

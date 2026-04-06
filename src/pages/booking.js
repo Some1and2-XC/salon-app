@@ -17,6 +17,7 @@ import { Calendar } from "react-native-calendars";
 import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
 import { NAV_HOME, TOAST_TYPE_ERROR } from "../consts";
 import { useTheme } from "../styles";
+import { colorSchemeDefault, MAP_COLOR_SCHEME } from "../colorScheme";
 
 const EMPLOYEE_OPTIONS = {
     ANY: "ANY",
@@ -271,7 +272,7 @@ export function BookingScreen({ navigation }) {
 
     const commonUi = useTheme((state) => state.getCommonUi)();
     const scheme = useTheme((state) => state.scheme);
-    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeBrown;
+    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeDefault;
     const styles = useMemo(() => makeStyles(colorScheme), [colorScheme]);
 
     const { width, height } = useWindowDimensions();
