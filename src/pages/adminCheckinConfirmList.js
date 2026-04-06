@@ -9,7 +9,7 @@ import {
     RefreshControl,
 } from "react-native";
 
-import { 
+import {
     APPOINTMENT_STATE_CANCELLED,
     TOAST_TYPE_SUCCESS,
     APPOINTMENT_STATE_CONFIRMED
@@ -17,7 +17,7 @@ import {
 import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
 import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
-import { AdminBackBar } from "../components/AdminBackBar";
+import { BackButton } from "../components/BackButton";
 
 export function AdminCheckinConfirmList({ navigation }) {
     const commonUi = useTheme((state) => state.getCommonUi)();
@@ -40,7 +40,7 @@ export function AdminCheckinConfirmList({ navigation }) {
             .then((data) => {
                 const appointments = Array.isArray(data) ? data : [];
 
-                // filter appointments to only show those that have not been confirmed 
+                // filter appointments to only show those that have not been confirmed
 
                 const filtered = appointments.filter(
                     (appt) => ![APPOINTMENT_STATE_CONFIRMED, APPOINTMENT_STATE_CANCELLED].
@@ -63,7 +63,7 @@ export function AdminCheckinConfirmList({ navigation }) {
             })
     }, []);
 
-    // filter appointments to only show those that have not been confirmed 
+    // filter appointments to only show those that have not been confirmed
 
     useEffect(() => {
         load();
@@ -74,7 +74,7 @@ export function AdminCheckinConfirmList({ navigation }) {
         load();
     };
 
-    // maps appointment uuids to user objects 
+    // maps appointment uuids to user objects
 
     const getUsersForAppointments = (data) => {
 
@@ -100,7 +100,7 @@ export function AdminCheckinConfirmList({ navigation }) {
             )
         })
 
-        return Promise.all(promises).then(() => map);           
+        return Promise.all(promises).then(() => map);
     };
 
     // Handle Confirm/Deny Buttons on each Appointment Card
@@ -194,14 +194,14 @@ export function AdminCheckinConfirmList({ navigation }) {
                 renderItem={renderItem}
                 ListHeaderComponent={
                     <View style={{ marginBottom: 6 }}>
-                        <AdminBackBar navigation={navigation} />
+                        <BackButton navigation={navigation} />
 
                         <View style={commonUi.card.accentCard}>
                             <View style={commonUi.card.accentCardBlob} />
                             <Text style={commonUi.card.kicker}>Operations</Text>
-                            <Text style={commonUi.card.cardTitle}>Check-in queue</Text>
+                            <Text style={commonUi.card.cardTitle}>Waiting Room</Text>
                             <Text style={commonUi.card.cardSubtitle}>
-                                Select an appointment to open the confirmation screen.
+                                Confirm or Deny Appointment Requests.
                             </Text>
                         </View>
 

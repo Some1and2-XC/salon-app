@@ -17,7 +17,7 @@ import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
 
 import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
-import { AdminBackBar } from "../components/AdminBackBar";
+import { BackButton } from "../components/BackButton";
 
 /**
  * Admin confirm/deny for an appointment. Pass the appointment via route.params,
@@ -37,7 +37,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
     const [loadError, setLoadError] = useState(null);
 
     // Check if you have been passed an appointment object or no
-    // If not then render the first appointment from the booked appointments 
+    // If not then render the first appointment from the booked appointments.
     useEffect(() => {
 
         if (appointment) {
@@ -78,7 +78,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
         setLoadError(null);
 
         // Needs to pass the user token to validate the admin (only the admin can access the list of users)
-        apiFetch(`/users/${appointment.user_uuid}`, { 
+        apiFetch(`/users/${appointment.user_uuid}`, {
             method: "GET"
         })
             .then(assertFetchSuccessful)
@@ -153,14 +153,14 @@ export function AdminCheckinConfirm({ navigation, route }) {
                 { paddingBottom: 28 },
             ]}
         >
-            <AdminBackBar navigation={navigation} />
+            <BackButton navigation={navigation} />
 
             <View style={commonUi.card.accentCard}>
                 <View style={commonUi.card.accentCardBlob} />
                 <Text style={commonUi.card.kicker}>Front desk</Text>
-                <Text style={commonUi.card.cardTitle}>Confirm booking</Text>
+                <Text style={commonUi.card.cardTitle}>Confirm Appointment</Text>
                 <Text style={commonUi.card.cardSubtitle}>
-                    Review the visit below, then accept or decline the check-in.
+                    Review the visit below, then accept or decline the appointment.
                 </Text>
             </View>
 

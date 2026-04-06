@@ -1,6 +1,6 @@
 # Project
 
-Primary requirements: An app that allow the customer to book appointments so the owner to see and schedule appointments. When customers book appointments, the app will send the unbook appointment into the app with the time slot, appointments detail like: services name, the time will take, the time customers want to come in. 
+Primary requirements: An app that allow the customer to book appointments so the owner to see and schedule appointments. When customers book appointments, the app will send the unbook appointment into the app with the time slot, appointments detail like: services name, the time will take, the time customers want to come in.
 
 Features:
 

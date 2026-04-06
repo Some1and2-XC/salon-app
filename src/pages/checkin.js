@@ -10,6 +10,7 @@ import {
 } from "../consts";
 import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
+import { BackButton } from "../components/BackButton";
 
 export function CheckinScreen({ navigation }) {
 
@@ -64,17 +65,25 @@ export function CheckinScreen({ navigation }) {
 
     return (
         <View style={[commonUi.screen.pageMargins, commonUi.screen.pageInnerGaps]}>
-            <Text style={styles.heading}>Check In</Text>
-            <Pressable
-                style={({ pressed }) => [
-                    commonUi.auth.backButton,
-                    pressed && commonUi.card.cardPressed,
-                ]}
-                onPress={() => navigation.navigate(NAV_HOME)}
-            >
-                <Text style={commonUi.auth.backButtonArrow}>←</Text>
-                <Text style={commonUi.auth.backButtonText}>Back</Text>
-            </Pressable>
+
+            <BackButton navigation={navigation} />
+
+            <View style={ commonUi.hero.heroCard }>
+
+                <View style={commonUi.hero.heroTopRow}>
+                    <Text style={commonUi.hero.kicker}>Check In</Text>
+                </View>
+
+                <View style={commonUi.hero.heroTextBlock}>
+                    <Text style={commonUi.hero.heroTitle}>Your Appointments</Text>
+                    <Text style={commonUi.hero.heroTitleAccent}>Dashboard</Text>
+                    <Text style={commonUi.hero.heroText}>
+                        Manage and view upcoming appointments in one clean, smooth workspace.
+                    </Text>
+                </View>
+
+            </View>
+
 
             <FlatList
                 data={appointments}
@@ -88,11 +97,6 @@ export function CheckinScreen({ navigation }) {
 
 function makeStyles(colorScheme) {
     return StyleSheet.create({
-        heading: {
-            fontSize: 32,
-            fontWeight: '700',
-            color: colorScheme.textDarkest,
-        },
         card: {
             padding: 16,
             backgroundColor: colorScheme.whiteWarmCard,

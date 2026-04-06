@@ -44,17 +44,24 @@ const ADMIN_ACTIONS = [
         route: NAV_CHECKIN_CONFIRM_ADMIN,
         pill: "Front desk",
         icon: "✦",
-        title: "Confirm check-in",
+        title: "Confirm Appointment Requests",
         description:
-            "Review arrivals and confirm client check-ins from the admin queue.",
+            "Review arrivals and confirm appointment requests from the appointment queue.",
+    },
+    {
+        route: NAV_BARCODE_SCANNER,
+        pill: "Operations",
+        icon: "▣",
+        title: "Check-In Scanner",
+        description: "Open the scanner to check-in a customer.",
     },
     {
         route: NAV_CHECKIN_CONFIRM_ADMIN_LIST,
         pill: "Operations",
         icon: "◎",
-        title: "Check-in list",
+        title: "Waiting Room",
         description:
-            "See all pending confirmations and manage the check-in pipeline.",
+            "View and call for Clients in the Waiting Room.",
     },
     {
         route: NAV_APP_TYPES,
@@ -62,13 +69,6 @@ const ADMIN_ACTIONS = [
         icon: "◇",
         title: "Appointment types",
         description: "Configure services and how they appear when booking.",
-    },
-    {
-        route: NAV_BARCODE_SCANNER,
-        pill: "Tools",
-        icon: "▣",
-        title: "Barcode scanner",
-        description: "Open the scanner for quick product or code lookup.",
     },
     {
         route: NAV_ADD_EMPLOYEE,

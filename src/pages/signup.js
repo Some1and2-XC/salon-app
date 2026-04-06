@@ -90,21 +90,9 @@ export function SignupScreen({ navigation }) {
 
     return (
         <KeyboardAvoidingView>
-            <ScrollView style={commonUi.screen.pageMargins}>
+            <ScrollView style={[commonUi.screen.pageMargins, commonUi.screen.pageInnerGaps ]}>
 
                 <Text style={commonUi.auth.salonTitle}>SALON APP</Text>
-
-                <Pressable
-                    style={({ pressed }) => [
-                        commonUi.auth.backButton,
-                        pressed && commonUi.card.cardPressed,
-                    ]}
-                    onPress={() => navigation.navigate(NAV_LOGIN)}
-                >
-                    <Text style={commonUi.auth.backButtonArrow}>←</Text>
-                    <Text style={commonUi.auth.backButtonText}>Back</Text>
-                </Pressable>
-
 
                 <View style={commonUi.auth.formCard}>
                     <Text style={commonUi.auth.formTitle}>Create Account</Text>

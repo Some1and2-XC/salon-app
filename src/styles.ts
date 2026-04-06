@@ -101,7 +101,7 @@ export function useCommonUi(scheme) {
                 fontWeight: "800",
                 textAlign: "center",
                 color: scheme.textDefault,
-                marginBottom: 28,
+                marginBottom: 14,
                 letterSpacing: 1,
             },
             formCard: {
@@ -610,7 +610,6 @@ export function useCommonUi(scheme) {
                 paddingTop: 24,
                 paddingBottom: 32,
                 backgroundColor: scheme.accentTint,
-                marginBottom: 14,
                 justifyContent: "space-between",
                 width: "100%",
             },

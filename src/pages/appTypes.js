@@ -14,105 +14,11 @@ import {
 } from "react-native";
 
 import { useTheme } from "../styles";
-import { apiFetch } from "../utils";
+import { apiFetch, showAppToast } from "../utils";
 import { colorSchemeDefault, MAP_COLOR_SCHEME } from "../colorScheme";
-import { AdminBackBar } from "../components/AdminBackBar";
-
-function OptionModal({
-    visible,
-    title,
-    options,
-    selectedValue,
-    onSelect,
-    onClose,
-    emptyText = "No options available",
-}) {
-
-    const colorScheme = useTheme((state) => state.getScheme)() ?? colorSchemeDefault;
-    const styles = makeStyles(colorScheme);
-
-    return (
-        <Modal
-            visible={visible}
-            transparent={true}
-            animationType="fade"
-            onRequestClose={onClose}
-        >
-
-            <View style={styles.formModalBackdrop}>
-
-                <View style={[ styles.modalCard, {maxWidth: 420} ]}>
-                    <Pressable style={ styles.modalBackdrop } onPress={onClose} />
-
-                    <View style={styles.optionModalHeader}>
-                        <Text style={styles.optionModalTitle}>{title}</Text>
-
-                        <Pressable onPress={onClose} style={styles.closeButton}>
-                            <Text style={styles.optionModalClose}>✕</Text>
-                        </Pressable>
-                    </View>
-
-                    <ScrollView
-                        style={styles.optionModalList}
-                        contentContainerStyle={styles.optionModalListContent}
-                        showsVerticalScrollIndicator={true}
-                        nestedScrollEnabled={true}
-                    >
-                        {options.length === 0 ? (
-                            <Text style={styles.emptyOptionText}>{emptyText}</Text>
-                        ) : (
-                            options.map((option) => {
-                                const isSelected = option.value === selectedValue;
-
-                                return (
-                                    <Pressable
-                                        key={String(option.value)}
-                                        style={({ pressed }) => [
-                                            styles.optionRow,
-                                            isSelected && styles.optionRowSelected,
-                                            pressed && styles.optionRowPressed,
-                                        ]}
-                                        onPress={() => {
-                                            onSelect(option.value);
-                                            onClose();
-                                        }}
-                                    >
-                                        <View style={styles.optionTextWrap}>
-                                            <Text
-                                                style={[
-                                                    styles.optionLabel,
-                                                    isSelected && styles.optionLabelSelected,
-                                                ]}
-                                            >
-                                                {option.label}
-                                            </Text>
-
-                                            {!!option.subLabel && (
-                                                <Text
-                                                    style={[
-                                                        styles.optionSubLabel,
-                                                        isSelected &&
-                                                            styles.optionSubLabelSelected,
-                                                    ]}
-                                                >
-                                                    {option.subLabel}
-                                                </Text>
-                                            )}
-                                        </View>
-
-                                        {isSelected && (
-                                            <Text style={styles.optionCheck}>✓</Text>
-                                        )}
-                                    </Pressable>
-                                );
-                            })
-                        )}
-                    </ScrollView>
-                </View>
-            </View>
-        </Modal>
-    );
-}
+import { TOAST_TYPE_ERROR } from "../consts";
+import { BackButton } from "../components/BackButton";
+import { OptionModal } from "../components/OptionModal";
 
 export function AdminAppointmentTypesScreen({ navigation }) {
 
@@ -228,8 +134,7 @@ export function AdminAppointmentTypesScreen({ navigation }) {
         if (!taskToDelete) return;
 
         apiFetch(`/tasks/${taskToDelete.id}`, { method: "DELETE" })
-            // TODO Replace with global popup
-            .catch(console.error)
+            .catch((err) => showAppToast(TOAST_TYPE_ERROR, "Server Error", err))
             ;
 
         setDeleteModalVisible(false);
@@ -307,7 +212,7 @@ export function AdminAppointmentTypesScreen({ navigation }) {
             style={commonUi.screen.pageMargins}
             contentContainerStyle={commonUi.screen.pageInnerGaps}
         >
-            <AdminBackBar navigation={navigation} />
+            <BackButton navigation={navigation} />
 
             <View style={commonUi.hero.heroCard}>
                 <View style={commonUi.hero.blobOne} />

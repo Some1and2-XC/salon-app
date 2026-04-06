@@ -14,8 +14,8 @@ import { v7 as uuidv7 } from "uuid";
 import { apiFetch, assertFetchSuccessful } from "../utils";
 import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
-import { AdminBackBar } from "../components/AdminBackBar";
-import { OptionModal } from "./booking";
+import { BackButton } from "../components/BackButton";
+import { OptionModal } from "../components/OptionModal";
 
 function showAlert(title, message) {
     if (Platform.OS === "web") {
@@ -137,7 +137,7 @@ export function AddEmployeeScreen({ navigation }) {
             ]}
             keyboardShouldPersistTaps="handled"
         >
-            <AdminBackBar navigation={navigation} />
+            <BackButton navigation={navigation} />
 
             <View style={commonUi.card.accentCard}>
                 <Text style={commonUi.card.kicker}>Team</Text>
