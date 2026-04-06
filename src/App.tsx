@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import { StatusBar } from "expo-status-bar";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { Platform } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -97,6 +98,7 @@ export default function App() {
     };
 
     return (
+        <GestureHandlerRootView>
         <SafeAreaProvider>
             <SafeAreaView
                 style={commonUi.screen.safeArea}
@@ -172,5 +174,6 @@ export default function App() {
                 </NavigationContainer>
             </SafeAreaView>
         </SafeAreaProvider>
+        </GestureHandlerRootView>
     );
 }
