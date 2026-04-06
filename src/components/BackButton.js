@@ -38,7 +38,6 @@ function makeStyles(colorScheme) {
             paddingHorizontal: 14,
             borderWidth: 1,
             borderColor: colorScheme.borderLight,
-            marginBottom: 14,
             gap: 8,
         },
         pressed: {
