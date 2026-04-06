@@ -175,47 +175,42 @@ export function AdminCheckinConfirmList({ navigation }) {
     };
 
     return (
-        <View
-            style={[
-                commonUi.screen.screenInner,
-                { backgroundColor: colorScheme.pageBackground },
-            ]}
-        >
+        <View style={[commonUi.screen.pageMargins, commonUi.screen.pageInnerGaps ]}>
+
+            <BackButton navigation={navigation} />
+
+            <View style={commonUi.card.accentCard}>
+                <View style={commonUi.card.accentCardBlob} />
+                <Text style={commonUi.card.kicker}>Operations</Text>
+                <Text style={commonUi.card.cardTitle}>Waiting Room</Text>
+                <Text style={commonUi.card.cardSubtitle}>
+                    Confirm or Deny Appointment Requests.
+                </Text>
+            </View>
+
+            {loading ? (
+                <View style={styles.loaderWrap}>
+                    <ActivityIndicator
+                        size="large"
+                        color={colorScheme.textAccent}
+                    />
+                </View>
+            ) : null}
+
+            {error ? (
+                <View style={styles.banner}>
+                    <Text style={styles.bannerText}>{error}</Text>
+                </View>
+            ) : null}
+
+
             <FlatList
                 data={items}
                 keyExtractor={(item, index) =>
                     String(item?.uuid ?? item?.id ?? index)
                 }
                 renderItem={renderItem}
-                ListHeaderComponent={
-                    <View style={{ marginBottom: 6 }}>
-                        <BackButton navigation={navigation} />
-
-                        <View style={commonUi.card.accentCard}>
-                            <View style={commonUi.card.accentCardBlob} />
-                            <Text style={commonUi.card.kicker}>Operations</Text>
-                            <Text style={commonUi.card.cardTitle}>Waiting Room</Text>
-                            <Text style={commonUi.card.cardSubtitle}>
-                                Confirm or Deny Appointment Requests.
-                            </Text>
-                        </View>
-
-                        {loading ? (
-                            <View style={styles.loaderWrap}>
-                                <ActivityIndicator
-                                    size="large"
-                                    color={colorScheme.textAccent}
-                                />
-                            </View>
-                        ) : null}
-
-                        {error ? (
-                            <View style={styles.banner}>
-                                <Text style={styles.bannerText}>{error}</Text>
-                            </View>
-                        ) : null}
-                    </View>
-                }
+                style={commonUi.screen.screenInner}
                 ListEmptyComponent={
                     !loading ? (
                         <View style={styles.empty}>
@@ -230,7 +225,6 @@ export function AdminCheckinConfirmList({ navigation }) {
                 contentContainerStyle={[
                     commonUi.screen.pageMargins,
                     commonUi.screen.pageInnerGaps,
-                    { paddingBottom: 28 },
                 ]}
                 refreshControl={
                     <RefreshControl
