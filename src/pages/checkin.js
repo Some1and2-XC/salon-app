@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Text, FlatList, Pressable, View, StyleSheet } from 'react-native';
 import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
-import { 
-    NAV_QR, 
-    NAV_HOME, 
-    TOAST_TYPE_SUCCESS, 
+import {
+    APPOINTMENT_STATE_MAPPINGS,
+    NAV_QR,
+    NAV_HOME,
+    TOAST_TYPE_SUCCESS,
     TOAST_TYPE_ERROR,
- } from "../consts";
+} from "../consts";
 import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
 
@@ -42,21 +43,13 @@ export function CheckinScreen({ navigation }) {
         return () => { cancelled = true; };
     }, []);
 
-    const appointmentStates = {
-        0: "Unconfirmed",
-        1: "Accepted",
-        2: "Checked In!",
-        3: "Cancelled!",
-        4: "Completed!"
-    };
-
     const renderItem = ({ item }) => {
         const formattedDate = new Date(item.start_time * 1000).toLocaleString(undefined, {
             dateStyle: 'medium',
             timeStyle: 'short'
         });
 
-        const appointmentState = appointmentStates[item.appointment_state_id];
+        const appointmentState = APPOINTMENT_STATE_MAPPINGS[item.appointment_state_id];
 
         return (
             <Pressable
