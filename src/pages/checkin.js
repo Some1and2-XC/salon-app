@@ -19,6 +19,24 @@ export function CheckinScreen({ navigation }) {
     const styles = useMemo(() => makeStyles(colorScheme), [colorScheme]);
 
     const [appointments, setAppointments] = useState([]);
+    const [appointmentsSorted, setAppointmentsSorted] = useState([]);
+
+
+    // Effect that gets triggered per update of the appointment data.
+    // This is used to always have the data sorted.
+    useEffect(() => {
+        if (!appointments) return;
+        const appointment_state_id_order = [1, 2, 0, 3, 4];
+        const sorted = [...appointments].sort((a, b) => {
+            // Compares the state ID
+            const state_diff = appointment_state_id_order.indexOf(a.appointment_state_id) - appointment_state_id_order.indexOf(b.appointment_state_id);
+            if (state_diff != 0) return state_diff;
+            // Compares start time
+            return a.start_time - b.start_time;
+        })
+        setAppointmentsSorted(sorted);
+    }, [appointments]);
+
 
     useEffect(() => {
         let cancelled = false;
@@ -86,7 +104,7 @@ export function CheckinScreen({ navigation }) {
 
 
             <FlatList
-                data={appointments}
+                data={appointmentsSorted}
                 contentContainerStyle={commonUi.screen.pageInnerGaps}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={renderItem}
