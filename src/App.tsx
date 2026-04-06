@@ -55,7 +55,7 @@ import {
     NAV_SET_THEME,
 } from "./consts";
 
-import { MAP_COLOR_SCHEME } from "./colorScheme";
+import { colorSchemeDefault, MAP_COLOR_SCHEME } from "./colorScheme";
 
 export default function App() {
     // Inits scheme from storage
@@ -65,7 +65,7 @@ export default function App() {
 
     const commonUi = useTheme((state) => state.getCommonUi)();
     const scheme = useTheme((state) => state.scheme);
-    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeBrown;
+    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeDefault;
 
     const [user, setUser] = useState<FBUser | null>(null);
     const [authReady, setAuthReady] = useState(false);
@@ -102,7 +102,7 @@ export default function App() {
         <SafeAreaProvider>
             <SafeAreaView
                 style={commonUi.screen.safeArea}
-                edges={["left", "right"]}
+                edges={["left", "right", "top"]}
             >
                 <StatusBar translucent backgroundColor="transparent" />
 

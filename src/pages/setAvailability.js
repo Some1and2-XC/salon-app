@@ -3,19 +3,18 @@ import { useTheme } from "../styles";
 import {
     View,
     Text,
-    Button,
+    Pressable,
+    ScrollView,
     Platform,
     Alert,
     Modal,
-    TouchableOpacity,
-    ScrollView,
-    Pressable,
+    StyleSheet,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import { Calendar } from "react-native-calendars";
 import { apiFetch, assertFetchSuccessful } from "../utils";
-import { sty } from "../styles";
+import { colorSchemeGreens } from "../colorScheme";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { makeStyles as makeBookingStyles, OptionModal } from "../pages/booking";
 
 function showAlert(title, message) {
     if (Platform.OS === "web") {
@@ -38,10 +37,10 @@ function generateTimes() {
 }
 
 function toSecondsFromWeekStart(date, time) {
-    const d = new Date(`${date}T${time}:00`);
-    const dayOfWeek = d.getDay();
-    const hours = d.getHours();
-    const minutes = d.getMinutes();
+    const dateObj = new Date(`${date}T${time}:00`);
+    const dayOfWeek = dateObj.getDay();
+    const hours = dateObj.getHours();
+    const minutes = dateObj.getMinutes();
     return dayOfWeek * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60;
 }
 
@@ -65,7 +64,7 @@ function fromSecondsFromWeekStart(seconds) {
     return `${days[day]} ${hours}:${minutes}`;
 }
 
-function TimeRangeSelector({ times, onSelect, scheme, commonUi }) {
+function TimeRangeSelector({ times, onSelect, scheme }) {
     const [startIdx, setStartIdx] = useState(null);
     const [endIdx, setEndIdx] = useState(null);
 
@@ -178,26 +177,68 @@ function TimeRangeSelector({ times, onSelect, scheme, commonUi }) {
     );
 }
 
-export function SetAvailabilityScreen() {
-    const scheme = useTheme((state) => state.getScheme)();
+export function SetAvailabilityScreen({ navigation }) {
     const commonUi = useTheme((state) => state.getCommonUi)();
+    const colorScheme =
+        useTheme((state) => state.getScheme)() ?? colorSchemeGreens;
+
+    const styles = useMemo(
+        () => ({
+            ...makeBookingStyles(colorScheme),
+            ...makeAvailabilityStyles(colorScheme),
+        }),
+        [colorScheme],
+    );
+
+    const calendarTheme = useMemo(
+        () => ({
+            backgroundColor: colorScheme.whiteWarmCard,
+            calendarBackground: colorScheme.whiteWarmCard,
+            textSectionTitleColor: colorScheme.textMuted,
+            selectedDayBackgroundColor: colorScheme.darkSurface,
+            selectedDayTextColor: colorScheme.whiteWarm,
+            todayTextColor: colorScheme.textAccent,
+            dayTextColor: colorScheme.textDark,
+            textDisabledColor: colorScheme.textLabel,
+            monthTextColor: colorScheme.textDark,
+            arrowColor: colorScheme.textAccent,
+        }),
+        [colorScheme],
+    );
+
     const [employees, setEmployees] = useState([]);
     const [selectedEmployee, setSelectedEmployee] = useState("");
+    const [showEmployeeModal, setShowEmployeeModal] = useState(false);
     const [selectedDate, setSelectedDate] = useState("");
     const [showCalendar, setShowCalendar] = useState(false);
     const [currentAvailability, setCurrentAvailability] = useState([]);
-    const [mode, setMode] = useState(null);
     const [startTime, setStartTime] = useState("");
     const [endTime, setEndTime] = useState("");
+    const [mode, setMode] = useState(null);
 
     const times = useMemo(() => generateTimes(), []);
 
     useEffect(() => {
         apiFetch("/employees")
             .then((res) => res.json())
-            .then((data) => setEmployees(data))
+            .then((data) => {
+                const list = Array.isArray(data) ? data : data.employees || [];
+                setEmployees(list);
+            })
             .catch(() => showAlert("Error", "Failed to load employees."));
     }, []);
+
+    const employeeOptions = useMemo(() => {
+        const rows = employees.map((employee) => ({
+            label:
+                employee.first_name && employee.last_name
+                    ? `${employee.first_name} ${employee.last_name}`
+                    : employee.first_name || `Employee ${employee.id}`,
+            value: String(employee.id),
+            subLabel: "Team member",
+        }));
+        return [{ label: "Select employee…", value: "", subLabel: "" }, ...rows];
+    }, [employees]);
 
     useEffect(() => {
         if (!selectedEmployee) return;
@@ -206,7 +247,8 @@ export function SetAvailabilityScreen() {
             .then((data) =>
                 setCurrentAvailability(
                     data.filter(
-                        (slot) => slot.employee_id === selectedEmployee,
+                        (slot) =>
+                            String(slot.employee_id) === String(selectedEmployee),
                     ),
                 ),
             )
@@ -217,18 +259,28 @@ export function SetAvailabilityScreen() {
     }, [selectedEmployee]);
 
     async function handleRemoveAvailability(id) {
-
         apiFetch(`/availability/${id}`, {
-                method: "DELETE",
-            })
+            method: "DELETE",
+        })
             .then(assertFetchSuccessful)
-            .then(() => setCurrentAvailability(currentAvailability.filter((slot) => slot.id !== id)))
-            .catch((err) => showAlert("Error", err.message || "Failed to remove availability."))
-            ;
-
+            .then(() =>
+                setCurrentAvailability((prev) =>
+                    prev.filter((slot) => slot.id !== id),
+                ),
+            )
+            .catch((err) =>
+                showAlert(
+                    "Error",
+                    err.message || "Failed to remove availability.",
+                ),
+            );
     }
 
     async function handleSubmit() {
+        if (!selectedDate) {
+            showAlert("Missing date", "Please choose a date first.");
+            return;
+        }
         if (!startTime || !endTime) {
             showAlert(
                 "Missing fields",
@@ -244,189 +296,263 @@ export function SetAvailabilityScreen() {
         };
 
         apiFetch("/availability", {
-                method: "POST",
-                body: JSON.stringify(payload),
-            })
+            method: "POST",
+            body: JSON.stringify(payload),
+        })
             .then(assertFetchSuccessful)
             .then((res) => res.json())
             .then((res) => {
-                setCurrentAvailability([...currentAvailability, res]);
-                setMode(null);
+                setCurrentAvailability((prev) => [...prev, res]);
                 setStartTime("");
                 setEndTime("");
+                setMode(null);
                 showAlert("Success", "Availability has been set.");
             })
             .catch((err) => {
                 showAlert("Error", err.message || "Failed to set availability.");
-                throw err;
-            })
-            ;
-
+            });
     }
 
     const selectedEmployeeName = employees.find(
-        (e) => e.id === selectedEmployee,
+        (e) => String(e.id) === String(selectedEmployee),
     );
 
+    const employeeFieldLabel = selectedEmployeeName
+        ? selectedEmployeeName.first_name && selectedEmployeeName.last_name
+            ? `${selectedEmployeeName.first_name} ${selectedEmployeeName.last_name}`
+            : selectedEmployeeName.first_name ||
+              `Employee ${selectedEmployeeName.id}`
+        : "Select employee…";
+
+    const onSelectEmployee = (value) => {
+        setSelectedEmployee(value);
+        setSelectedDate("");
+        setCurrentAvailability([]);
+        setMode(null);
+    };
+
     return (
-    <ScrollView contentContainerStyle={commonUi.screen.pageInnerGaps}>
-
-        {/* Header */}
-        <View style={commonUi.auth.formCard}>
-            <Text style={commonUi.hero.heroTitle}>Set</Text>
-            <Text style={commonUi.hero.heroTitleAccent}>Availability</Text>
-            <Text style={commonUi.auth.formDescription}>
-                Manage employee schedules using gestures.
-            </Text>
-        </View>
-
-        {/* Employee Picker */}
-        <View style={commonUi.auth.formCard}>
-            <Text style={commonUi.auth.inputLabel}>Employee</Text>
-
-            <View
-                style={{
-                    borderRadius: 18,
-                    borderWidth: 1,
-                    borderColor: scheme.borderLightAlt,
-                    backgroundColor: scheme.panelBackground,
-                    overflow: "hidden",
-                }}
+        <ScrollView
+            style={{ backgroundColor: colorScheme.pageBackground }}
+            contentContainerStyle={[
+                commonUi.screen.pageMargins,
+                commonUi.screen.pageInnerGaps,
+                { paddingBottom: 32 },
+            ]}
+            keyboardShouldPersistTaps="handled"
+        >
+            <Pressable
+                style={({ pressed }) => [
+                    styles.backButton,
+                    pressed && styles.cardPressed,
+                ]}
+                onPress={() => navigation.goBack()}
             >
-                <Picker
-                    selectedValue={selectedEmployee}
-                    onValueChange={(v) => {
-                        setSelectedEmployee(v);
-                        setSelectedDate("");
-                        setCurrentAvailability([]);
-                        setMode(null);
-                    }}
-                >
-                    <Picker.Item label="Select employee..." value="" />
-                    {employees.map((emp) => (
-                        <Picker.Item
-                            key={emp.id}
-                            label={`${emp.first_name} ${emp.last_name}`}
-                            value={emp.id}
-                        />
-                    ))}
-                </Picker>
-            </View>
-        </View>
+                <Text style={styles.backButtonArrow}>←</Text>
+                <Text style={styles.backButtonText}>Back</Text>
+            </Pressable>
 
-        {selectedEmployee && (
-            <>
-                {/* Availability List */}
+            <View style={commonUi.auth.formCard}>
+                <Text style={commonUi.hero.kicker}>Scheduling</Text>
+                <Text style={commonUi.auth.formTitle}>Availability</Text>
+                <Text style={commonUi.auth.formDescription}>
+                    Choose a team member, pick a date, then add time with tap or
+                    drag—or remove existing slots.
+                </Text>
+            </View>
+
+            <View style={commonUi.auth.formCard}>
+                <Text style={commonUi.auth.inputLabel}>Employee</Text>
+                <Pressable
+                    style={({ pressed }) => [
+                        styles.selectButton,
+                        pressed && styles.cardPressed,
+                    ]}
+                    onPress={() => setShowEmployeeModal(true)}
+                >
+                    <Text
+                        style={[
+                            styles.selectValue,
+                            !selectedEmployee && styles.selectValueMuted,
+                        ]}
+                    >
+                        {employeeFieldLabel}
+                    </Text>
+                    <Text style={styles.selectChevron}>⌄</Text>
+                </Pressable>
+            </View>
+
+            {selectedEmployee ? (
+                <>
+                    <View style={commonUi.auth.formCard}>
+                        <Text style={styles.sectionHeading}>
+                            Current availability
+                            {selectedEmployeeName
+                                ? ` · ${selectedEmployeeName.first_name} ${selectedEmployeeName.last_name}`
+                                : ""}
+                        </Text>
+
+                        {currentAvailability.length === 0 ? (
+                            <Text style={styles.muted}>
+                                No availability set yet.
+                            </Text>
+                        ) : (
+                            currentAvailability.map((slot) => (
+                                <View key={slot.id} style={styles.removeBlock}>
+                                    <Text style={styles.slotText}>
+                                        {fromSecondsFromWeekStart(
+                                            slot.start_time,
+                                        )}{" "}
+                                        —{" "}
+                                        {fromSecondsFromWeekStart(slot.end_time)}
+                                    </Text>
+                                </View>
+                            ))
+                        )}
+                    </View>
+
+                    <View style={commonUi.auth.formCard}>
+                        <Text style={commonUi.auth.inputLabel}>Date</Text>
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.dateField,
+                                pressed && styles.cardPressed,
+                            ]}
+                            onPress={() => setShowCalendar(true)}
+                        >
+                            <Text
+                                style={
+                                    selectedDate
+                                        ? styles.dateFieldText
+                                        : styles.datePlaceholder
+                                }
+                            >
+                                {selectedDate || "Tap to choose a date"}
+                            </Text>
+                            <Text style={styles.dateChevron}>⌄</Text>
+                        </Pressable>
+                    </View>
+
+                    <View style={commonUi.auth.formCard}>
+                        <View style={styles.rowBtns}>
+                            <Pressable
+                                style={({ pressed }) => [
+                                    commonUi.auth.inlineCtaButton,
+                                    { flex: 1 },
+                                    pressed && commonUi.auth.cardPressed,
+                                ]}
+                                onPress={() => setMode("add")}
+                            >
+                                <Text style={commonUi.auth.inlineCtaButtonText}>
+                                    Add availability
+                                </Text>
+                            </Pressable>
+
+                            <Pressable
+                                style={({ pressed }) => [
+                                    commonUi.auth.inlineCtaButton,
+                                    { flex: 1 },
+                                    pressed && commonUi.auth.cardPressed,
+                                ]}
+                                onPress={() => setMode("remove")}
+                            >
+                                <Text style={commonUi.auth.inlineCtaButtonText}>
+                                    Remove availability
+                                </Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </>
+            ) : null}
+
+            {mode === "add" && selectedEmployee ? (
                 <View style={commonUi.auth.formCard}>
                     <Text style={commonUi.auth.formTitle}>
-                        Current Availability
+                        Select time range
                     </Text>
 
+                    <Text style={commonUi.auth.formDescription}>
+                        Tap or drag across time slots (first half of the day).
+                    </Text>
+
+                    <TimeRangeSelector
+                        times={times}
+                        scheme={colorScheme}
+                        onSelect={(start, end) => {
+                            setStartTime(start);
+                            setEndTime(end);
+                        }}
+                    />
+
+                    <Text style={{ marginTop: 10 }}>
+                        Selected: {startTime || "--"} → {endTime || "--"}
+                    </Text>
+
+                    <View style={styles.inlineActions}>
+                        <Pressable
+                            style={({ pressed }) => [
+                                commonUi.auth.primaryButton,
+                                pressed && commonUi.auth.cardPressed,
+                            ]}
+                            onPress={handleSubmit}
+                        >
+                            <Text style={commonUi.auth.primaryButtonText}>
+                                Save slot
+                            </Text>
+                        </Pressable>
+
+                        <Pressable
+                            style={({ pressed }) => [
+                                commonUi.auth.inlineCtaButton,
+                                pressed && commonUi.auth.cardPressed,
+                            ]}
+                            onPress={() => setMode(null)}
+                        >
+                            <Text style={commonUi.auth.inlineCtaButtonText}>
+                                Cancel
+                            </Text>
+                        </Pressable>
+                    </View>
+                </View>
+            ) : null}
+
+            {mode === "remove" && selectedEmployee ? (
+                <View style={commonUi.auth.formCard}>
                     {currentAvailability.length === 0 ? (
-                        <Text style={{ color: scheme.textMuted }}>
-                            No availability set.
+                        <Text style={styles.muted}>
+                            No availability to remove.
                         </Text>
                     ) : (
                         currentAvailability.map((slot) => (
-                            <View
-                                key={slot.id}
-                                style={{
-                                    padding: 12,
-                                    borderRadius: 14,
-                                    backgroundColor: scheme.panelBackground,
-                                    marginTop: 8,
-                                    borderWidth: 1,
-                                    borderColor: scheme.borderLight,
-                                }}
-                            >
-                                <Text style={{ fontWeight: "600" }}>
-                                    {fromSecondsFromWeekStart(slot.start_time)} —{" "}
+                            <View key={slot.id} style={styles.removeBlock}>
+                                <Text style={styles.slotText}>
+                                    {fromSecondsFromWeekStart(slot.start_time)}{" "}
+                                    —{" "}
                                     {fromSecondsFromWeekStart(slot.end_time)}
                                 </Text>
+                                <Pressable
+                                    style={({ pressed }) => [
+                                        styles.smallDanger,
+                                        pressed && styles.cardPressed,
+                                    ]}
+                                    onPress={() =>
+                                        handleRemoveAvailability(slot.id)
+                                    }
+                                >
+                                    <Text style={styles.smallDangerText}>
+                                        Remove
+                                    </Text>
+                                </Pressable>
                             </View>
                         ))
                     )}
-                </View>
-
-                {/* Date Picker */}
-                <View style={commonUi.auth.formCard}>
-                    <Text style={commonUi.auth.inputLabel}>Date</Text>
-
-                    <TouchableOpacity
-                        style={{
-                            backgroundColor: scheme.panelBackground,
-                            padding: 16,
-                            borderRadius: 18,
-                            borderWidth: 1,
-                            borderColor: scheme.borderLightAlt,
-                        }}
-                        onPress={() => setShowCalendar(true)}
-                    >
-                        <Text style={{ fontWeight: "700" }}>
-                            {selectedDate || "Tap to select a date"}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-
-                {/* Buttons */}
-                <View style={{ gap: 10 }}>
-                    <Pressable
-                        style={commonUi.auth.inlineCtaButton}
-                        onPress={() => setMode("add")}
-                    >
-                        <Text style={commonUi.auth.inlineCtaButtonText}>
-                            Add Availability
-                        </Text>
-                    </Pressable>
 
                     <Pressable
-                        style={commonUi.auth.inlineCtaButton}
-                        onPress={() => setMode("remove")}
-                    >
-                        <Text style={commonUi.auth.inlineCtaButtonText}>
-                            Remove Availability
-                        </Text>
-                    </Pressable>
-                </View>
-            </>
-        )}
-
-        {mode === "add" && (
-            <View style={commonUi.auth.formCard}>
-                <Text style={commonUi.auth.formTitle}>
-                    Select Availability
-                </Text>
-
-                <Text style={commonUi.auth.formDescription}>
-                    Tap or drag across time slots.
-                </Text>
-
-                <TimeRangeSelector
-                    times={times}
-                    scheme={scheme}
-                    commonUi={commonUi}
-                    onSelect={(start, end) => {
-                        setStartTime(start);
-                        setEndTime(end);
-                    }}
-                />
-
-                <Text style={{ marginTop: 10 }}>
-                    Selected: {startTime || "--"} → {endTime || "--"}
-                </Text>
-
-                <View style={{ marginTop: 10, gap: 10 }}>
-                    <Pressable
-                        style={commonUi.auth.primaryButton}
-                        onPress={handleSubmit}
-                    >
-                        <Text style={commonUi.auth.primaryButtonText}>
-                            Submit
-                        </Text>
-                    </Pressable>
-
-                    <Pressable
-                        style={commonUi.auth.inlineCtaButton}
+                        style={({ pressed }) => [
+                            commonUi.auth.inlineCtaButton,
+                            { marginTop: 12 },
+                            pressed && commonUi.auth.cardPressed,
+                        ]}
                         onPress={() => setMode(null)}
                     >
                         <Text style={commonUi.auth.inlineCtaButtonText}>
@@ -434,85 +560,157 @@ export function SetAvailabilityScreen() {
                         </Text>
                     </Pressable>
                 </View>
-            </View>
-        )}
+            ) : null}
 
-        {mode === "remove" && (
-            <View style={commonUi.auth.formCard}>
-                {currentAvailability.length === 0 ? (
-                    <Text>No availability to remove.</Text>
-                ) : (
-                    currentAvailability.map((slot) => (
-                        <View key={slot.id} style={{ marginBottom: 10 }}>
-                            <Text>
-                                {fromSecondsFromWeekStart(slot.start_time)} —{" "}
-                                {fromSecondsFromWeekStart(slot.end_time)}
-                            </Text>
+            <OptionModal
+                visible={showEmployeeModal}
+                title="Choose employee"
+                options={employeeOptions}
+                selectedValue={
+                    selectedEmployee === "" ? "" : String(selectedEmployee)
+                }
+                onSelect={onSelectEmployee}
+                onClose={() => setShowEmployeeModal(false)}
+                emptyText="No employees found"
+                styles={styles}
+            />
 
-                            <Pressable
-                                style={commonUi.auth.inlineCtaButton}
-                                onPress={() =>
-                                    handleRemoveAvailability(slot.id)
-                                }
-                            >
-                                <Text style={commonUi.auth.inlineCtaButtonText}>
-                                    Remove
-                                </Text>
-                            </Pressable>
-                        </View>
-                    ))
-                )}
-
-                <Pressable
-                    style={commonUi.auth.inlineCtaButton}
-                    onPress={() => setMode(null)}
-                >
-                    <Text style={commonUi.auth.inlineCtaButtonText}>
-                        Cancel
-                    </Text>
-                </Pressable>
-            </View>
-        )}
-
-        {/* Added a modal for calendar view */}
-        <Modal
-            visible={showCalendar}
-            transparent={true}
-            animationType="fade"
-            onRequestClose={() => setShowCalendar(false)}
-        >
-            <TouchableOpacity
-                style={{
-                    flex: 1,
-                    backgroundColor: "rgba(0,0,0,0.3)",
-                    justifyContent: "center",
-                    padding: 20,
-                }}
-                onPress={() => setShowCalendar(false)}
+            <Modal
+                visible={showCalendar}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={() => setShowCalendar(false)}
             >
-                <TouchableOpacity
-                    activeOpacity={1}
-                    style={{ borderRadius: 20, overflow: "hidden" }}
-                >
-                    <Calendar
-                        onDayPress={(day) => {
-                            setSelectedDate(day.dateString);
-                            setShowCalendar(false);
-                        }}
-                        markedDates={{
-                            [selectedDate]: {
-                                selected: true,
-                                selectedColor: scheme.textAccent,
-                            },
-                        }}
-                        minDate={
-                            new Date().toISOString().split("T")[0]
-                        }
+                <View style={styles.calendarModalRoot}>
+                    <Pressable
+                        style={StyleSheet.absoluteFill}
+                        onPress={() => setShowCalendar(false)}
                     />
-                </TouchableOpacity>
-            </TouchableOpacity>
-        </Modal>
+                    <View style={styles.calendarModalCard}>
+                        <Calendar
+                            theme={calendarTheme}
+                            onDayPress={(day) => {
+                                setSelectedDate(day.dateString);
+                                setShowCalendar(false);
+                            }}
+                            markedDates={{
+                                [selectedDate]: {
+                                    selected: true,
+                                    selectedColor: colorScheme.darkSurface,
+                                },
+                            }}
+                            minDate={new Date().toISOString().split("T")[0]}
+                        />
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.ghostBtn,
+                                { marginTop: 12 },
+                                pressed && styles.cardPressed,
+                            ]}
+                            onPress={() => setShowCalendar(false)}
+                        >
+                            <Text style={styles.ghostBtnText}>Cancel</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            </Modal>
+        </ScrollView>
+    );
+}
 
-    </ScrollView>
-);
+function makeAvailabilityStyles(colorScheme) {
+    return StyleSheet.create({
+        sectionHeading: {
+            fontSize: 16,
+            fontWeight: "800",
+            color: colorScheme.textDark,
+            marginBottom: 10,
+        },
+        muted: {
+            fontSize: 14,
+            color: colorScheme.textMuted,
+            lineHeight: 21,
+        },
+        slotText: {
+            fontSize: 14,
+            color: colorScheme.textDefault,
+            fontWeight: "600",
+        },
+        dateField: {
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            backgroundColor: colorScheme.panelBackground,
+            borderRadius: 18,
+            paddingHorizontal: 16,
+            paddingVertical: 15,
+            borderWidth: 1,
+            borderColor: colorScheme.borderLightAlt,
+            marginTop: 6,
+        },
+        dateFieldText: {
+            fontSize: 15,
+            fontWeight: "700",
+            color: colorScheme.textDefault,
+        },
+        datePlaceholder: {
+            fontSize: 15,
+            fontWeight: "600",
+            color: colorScheme.textLabel,
+        },
+        dateChevron: {
+            fontSize: 22,
+            color: colorScheme.textAccentSoft,
+        },
+        rowBtns: {
+            flexDirection: "row",
+            gap: 10,
+        },
+        inlineActions: {
+            gap: 10,
+            marginTop: 8,
+        },
+        ghostBtn: {
+            alignItems: "center",
+            paddingVertical: 12,
+        },
+        ghostBtnText: {
+            fontSize: 15,
+            fontWeight: "700",
+            color: colorScheme.textAccent,
+        },
+        removeBlock: {
+            marginBottom: 14,
+            paddingBottom: 14,
+            borderBottomWidth: 1,
+            borderBottomColor: colorScheme.dividerLight,
+        },
+        smallDanger: {
+            marginTop: 8,
+            alignSelf: "flex-start",
+            backgroundColor: colorScheme.danger,
+            borderRadius: 999,
+            paddingVertical: 8,
+            paddingHorizontal: 16,
+        },
+        smallDangerText: {
+            color: colorScheme.whiteWarm,
+            fontWeight: "800",
+            fontSize: 13,
+        },
+        calendarModalRoot: {
+            flex: 1,
+            backgroundColor: colorScheme.overlayDarkStrong,
+            justifyContent: "center",
+            paddingHorizontal: 14,
+        },
+        calendarModalCard: {
+            backgroundColor: colorScheme.whiteWarmCard,
+            borderRadius: 26,
+            padding: 14,
+            borderWidth: 1,
+            borderColor: colorScheme.borderLight,
+            zIndex: 1,
+        },
+    });
 }
