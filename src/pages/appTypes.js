@@ -14,8 +14,9 @@ import {
 } from "react-native";
 
 import { useTheme } from "../styles";
-import { apiFetch } from "../utils";
+import { apiFetch, showAppToast } from "../utils";
 import { colorSchemeDefault, MAP_COLOR_SCHEME } from "../colorScheme";
+import { TOAST_TYPE_ERROR } from "../consts";
 import { BackButton } from "../components/BackButton";
 import { OptionModal } from "../components/OptionModal";
 
@@ -133,8 +134,7 @@ export function AdminAppointmentTypesScreen({ navigation }) {
         if (!taskToDelete) return;
 
         apiFetch(`/tasks/${taskToDelete.id}`, { method: "DELETE" })
-            // TODO Replace with global popup
-            .catch(console.error)
+            .catch((err) => showAppToast(TOAST_TYPE_ERROR, "Server Error", err))
             ;
 
         setDeleteModalVisible(false);
