@@ -15,7 +15,7 @@ import { apiFetch, assertFetchSuccessful } from "../utils";
 import { colorSchemeGreens } from "../colorScheme";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { makeStyles as makeBookingStyles, OptionModal } from "../pages/booking";
-import { AdminBackBar } from "../pages/AdminBackBar"; 
+import { AdminBackBar } from "../components/AdminBackBar"; 
 
 function showAlert(title, message) {
     if (Platform.OS === "web") {
