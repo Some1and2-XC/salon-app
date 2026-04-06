@@ -9,10 +9,9 @@ import {
 } from "react-native";
 
 import {
-    APPOINTMENT_STATE_ACCEPTED,
+    APPOINTMENT_STATE_UNCONFIRMED,
     APPOINTMENT_STATE_CONFIRMED,
     APPOINTMENT_STATE_CANCELLED,
-    APPOINTMENT_STATE_UNCONFIRMED,
     TOAST_TYPE_SUCCESS
 } from "../consts";
 import { useTheme } from "../styles";
@@ -25,7 +24,7 @@ import { BackButton } from "../components/BackButton";
  * Admin confirm/deny for an appointment. Pass the appointment via route.params,
  * or the first open appointment is loaded when params are omitted (dev / debug).
  */
-export function AdminCheckinConfirm({ navigation, route }) {
+export function AdminAppointmentConfirm({ navigation, route }) {
 
     const commonUi = useTheme((state) => state.getCommonUi)();
     const colorScheme =
@@ -55,13 +54,14 @@ export function AdminCheckinConfirm({ navigation, route }) {
             .then((res) => res.json())
             .then((arr) => {
                 if (Array.isArray(arr) && arr.size != 0) {
+                    // Only get unconfirmed appointments
                     const filtered = arr.filter((appt) => appt.appointment_state_id == APPOINTMENT_STATE_UNCONFIRMED);
                     setAppointment(filtered[0]);
                 } else {
                     setLoadError("No appointments found.");
                 }
             })
-            .catch((e) => setLoadError(`Could not load appointments. Error: ${e}`))
+            .catch(() => setLoadError("Could not load appointments."))
             .finally(() => setLoadingAppointment(false))
             ;
 
@@ -96,7 +96,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
             method: "PATCH",
             body: JSON.stringify({
                 appointment_state_id: confirmed
-                    ? APPOINTMENT_STATE_ACCEPTED
+                    ? APPOINTMENT_STATE_CONFIRMED
                     : APPOINTMENT_STATE_CANCELLED,
             }),
         };
@@ -154,7 +154,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
             <View style={commonUi.card.accentCard}>
                 <View style={commonUi.card.accentCardBlob} />
                 <Text style={commonUi.card.kicker}>Front desk</Text>
-                <Text style={commonUi.card.cardTitle}>Confirm Appointment</Text>
+                <Text style={commonUi.card.cardTitle}>Approve Schedule Request</Text>
                 <Text style={commonUi.card.cardSubtitle}>
                     Review the visit below, then accept or decline the appointment.
                 </Text>

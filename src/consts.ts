@@ -5,17 +5,17 @@ export const NAV_CHECKIN: string = "checkin";
 
 export const NAV_CHECKINCONFIRM: string = "checkin-confirm";
 export const NAV_CHECKIN_CONFIRM_ADMIN: string = "admin-checkin-confirm";
-export const NAV_CHECKIN_CONFIRM_ADMIN_LIST: string =
-    "admin-checkin-confirm-list";
+export const NAV_CHECKIN_CONFIRM_ADMIN_LIST: string = "admin-checkin-confirm-list";
+export const NAV_CHECKIN_APPOINTMENT_CONFIRM: sring = "admin-appointment-confirm";
 export const NAV_QR: string = "qr";
 export const NAV_HOME: string = "home";
 export const NAV_LOGIN: string = "login";
 export const NAV_SIGNUP: string = "signup";
 export const NAV_APP_TYPES: string = "app-types";
 export const NAV_BARCODE_SCANNER: string = "barcode-scanner";
-export const NAV_ADMIN_HOMEPAGE: string = "adminHomepage";
-export const NAV_ADD_EMPLOYEE: string = "addEmployee";
-export const NAV_SET_AVAILABILITY: string = "setAvailability";
+export const NAV_ADMIN_HOMEPAGE: string = "admin-homepage";
+export const NAV_ADD_EMPLOYEE: string = "add-employee";
+export const NAV_SET_AVAILABILITY: string = "set-availability";
 export const NAV_SET_THEME: string = "set-theme";
 
 export const TOAST_TYPE_SUCCESS: number = 0;

@@ -43,6 +43,7 @@ import {
     NAV_CHECKINCONFIRM,
     NAV_CHECKIN_CONFIRM_ADMIN,
     NAV_CHECKIN_CONFIRM_ADMIN_LIST,
+    NAV_CHECKIN_APPOINTMENT_CONFIRM,
     NAV_HOME,
     NAV_LOGIN,
     NAV_SIGNUP,
@@ -102,7 +103,7 @@ export default function App() {
         <SafeAreaProvider>
             <SafeAreaView
                 style={commonUi.screen.safeArea}
-                edges={["left", "right", "top"]}
+                edges={["left", "right", "top", "bottom"]}
             >
                 <StatusBar translucent backgroundColor="transparent" />
 
@@ -134,10 +135,15 @@ export default function App() {
                         <Stack.Screen
                             name={NAV_CHECKIN_CONFIRM_ADMIN}
                             component={AdminCheckinConfirm}
-                            options={{ title: "Salon - Appointment Confirmation"}}
+                            options={{ title: "Salon - Check-In Confirmation"}}
                         />
                         <Stack.Screen
                             name={NAV_CHECKIN_CONFIRM_ADMIN_LIST}
+                            component={AdminCheckinConfirmList}
+                            options={{ title: "Salon - Check-In Final"}}
+                        />
+                        <Stack.Screen
+                            name={NAV_CHECKIN_APPOINTMENT_CONFIRM}
                             component={AdminCheckinConfirmList}
                             options={{ title: "Salon - Appointment Confirmation"}}
                         />

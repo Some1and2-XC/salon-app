@@ -13,6 +13,7 @@ import { auth } from "../firebaseConfig";
 import {
     NAV_CHECKIN_CONFIRM_ADMIN,
     NAV_CHECKIN_CONFIRM_ADMIN_LIST,
+    NAV_CHECKIN_APPOINTMENT_CONFIRM,
     NAV_APP_TYPES,
     NAV_BARCODE_SCANNER,
     NAV_ADD_EMPLOYEE,
@@ -56,7 +57,7 @@ const ADMIN_ACTIONS = [
         description: "Open the scanner to check-in a customer.",
     },
     {
-        route: NAV_CHECKIN_CONFIRM_ADMIN_LIST,
+        route: NAV_CHECKIN_APPOINTMENT_CONFIRM,
         pill: "Operations",
         icon: "◎",
         title: "Waiting Room",
