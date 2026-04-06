@@ -132,15 +132,12 @@ export function LoginScreen({ navigation }) {
                             onSubmitEditing={onLogin}
                         />
 
-                        <View style={commonUi.auth.forgotPassword}>
+                        <View style={commonUi.auth.forgotPasswordText}>
                             <Pressable
                                 onPress={onForgotPassword}
-                                style={commonUi.auth.forgotPasswordPressable}
                                 hitSlop={6}
                             >
-                                <Text style={commonUi.auth.forgotPasswordText}>
-                                    Forgot Password?
-                                </Text>
+                                <Text>Forgot Password?</Text>
                             </Pressable>
                         </View>
                     </View>

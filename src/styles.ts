@@ -244,15 +244,6 @@ export function useCommonUi(scheme) {
                 marginTop: 6,
                 alignSelf: "flex-end",
             },
-            forgotPasswordWrap: {
-                alignItems: "flex-end",
-                marginTop: 8,
-            },
-            forgotPasswordPressable: {
-                alignSelf: "flex-end",
-                paddingVertical: 2,
-                paddingHorizontal: 2,
-            },
         },
         card: {
             // Accent tint header card used in admin screens
