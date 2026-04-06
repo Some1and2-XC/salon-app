@@ -93,7 +93,7 @@ export function LoginScreen({ navigation }) {
 
     return (
         <KeyboardAvoidingView>
-            <ScrollView style={commonUi.screen.pageMargins}>
+            <ScrollView style={[commonUi.screen.pageMargins, commonUi.screen.pageInnerGaps ]}>
                 <Text style={commonUi.auth.salonTitle}>SALON APP</Text>
 
                 <View style={commonUi.auth.formCard}>

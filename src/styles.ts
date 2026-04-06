@@ -101,7 +101,7 @@ export function useCommonUi(scheme) {
                 fontWeight: "800",
                 textAlign: "center",
                 color: scheme.textDefault,
-                marginBottom: 28,
+                marginBottom: 14,
                 letterSpacing: 1,
             },
             formCard: {
