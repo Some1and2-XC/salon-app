@@ -114,60 +114,82 @@ export default function App() {
                         <Stack.Screen
                             name={NAV_EXAMPLE_HOME}
                             component={ExampleHome}
+                            options={{ title: "Dev-Home"}}
                         />
                         <Stack.Screen
                             name={NAV_BOOKING}
                             component={BookingScreen}
+                            options={{ title: "Salon - Booking"}}
                         />
                         <Stack.Screen
                             name={NAV_CHECKIN}
                             component={CheckinScreen}
+                            options={{ title: "Salon - Check-In"}}
                         />
                         <Stack.Screen
                             name={NAV_CHECKINCONFIRM}
                             component={CheckinConfirmScreen}
+                            options={{ title: "Salon - Check-In Confirmation"}}
                         />
                         <Stack.Screen
                             name={NAV_CHECKIN_CONFIRM_ADMIN}
                             component={AdminCheckinConfirm}
+                            options={{ title: "Salon - Appointment Confirmation"}}
                         />
                         <Stack.Screen
                             name={NAV_CHECKIN_CONFIRM_ADMIN_LIST}
                             component={AdminCheckinConfirmList}
+                            options={{ title: "Salon - Appointment Confirmation"}}
                         />
-                        <Stack.Screen name={NAV_HOME} component={HomeScreen} />
+                        <Stack.Screen
+                            name={NAV_HOME}
+                            component={HomeScreen}
+                            options={{ title: "Salon"}}
+                        />
                         <Stack.Screen
                             name={NAV_LOGIN}
                             component={LoginScreen}
+                            options={{ title: "Salon - Login"}}
                         />
                         <Stack.Screen
                             name={NAV_SIGNUP}
                             component={SignupScreen}
+                            options={{ title: "Salon - Sign Up"}}
                         />
                         <Stack.Screen
                             name={NAV_APP_TYPES}
                             component={AdminAppointmentTypesScreen}
+                            options={{ title: "Salon - Appointment Types Administration"}}
                         />
-                        <Stack.Screen name={NAV_QR} component={QRScreen} />
+                        <Stack.Screen
+                            name={NAV_QR}
+                            component={QRScreen}
+                            options={{ title: "Salon - Check-In QR Code"}}
+                        />
                         <Stack.Screen
                             name={NAV_BARCODE_SCANNER}
                             component={BarcodeScannerScreen}
+                            options={{ title: "Salon - Check-In QR Scanner"}}
                         />
                         <Stack.Screen
                             name={NAV_ADMIN_HOMEPAGE}
                             component={AdminHomepageScreen}
+                            options={{ title: "Salon - Admin Home"}}
                         />
                         <Stack.Screen
                             name={NAV_SET_THEME}
                             component={SetThemeScreen}
+                            options={{ title: "Salon - Set Theme"}}
                         />
                         <Stack.Screen
                             name={NAV_ADD_EMPLOYEE}
                             component={AddEmployeeScreen}
+                            options={{ title: "Salon - Employee Administration"}}
                         />
                         <Stack.Screen
                             name={NAV_SET_AVAILABILITY}
                             component={SetAvailabilityScreen}
+                            options={{ title: "Salon - Employee Availability"}}
                         />
                     </Stack.Navigator>
                     <Toast />
