@@ -11,7 +11,7 @@ import { NAV_CHECKIN_CONFIRM_ADMIN } from "../consts";
 
 import { useTheme } from "../styles";
 import { colorSchemeDefault, MAP_COLOR_SCHEME } from "../colorScheme";
-import { AdminBackBar } from "../components/AdminBackBar";
+import { BackButton } from "../components/BackButton";
 import { useIsFocused } from '@react-navigation/native';
 import { showAppToast } from "../utils";
 
@@ -56,7 +56,7 @@ export function BarcodeScannerScreen({ navigation }) {
                     { backgroundColor: colorScheme.pageBackground, flex: 1 },
                 ]}
             >
-                <AdminBackBar navigation={navigation} />
+                <BackButton navigation={navigation} />
                 <View style={styles.loaderWrap}>
                     <ActivityIndicator
                         size="large"
@@ -76,7 +76,7 @@ export function BarcodeScannerScreen({ navigation }) {
                     { backgroundColor: colorScheme.pageBackground, flex: 1 },
                 ]}
             >
-                <AdminBackBar navigation={navigation} />
+                <BackButton navigation={navigation} />
 
                 <View style={commonUi.card.accentCard}>
                     <Text style={commonUi.card.kicker}>Operations</Text>
@@ -107,7 +107,7 @@ export function BarcodeScannerScreen({ navigation }) {
             ]}
         >
             <View style={commonUi.screen.pageMargins}>
-                <AdminBackBar navigation={navigation} />
+                <BackButton navigation={navigation} />
 
                 <View style={commonUi.card.accentCard}>
                     <Text style={commonUi.card.kicker}>Tools</Text>

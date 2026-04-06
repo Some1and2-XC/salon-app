@@ -17,7 +17,7 @@ import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
 
 import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
-import { AdminBackBar } from "../components/AdminBackBar";
+import { BackButton } from "../components/BackButton";
 
 /**
  * Admin confirm/deny for an appointment. Pass the appointment via route.params,
@@ -153,7 +153,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
                 { paddingBottom: 28 },
             ]}
         >
-            <AdminBackBar navigation={navigation} />
+            <BackButton navigation={navigation} />
 
             <View style={commonUi.card.accentCard}>
                 <View style={commonUi.card.accentCardBlob} />

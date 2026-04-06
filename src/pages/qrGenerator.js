@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { useTheme } from "../styles";
-import { AdminBackBar } from "../components/AdminBackBar";
+import { BackButton } from "../components/BackButton";
 
 export function QRScreen({ route, navigation }) {
 
@@ -19,7 +19,7 @@ export function QRScreen({ route, navigation }) {
 
         <View style={[commonUi.screen.pageMargins, commonUi.screen.pageInnerGaps, { alignItems: "center" }]}>
 
-            <AdminBackBar navigation={navigation} />
+            <BackButton navigation={navigation} />
 
             <Text style={commonUi.card.kicker}>Check-in ready! Show this QR to the admin.</Text>
 

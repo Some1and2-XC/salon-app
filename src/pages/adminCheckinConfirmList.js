@@ -17,7 +17,7 @@ import {
 import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
 import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
-import { AdminBackBar } from "../components/AdminBackBar";
+import { BackButton } from "../components/BackButton";
 
 export function AdminCheckinConfirmList({ navigation }) {
     const commonUi = useTheme((state) => state.getCommonUi)();
@@ -194,7 +194,7 @@ export function AdminCheckinConfirmList({ navigation }) {
                 renderItem={renderItem}
                 ListHeaderComponent={
                     <View style={{ marginBottom: 6 }}>
-                        <AdminBackBar navigation={navigation} />
+                        <BackButton navigation={navigation} />
 
                         <View style={commonUi.card.accentCard}>
                             <View style={commonUi.card.accentCardBlob} />

@@ -16,7 +16,7 @@ import {
 import { useTheme } from "../styles";
 import { apiFetch } from "../utils";
 import { colorSchemeDefault, MAP_COLOR_SCHEME } from "../colorScheme";
-import { AdminBackBar } from "../components/AdminBackBar";
+import { BackButton } from "../components/BackButton";
 import { OptionModal } from "../components/OptionModal";
 
 export function AdminAppointmentTypesScreen({ navigation }) {
@@ -212,7 +212,7 @@ export function AdminAppointmentTypesScreen({ navigation }) {
             style={commonUi.screen.pageMargins}
             contentContainerStyle={commonUi.screen.pageInnerGaps}
         >
-            <AdminBackBar navigation={navigation} />
+            <BackButton navigation={navigation} />
 
             <View style={commonUi.hero.heroCard}>
                 <View style={commonUi.hero.blobOne} />

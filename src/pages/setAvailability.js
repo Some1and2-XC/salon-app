@@ -358,7 +358,7 @@ export function SetAvailabilityScreen({ navigation }) {
             ]}
             keyboardShouldPersistTaps="handled"
         >
-            <AdminBackBar navigation={navigation} />
+            <BackButton navigation={navigation} />
 
             <View style={commonUi.auth.formCard}>
                 <Text style={commonUi.hero.kicker}>Scheduling</Text>

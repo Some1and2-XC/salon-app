@@ -1,7 +1,6 @@
 import { useTheme } from "../styles";
 import { apiFetch } from "../utils";
 import { colorSchemeDefault, MAP_COLOR_SCHEME } from "../colorScheme";
-import { AdminBackBar } from "../components/AdminBackBar";
 
 import {
     Text,
