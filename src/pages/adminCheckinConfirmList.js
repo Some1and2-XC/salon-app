@@ -137,8 +137,8 @@ export function AdminCheckinConfirmList({ navigation }) {
     // Render Each card
 
     const renderItem = ({ item }) => {
-        const updated = item?.last_modified
-            ? new Date(Number(item.last_modified)).toLocaleString()
+        const appointmentDate = item?.start_time
+            ? new Date(Number(item.start_time * 1000)).toLocaleString()
             : "—";
 
         const user = appointmentUserMap[item?.uuid];
@@ -154,7 +154,7 @@ export function AdminCheckinConfirmList({ navigation }) {
                     </Text>
                     <Text style={styles.cardChevron}>→</Text>
                 </View>
-                <Text style={styles.cardMeta}>Updated {updated}</Text>
+                <Text style={styles.cardMeta}>Appointment Date: {appointmentDate}</Text>
                 <View style={commonUi.card.actions}>
                     <Pressable
                         style={({ pressed }) => [commonUi.card.btnConfirm, pressed && commonUi.card.pressed]}
