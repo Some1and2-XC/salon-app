@@ -237,6 +237,13 @@ export function useCommonUi(scheme) {
                 fontWeight: "700",
                 color: scheme.textDefault,
             },
+            forgotPasswordText: {
+                fontSize: 12,
+                color: scheme.textAccent,
+                fontWeight: "600",
+                marginTop: 6,
+                alignSelf: "flex-end",
+            },
         },
         card: {
             // Accent tint header card used in admin screens
