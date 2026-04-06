@@ -132,10 +132,10 @@ export function LoginScreen({ navigation }) {
                             onSubmitEditing={onLogin}
                         />
 
-                        <View style={{ alignItems: "flex-end", marginTop: 8 }}>
+                        <View style={commonUi.auth.forgotPassword}>
                             <Pressable
                                 onPress={onForgotPassword}
-                                style={{ alignSelf: "flex-start", paddingVertical: 2, paddingHorizontal: 2 }}
+                                style={commonUi.auth.forgotPasswordPressable}
                                 hitSlop={6}
                             >
                                 <Text style={commonUi.auth.forgotPasswordText}>
