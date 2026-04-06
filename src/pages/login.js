@@ -27,7 +27,6 @@ import {
     TOAST_TYPE_SUCCESS,
     TOAST_TYPE_ERROR,
 } from "../consts";
-import { colorSchemeDefault } from "../colorScheme";
 
 const webGoogleApp =
     getApps().find((a) => a.name === "google-web-auth") ??
