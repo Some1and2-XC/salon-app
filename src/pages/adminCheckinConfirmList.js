@@ -48,8 +48,6 @@ export function AdminCheckinConfirmList({ navigation }) {
 
                 const filtered = appointments.filter(
                     (appt) => appt.appointment_state_id == APPOINTMENT_STATE_CONFIRMED
-                    // (appt) => [APPOINTMENT_STATE_UNCONFIRMED, APPOINTMENT_STATE_ACCEPTED]
-                    //     .includes(appt.appointment_state_id)
                 );
                 setItems(filtered);
                 return filtered;

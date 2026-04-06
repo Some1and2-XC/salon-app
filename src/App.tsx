@@ -23,6 +23,7 @@ import { CheckinScreen } from "./pages/checkin";
 import { CheckinConfirmScreen } from "./pages/checkinConfirm";
 import { AdminCheckinConfirm } from "./pages/adminCheckinConfirm";
 import { AdminCheckinConfirmList } from "./pages/adminCheckinConfirmList";
+import { AdminAppointmentConfirm } from "./pages/adminAppointmentConfirmation";
 import { HomeScreen } from "./pages/home";
 import { LoginScreen } from "./pages/login";
 import { SignupScreen } from "./pages/signup";
@@ -144,7 +145,7 @@ export default function App() {
                         />
                         <Stack.Screen
                             name={NAV_CHECKIN_APPOINTMENT_CONFIRM}
-                            component={AdminCheckinConfirmList}
+                            component={AdminAppointmentConfirm}
                             options={{ title: "Salon - Appointment Confirmation"}}
                         />
                         <Stack.Screen

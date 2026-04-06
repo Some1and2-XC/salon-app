@@ -42,7 +42,7 @@ function getTodayLabel() {
 
 const ADMIN_ACTIONS = [
     {
-        route: NAV_CHECKIN_CONFIRM_ADMIN,
+        route: NAV_CHECKIN_APPOINTMENT_CONFIRM,
         pill: "Front desk",
         icon: "✦",
         title: "Confirm Appointment Requests",
@@ -57,7 +57,7 @@ const ADMIN_ACTIONS = [
         description: "Open the scanner to check-in a customer.",
     },
     {
-        route: NAV_CHECKIN_APPOINTMENT_CONFIRM,
+        route: NAV_CHECKIN_CONFIRM_ADMIN_LIST,
         pill: "Operations",
         icon: "◎",
         title: "Waiting Room",
