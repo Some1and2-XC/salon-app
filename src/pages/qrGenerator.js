@@ -26,19 +26,21 @@ export function QRScreen({ route, navigation }) {
 
     useEffect(() => {
 
-        apiFetch(`/appointments/${appt_uuid}`)
-            .then(assertFetchSuccessful)
-            .then((res) => {
-                // Redirects if the status has changed.
-                if (res.appointment_state_id != APPOINTMENT_STATE_UNCONFIRMED) {
-                    navigation.navigate(NAV_HOME, { toastMessage: `Appointment \`${appt_uuid}\` has been confirmed!`});
-                }
-            })
-            .catch((err) => showAppToast(TOAST_TYPE_ERROR, "Server Error", err))
-            ;
+        const interval = setInterval(() => apiFetch(`/appointments/${appt_uuid}`)
+                .then(assertFetchSuccessful)
+                .then((res) => res.json())
+                .then((res) => {
+                    // Redirects if the status has changed.
+                    if (res.appointment_state_id && res.appointment_state_id != APPOINTMENT_STATE_UNCONFIRMED) {
+                        navigation.navigate(NAV_HOME, { toastMessage: `Appointment \`${appt_uuid}\` has been confirmed!`});
+                    }
+                })
+                .catch((err) => showAppToast(TOAST_TYPE_ERROR, "Server Error", err))
+            , REFRESH_INTERVAL
+        );
+        return () => clearInterval(interval);
 
-
-    }, REFRESH_INTERVAL);
+    }, []);
 
     return (
 
