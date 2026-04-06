@@ -12,12 +12,29 @@ import {
     ScrollView,
 } from "react-native";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-
+import { initializeApp, getApps } from "firebase/app";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { apiFetch, showAppToast } from "../utils";
 import { useTheme } from "../styles";
-import { NAV_HOME, NAV_SIGNUP, FIREBASE_AUTH_ERROR_MESSAGES, TOAST_TYPE_SUCCESS, TOAST_TYPE_ERROR } from "../consts";
+import { NAV_HOME, NAV_SIGNUP, FIREBASE_AUTH_ERROR_MESSAGES, TOAST_TYPE_SUCCESS, TOAST_TYPE_ERROR, NAV_LOGIN } from "../consts";
 import { colorScheme } from "../colorScheme";
+
+const webGoogleApp =
+    getApps().find((a) => a.name === "google-web-auth") ??
+    initializeApp(
+        {
+            apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+            authDomain: "csci4176groupproject.firebaseapp.com",
+            projectId: "csci4176groupproject",
+            storageBucket: "csci4176groupproject.firebasestorage.app",
+            messagingSenderId: "763370449450",
+            appId: "1:763370449450:web:b10053e60f6fca0632b153",
+        },
+        "google-web-auth"
+    );
+
+const webAuth = getAuth(webGoogleApp);
 
 export function SignupScreen({ navigation }) {
 
@@ -86,11 +103,60 @@ export function SignupScreen({ navigation }) {
 
     };
 
+    const onGoogleSignUp = async () => {
+        try {
+            const provider = new GoogleAuthProvider();
+            const result = await signInWithPopup(webAuth, provider);
+            const user = result.user;
+
+            const googleFirstName = user.displayName?.split(" ")[0] ?? "";
+            const googleLastName =
+                user.displayName?.split(" ").slice(1).join(" ") ?? "";
+
+            await apiFetch("/users", {
+                method: "POST",
+                body: JSON.stringify({
+                    email: user.email,
+                    first_name: googleFirstName,
+                    last_name: googleLastName,
+                    phone: null,
+                }),
+            });
+
+            showAppToast(
+                TOAST_TYPE_SUCCESS,
+                "Success",
+                `Signed up as ${user.email}`
+            );
+
+            navigation.navigate(NAV_HOME);
+        } catch (error) {
+            console.error(error);
+            showAppToast(
+                TOAST_TYPE_ERROR,
+                "Google Sign Up Failed",
+                error.message || "Could not sign up with Google."
+            );
+        }
+    };
+
     return (
         <KeyboardAvoidingView>
             <ScrollView style={commonUi.screen.pageMargins}>
 
                 <Text style={commonUi.auth.salonTitle}>SALON APP</Text>
+
+                <Pressable
+                    style={({ pressed }) => [
+                        commonUi.auth.backButton,
+                        pressed && commonUi.card.cardPressed,
+                    ]}
+                    onPress={() => navigation.navigate(NAV_LOGIN)}
+                >
+                    <Text style={commonUi.auth.backButtonArrow}>←</Text>
+                    <Text style={commonUi.auth.backButtonText}>Back</Text>
+                </Pressable>
+
 
                 <View style={commonUi.auth.formCard}>
                     <Text style={commonUi.auth.formTitle}>Create Account</Text>
@@ -176,6 +242,18 @@ export function SignupScreen({ navigation }) {
                     >
                         <Text style={commonUi.auth.primaryButtonText}>
                             Sign Up
+                        </Text>
+                    </Pressable>
+
+                    <Pressable
+                        style={({ pressed }) => [
+                            commonUi.auth.primaryButton,
+                            pressed && commonUi.auth.cardPressed,
+                        ]}
+                        onPress={onGoogleSignUp}
+                    >
+                        <Text style={commonUi.auth.primaryButtonText}>
+                            Sign Up with Google
                         </Text>
                     </Pressable>
 
