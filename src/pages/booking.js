@@ -17,6 +17,7 @@ import { Calendar } from "react-native-calendars";
 import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
 import { NAV_HOME, TOAST_TYPE_ERROR } from "../consts";
 import { useTheme } from "../styles";
+import { colorSchemeDefault, MAP_COLOR_SCHEME } from "../colorScheme";
 
 const EMPLOYEE_OPTIONS = {
     ANY: "ANY",
@@ -268,8 +269,10 @@ function InfoSelectCard({
 }
 
 export function BookingScreen({ navigation }) {
+
     const commonUi = useTheme((state) => state.getCommonUi)();
-    const colorScheme = useTheme((state) => state.getScheme)();
+    const scheme = useTheme((state) => state.scheme);
+    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeDefault;
     const styles = useMemo(() => makeStyles(colorScheme), [colorScheme]);
 
     const { width, height } = useWindowDimensions();
@@ -572,13 +575,13 @@ export function BookingScreen({ navigation }) {
             >
                 <Pressable
                     style={({ pressed }) => [
-                        styles.backButton,
+                        commonUi.auth.backButton,
                         pressed && commonUi.card.cardPressed,
                     ]}
                     onPress={() => navigation.navigate(NAV_HOME)}
                 >
-                    <Text style={styles.backButtonArrow}>←</Text>
-                    <Text style={styles.backButtonText}>Back to Home</Text>
+                    <Text style={commonUi.auth.backButtonArrow}>←</Text>
+                    <Text style={commonUi.auth.backButtonText}>Back</Text>
                 </Pressable>
 
                 <View
@@ -917,28 +920,6 @@ export function BookingScreen({ navigation }) {
 
 export function makeStyles(colorScheme) {
     return StyleSheet.create({
-        backButton: {
-            flexDirection: "row",
-            alignItems: "center",
-            alignSelf: "flex-start",
-            backgroundColor: colorScheme.whiteWarmCard,
-            borderRadius: 999,
-            paddingVertical: 10,
-            paddingHorizontal: 14,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLight,
-        },
-        backButtonArrow: {
-            fontSize: 18,
-            color: colorScheme.textAccentSoft,
-            marginRight: 8,
-            fontWeight: "800",
-        },
-        backButtonText: {
-            fontSize: 14,
-            fontWeight: "700",
-            color: colorScheme.textDefault,
-        },
         preferenceRow: {
             flexDirection: "row",
             gap: 10,
