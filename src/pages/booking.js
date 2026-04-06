@@ -3,7 +3,7 @@ import {
     StyleSheet,
     Text,
     View,
-    Alert,
+    Modal,
     Platform,
     Pressable,
     ScrollView,
@@ -17,6 +17,7 @@ import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
 import { NAV_HOME, TOAST_TYPE_ERROR } from "../consts";
 import { useTheme } from "../styles";
 import { colorSchemeDefault, MAP_COLOR_SCHEME } from "../colorScheme";
+import { OptionModal } from "../components/OptionModal";
 
 const EMPLOYEE_OPTIONS = {
     ANY: "ANY",

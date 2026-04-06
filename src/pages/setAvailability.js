@@ -16,6 +16,7 @@ import { colorSchemeGreens, MAP_COLOR_SCHEME } from "../colorScheme";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { makeStyles as makeBookingStyles } from "../pages/booking";
 import { OptionModal } from "../components/OptionModal";
+import { BackButton } from "../components/BackButton";
 
 function showAlert(title, message) {
     if (Platform.OS === "web") {
