@@ -199,9 +199,9 @@ export function AdminCheckinConfirmList({ navigation }) {
                         <View style={commonUi.card.accentCard}>
                             <View style={commonUi.card.accentCardBlob} />
                             <Text style={commonUi.card.kicker}>Operations</Text>
-                            <Text style={commonUi.card.cardTitle}>Check-in queue</Text>
+                            <Text style={commonUi.card.cardTitle}>Waiting Room</Text>
                             <Text style={commonUi.card.cardSubtitle}>
-                                Select an appointment to open the confirmation screen.
+                                Confirm or Deny Appointment Requests.
                             </Text>
                         </View>
 
