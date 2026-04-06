@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
-import { NAV_HOME, TOAST_TYPE_ERROR } from "../consts";
+import { APPOINTMENT_STATE_UNCONFIRMED, NAV_HOME, TOAST_TYPE_ERROR } from "../consts";
 import { useTheme } from "../styles";
 import { colorSchemeDefault, MAP_COLOR_SCHEME } from "../colorScheme";
 import { OptionModal } from "../components/OptionModal";
@@ -97,7 +97,7 @@ function buildAppointment(
     startDate.setHours(hours, minutes, 0, 0);
 
     const appointment = {
-        appointment_state_id: 0,
+        appointment_state_id: APPOINTMENT_STATE_UNCONFIRMED,
         length: appointmentLength,
         start_time: Math.floor(startDate.getTime() / 1000),
         task_id: taskId,
