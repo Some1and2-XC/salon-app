@@ -13,6 +13,7 @@ import { auth } from "../firebaseConfig";
 import {
     NAV_CHECKIN_CONFIRM_ADMIN,
     NAV_CHECKIN_CONFIRM_ADMIN_LIST,
+    NAV_CHECKIN_APPOINTMENT_CONFIRM,
     NAV_APP_TYPES,
     NAV_BARCODE_SCANNER,
     NAV_ADD_EMPLOYEE,
@@ -41,7 +42,7 @@ function getTodayLabel() {
 
 const ADMIN_ACTIONS = [
     {
-        route: NAV_CHECKIN_CONFIRM_ADMIN,
+        route: NAV_CHECKIN_APPOINTMENT_CONFIRM,
         pill: "Front desk",
         icon: "✦",
         title: "Confirm Appointment Requests",

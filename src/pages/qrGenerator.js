@@ -5,7 +5,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import QRCode from 'react-native-qrcode-svg';
 import { useTheme } from "../styles";
 import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
-import { APPOINTMENT_STATE_UNCONFIRMED, TOAST_TYPE_ERROR, NAV_HOME } from "../consts";
+import { APPOINTMENT_STATE_UNCONFIRMED, APPOINTMENT_STATE_ACCEPTED, TOAST_TYPE_ERROR, NAV_HOME } from "../consts";
 import { BackButton } from "../components/BackButton";
 
 export function QRScreen({ route, navigation }) {
@@ -34,7 +34,7 @@ export function QRScreen({ route, navigation }) {
             .then((res) => res.json())
             .then((res) => {
                 // Redirects if the status has changed.
-                if (res.appointment_state_id && res.appointment_state_id != APPOINTMENT_STATE_UNCONFIRMED) {
+                if (res.appointment_state_id && res.appointment_state_id != APPOINTMENT_STATE_UNCONFIRMED && res.appointment_state_id != APPOINTMENT_STATE_ACCEPTED) {
                     navigation.navigate(NAV_HOME, { toastMessage: `Appointment \`${appt_uuid}\` has been confirmed!`});
                 }
             })

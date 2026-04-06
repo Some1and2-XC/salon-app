@@ -10,8 +10,11 @@ import {
 } from "react-native";
 
 import {
-    APPOINTMENT_STATE_CANCELLED,
+    APPOINTMENT_STATE_ACCEPTED,
+    APPOINTMENT_STATE_UNCONFIRMED,
     APPOINTMENT_STATE_CONFIRMED,
+    APPOINTMENT_STATE_COMPLETED,
+    APPOINTMENT_STATE_CANCELLED,
     TOAST_TYPE_SUCCESS,
  } from "../consts";
 
@@ -44,8 +47,7 @@ export function AdminCheckinConfirmList({ navigation }) {
                 // filter appointments to only show those that have not been confirmed
 
                 const filtered = appointments.filter(
-                    (appt) => ![APPOINTMENT_STATE_CONFIRMED, APPOINTMENT_STATE_CANCELLED]
-                        .includes(appt.appointment_state_id)
+                    (appt) => appt.appointment_state_id == APPOINTMENT_STATE_CONFIRMED
                 );
                 setItems(filtered);
                 return filtered;
@@ -118,7 +120,7 @@ export function AdminCheckinConfirmList({ navigation }) {
             method: "PATCH",
             body: JSON.stringify({
                 appointment_state_id: confirmed
-                    ? APPOINTMENT_STATE_CONFIRMED
+                    ? APPOINTMENT_STATE_COMPLETED
                     : APPOINTMENT_STATE_CANCELLED,
             }),
         })
