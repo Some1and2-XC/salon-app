@@ -59,13 +59,13 @@ export function CheckinScreen({ navigation }) {
             <Text style={styles.heading}>Check In</Text>
             <Pressable
                 style={({ pressed }) => [
-                    styles.backButton,
+                    commonUi.auth.backButton,
                     pressed && commonUi.card.cardPressed,
                 ]}
                 onPress={() => navigation.navigate(NAV_HOME)}
             >
-                <Text style={styles.icon}>←</Text>
-                <Text style={styles.backButtonText}>Back</Text>
+                <Text style={commonUi.auth.backButtonArrow}>←</Text>
+                <Text style={commonUi.auth.backButtonText}>Back</Text>
             </Pressable>
 
             <FlatList
@@ -101,28 +101,6 @@ function makeStyles(colorScheme) {
         cardDate: {
             fontSize: 13,
             color: colorScheme.textMuted,
-        },
-        backButton: {
-            flexDirection: "row",
-            alignItems: "center",
-            alignSelf: "flex-start",
-            backgroundColor: colorScheme.whiteWarmCard,
-            borderRadius: 999,
-            paddingVertical: 10,
-            paddingHorizontal: 14,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLight,
-        },
-        backButtonArrow: {
-            fontSize: 18,
-            color: colorScheme.textAccentSoft,
-            marginRight: 8,
-            fontWeight: "800",
-        },
-        backButtonText: {
-            fontSize: 14,
-            fontWeight: "700",
-            color: colorScheme.textDefault,
         },
     });
 }

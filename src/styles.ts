@@ -215,6 +215,28 @@ export function useCommonUi(scheme) {
                 color: scheme.textSubtle,
                 marginBottom: 10,
             },
+            backButton: {
+                flexDirection: "row",
+                alignItems: "center",
+                alignSelf: "flex-start",
+                backgroundColor: scheme.whiteWarmCard,
+                borderRadius: 999,
+                paddingVertical: 10,
+                paddingHorizontal: 14,
+                borderWidth: 1,
+                borderColor: scheme.borderLight,
+            },
+            backButtonArrow: {
+                fontSize: 18,
+                color: scheme.textAccentSoft,
+                marginRight: 8,
+                fontWeight: "800",
+            },
+            backButtonText: {
+                fontSize: 14,
+                fontWeight: "700",
+                color: scheme.textDefault,
+            },
         },
         card: {
             // Accent tint header card used in admin screens

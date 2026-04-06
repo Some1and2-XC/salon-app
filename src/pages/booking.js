@@ -572,13 +572,13 @@ export function BookingScreen({ navigation }) {
             >
                 <Pressable
                     style={({ pressed }) => [
-                        styles.backButton,
+                        commonUi.auth.backButton,
                         pressed && commonUi.card.cardPressed,
                     ]}
                     onPress={() => navigation.navigate(NAV_HOME)}
                 >
-                    <Text style={styles.backButtonArrow}>←</Text>
-                    <Text style={styles.backButtonText}>Back</Text>
+                    <Text style={commonUi.auth.backButtonArrow}>←</Text>
+                    <Text style={commonUi.auth.backButtonText}>Back</Text>
                 </Pressable>
 
                 <View
@@ -917,28 +917,6 @@ export function BookingScreen({ navigation }) {
 
 export function makeStyles(colorScheme) {
     return StyleSheet.create({
-        backButton: {
-            flexDirection: "row",
-            alignItems: "center",
-            alignSelf: "flex-start",
-            backgroundColor: colorScheme.whiteWarmCard,
-            borderRadius: 999,
-            paddingVertical: 10,
-            paddingHorizontal: 14,
-            borderWidth: 1,
-            borderColor: colorScheme.borderLight,
-        },
-        backButtonArrow: {
-            fontSize: 18,
-            color: colorScheme.textAccentSoft,
-            marginRight: 8,
-            fontWeight: "800",
-        },
-        backButtonText: {
-            fontSize: 14,
-            fontWeight: "700",
-            color: colorScheme.textDefault,
-        },
         preferenceRow: {
             flexDirection: "row",
             gap: 10,
