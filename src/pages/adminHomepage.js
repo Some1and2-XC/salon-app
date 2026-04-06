@@ -23,6 +23,10 @@ import {
 } from "../consts";
 import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
+import {
+    AppIcon,
+    IconPalette
+} from "../icons";
 
 function getGreeting() {
     const hour = new Date().getHours();
@@ -44,7 +48,7 @@ const ADMIN_ACTIONS = [
     {
         route: NAV_CHECKIN_APPOINTMENT_CONFIRM,
         pill: "Front desk",
-        icon: "✦",
+        icon: "clipboard-check",
         title: "Confirm Appointment Requests",
         description:
             "Review arrivals and confirm appointment requests from the appointment queue.",
@@ -52,14 +56,14 @@ const ADMIN_ACTIONS = [
     {
         route: NAV_BARCODE_SCANNER,
         pill: "Operations",
-        icon: "▣",
+        icon: "barcode",
         title: "Check-In Scanner",
         description: "Open the scanner to check-in a customer.",
     },
     {
         route: NAV_CHECKIN_CONFIRM_ADMIN_LIST,
         pill: "Operations",
-        icon: "◎",
+        icon: "users",
         title: "Waiting Room",
         description:
             "View and call for Clients in the Waiting Room.",
@@ -67,21 +71,21 @@ const ADMIN_ACTIONS = [
     {
         route: NAV_APP_TYPES,
         pill: "Catalog",
-        icon: "◇",
+        icon: "list-ul",
         title: "Appointment types",
         description: "Configure services and how they appear when booking.",
     },
     {
         route: NAV_ADD_EMPLOYEE,
         pill: "Team",
-        icon: "✶",
+        icon: "user-plus",
         title: "Add employee",
         description: "Create staff accounts and keep the roster up to date.",
     },
     {
         route: NAV_SET_AVAILABILITY,
         pill: "Scheduling",
-        icon: "⏱",
+        icon: "clock",
         title: "Set availability",
         description: "Define when stylists and services can be booked.",
     },
@@ -232,7 +236,7 @@ export function AdminHomepageScreen({ navigation }) {
                     >
                         <View style={commonUi.card.smallTopRow}>
                             <View style={commonUi.card.iconWrapSmall}>
-                                <Text style={commonUi.card.iconSmall}>{action.icon}</Text>
+                                <AppIcon name={action.icon} size={16} color={colorScheme.textAccent} />
                             </View>
                             <Text style={commonUi.card.cornerText}>{action.pill}</Text>
                         </View>
@@ -249,7 +253,12 @@ export function AdminHomepageScreen({ navigation }) {
                     ]}
                     onPress={() => navigation.navigate(NAV_SET_THEME)}
                 >
-                    <Text style={commonUi.auth.inlineCtaButtonText}>Set Theme &#x1F3A8;</Text>
+                    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+                        <Text style={commonUi.auth.inlineCtaButtonText}>
+                            Set Theme
+                        </Text>
+                        <IconPalette size={16} color="#fff" style={{ marginLeft: 6 }} />
+                    </View>
                 </Pressable>
 
                 <Pressable
