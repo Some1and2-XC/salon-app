@@ -119,6 +119,7 @@ export function SignupScreen({ navigation }) {
                             onChangeText={setEmail}
                             autoCapitalize="none"
                             keyboardType="email-address"
+                            returnKeyType="next"
                         />
                     </View>
 
@@ -132,6 +133,7 @@ export function SignupScreen({ navigation }) {
                             value={firstName}
                             onChangeText={setFirstName}
                             autoCapitalize="words"
+                            returnKeyType="next"
                         />
                     </View>
 
@@ -145,6 +147,7 @@ export function SignupScreen({ navigation }) {
                             value={lastName}
                             onChangeText={setLastName}
                             autoCapitalize="words"
+                            returnKeyType="next"
                         />
                     </View>
 
@@ -158,6 +161,7 @@ export function SignupScreen({ navigation }) {
                             value={password}
                             onChangeText={setPassword}
                             secureTextEntry
+                            returnKeyType="next"
                         />
                     </View>
 
@@ -173,6 +177,8 @@ export function SignupScreen({ navigation }) {
                             value={confirmPassword}
                             onChangeText={setConfirmPassword}
                             secureTextEntry
+                            returnKeyType="done"
+                            onSubmitEditing={onLogin}
                         />
                     </View>
 

@@ -114,6 +114,7 @@ export function LoginScreen({ navigation }) {
                             onChangeText={setEmail}
                             autoCapitalize="none"
                             keyboardType="email-address"
+                            returnKeyType="next"
                         />
                     </View>
 
@@ -127,6 +128,8 @@ export function LoginScreen({ navigation }) {
                             value={password}
                             onChangeText={setPassword}
                             secureTextEntry
+                            returnKeyType="done"
+                            onSubmitEditing={onLogin}
                         />
 
                         <Pressable onPress={onForgotPassword}>
