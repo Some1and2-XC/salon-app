@@ -116,6 +116,7 @@ export function BarcodeScannerScreen({ navigation }) {
                 {isFocused && <CameraView
                     facing="back"
                     autoFocus="on"
+                    style={{ flex: 1 }}
                     barCodeScannerSettings={{
                         barCodeTypes: ["qr"],
                     }}
