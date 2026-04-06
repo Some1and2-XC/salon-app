@@ -9,7 +9,7 @@ import {
     RefreshControl,
 } from "react-native";
 
-import { 
+import {
     APPOINTMENT_STATE_CANCELLED,
     TOAST_TYPE_SUCCESS,
     APPOINTMENT_STATE_CONFIRMED
@@ -40,7 +40,7 @@ export function AdminCheckinConfirmList({ navigation }) {
             .then((data) => {
                 const appointments = Array.isArray(data) ? data : [];
 
-                // filter appointments to only show those that have not been confirmed 
+                // filter appointments to only show those that have not been confirmed
 
                 const filtered = appointments.filter(
                     (appt) => ![APPOINTMENT_STATE_CONFIRMED, APPOINTMENT_STATE_CANCELLED].
@@ -63,7 +63,7 @@ export function AdminCheckinConfirmList({ navigation }) {
             })
     }, []);
 
-    // filter appointments to only show those that have not been confirmed 
+    // filter appointments to only show those that have not been confirmed
 
     useEffect(() => {
         load();
@@ -74,7 +74,7 @@ export function AdminCheckinConfirmList({ navigation }) {
         load();
     };
 
-    // maps appointment uuids to user objects 
+    // maps appointment uuids to user objects
 
     const getUsersForAppointments = (data) => {
 
@@ -100,7 +100,7 @@ export function AdminCheckinConfirmList({ navigation }) {
             )
         })
 
-        return Promise.all(promises).then(() => map);           
+        return Promise.all(promises).then(() => map);
     };
 
     // Handle Confirm/Deny Buttons on each Appointment Card
