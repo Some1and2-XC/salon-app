@@ -9,8 +9,7 @@ import {
 } from "react-native";
 
 import {
-    NAV_CHECKIN_CONFIRM_ADMIN_LIST,
-    APPOINTMENT_STATE_ACCEPTED,
+    APPOINTMENT_STATE_CONFIRMED,
     APPOINTMENT_STATE_CANCELLED,
     TOAST_TYPE_SUCCESS
 } from "../consts";
@@ -53,9 +52,12 @@ export function AdminCheckinConfirm({ navigation, route }) {
             .then(assertFetchSuccessful)
             .then((res) => res.json())
             .then((arr) => {
-                if (Array.isArray(arr) && arr[0]) {
-                    setAppointment(arr[0]);
-                    console.log("setting checkin ", arr[0].uuid);
+                if (Array.isArray(arr) && arr.size != 0) {
+                    const filtered = arr.filter(
+                        (appt) => ![APPOINTMENT_STATE_CONFIRMED, APPOINTMENT_STATE_CANCELLED].
+                            includes(appt.appointment_state_id)
+                        );
+                    setAppointment(filtered[0]);
                 } else {
                     setLoadError("No appointments found.");
                 }
@@ -94,7 +96,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
             method: "PATCH",
             body: JSON.stringify({
                 appointment_state_id: confirmed
-                    ? APPOINTMENT_STATE_ACCEPTED
+                    ? APPOINTMENT_STATE_CONFIRMED
                     : APPOINTMENT_STATE_CANCELLED,
             }),
         };
