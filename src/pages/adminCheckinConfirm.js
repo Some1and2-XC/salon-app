@@ -65,7 +65,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
             .catch(() => setLoadError("Could not load appointments."))
             .finally(() => setLoadingAppointment(false))
             ;
-    }, []);
+    }, [appointment]);
 
     // User Fetching Effect
     useEffect(() => {
@@ -105,6 +105,10 @@ export function AdminCheckinConfirm({ navigation, route }) {
             apiFetch(`/appointments/${appointment.uuid.trim()}`, fetch_body)
                 .then(assertFetchSuccessful)
                 .then(res => res.json())
+                .then((data) => {
+                    console.log(data);
+                    setAppointment(null);
+                })
                 .catch((e) => {
                     console.error(e);
                 })
@@ -173,7 +177,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
                         color={colorScheme.textAccent}
                     />
                 </View>
-            ) : (
+            ) : appointment ? (
                 <View style={commonUi.card.pageCard}>
                     <View style={styles.row}>
                         <Text style={styles.label}>Customer</Text>
@@ -199,7 +203,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
                         </Pressable>
                     </View>
                 </View>
-            )}
+            ) : null}
         </ScrollView>
     );
 }
