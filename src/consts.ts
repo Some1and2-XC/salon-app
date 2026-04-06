@@ -35,6 +35,14 @@ export const APPOINTMENT_STATE_CONFIRMED: number = 2;
 export const APPOINTMENT_STATE_CANCELLED: number = 3;
 export const APPOINTMENT_STATE_COMPLETED: number = 4;
 
+export const APPOINTMENT_STATE_MAPPINGS = {
+    0: "Unconfirmed",
+    1: "Accepted",
+    2: "Checked In",
+    3: "Cancelled",
+    4: "Completed"
+};
+
 export const FIREBASE_AUTH_ERROR_MESSAGES = {
     "auth/invalid-credential": "Invalid email or password.",
     "auth/user-not-found": "No account exists with this email.",
