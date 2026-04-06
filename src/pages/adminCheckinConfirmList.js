@@ -9,10 +9,14 @@ import {
     RefreshControl,
 } from "react-native";
 
-import { NAV_CHECKIN_CONFIRM_ADMIN } from "../consts";
+import { 
+    APPOINTMENT_STATE_CANCELLED,
+    TOAST_TYPE_SUCCESS,
+    APPOINTMENT_STATE_CONFIRMED
+ } from "../consts";
 import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
-import { apiFetch } from "../utils";
+import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
 import { AdminBackBar } from "../components/AdminBackBar";
 
 export function AdminCheckinConfirmList({ navigation }) {
@@ -26,21 +30,40 @@ export function AdminCheckinConfirmList({ navigation }) {
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
 
-    const load = useCallback(async () => {
+    const [appointmentUserMap, setAppointmentUserMap] = useState({});
+
+    const load = useCallback(() => {
         setError(null);
-        try {
-            const res = await apiFetch("/appointments", { method: "GET" });
-            const data = await res.json();
-            setItems(Array.isArray(data) ? data : []);
-        } catch (e) {
-            console.error(e);
-            setError("Could not load appointments.");
-            setItems([]);
-        } finally {
-            setLoading(false);
-            setRefreshing(false);
-        }
+        apiFetch("/appointments", { method: "GET" })
+            .then(assertFetchSuccessful)
+            .then(res => res.json())
+            .then((data) => {
+                const appointments = Array.isArray(data) ? data : [];
+
+                // filter appointments to only show those that have not been confirmed 
+
+                const filtered = appointments.filter(
+                    (appt) => ![APPOINTMENT_STATE_CONFIRMED, APPOINTMENT_STATE_CANCELLED].
+                    includes(appt.appointment_state_id)
+                );
+                setItems(filtered);
+                return appointments;
+            })
+            .then (appointments => getUsersForAppointments(appointments))
+            .then(map => setAppointmentUserMap(map))
+            .catch((e) => {
+                console.error(e);
+                setError("Could not load appointments.");
+                setItems([]);
+                setAppointmentUserMap({});
+            })
+            .finally(() => {
+                setLoading(false);
+                setRefreshing(false);
+            })
     }, []);
+
+    // filter appointments to only show those that have not been confirmed 
 
     useEffect(() => {
         load();
@@ -51,25 +74,108 @@ export function AdminCheckinConfirmList({ navigation }) {
         load();
     };
 
+    // maps appointment uuids to user objects 
+
+    const getUsersForAppointments = (data) => {
+
+        if(!data) {
+            return Promise.resolve({});
+        }
+
+        const map = {};
+
+        const promises = data.map((appt) => {
+            if (!appt.user_uuid) return Promise.resolve();
+
+            return(
+                apiFetch(`/users/${appt.user_uuid}`, { method: 'GET' })
+                    .then(assertFetchSuccessful)
+                    .then(res => res.json())
+                    .then((user) => {
+                        map[appt.uuid] = user
+                    })
+                    .catch((e) => {
+                        console.error(e);
+                    })
+            )
+        })
+
+        return Promise.all(promises).then(() => map);           
+    };
+
+    // Handle Confirm/Deny Buttons on each Appointment Card
+
+    const handleResponse = async (confirmed, item) => {
+
+        const fetch_body = {
+            method: "PATCH",
+            body: JSON.stringify({
+                appointment_state_id: confirmed
+                    ? APPOINTMENT_STATE_CONFIRMED
+                    : APPOINTMENT_STATE_CANCELLED,
+            }),
+        };
+        if (item.uuid) {
+            apiFetch(`/appointments/${item.uuid}`, fetch_body)
+                .then(assertFetchSuccessful)
+                .then(res => res.json())
+                .then(() => {
+                    setItems((prev) => prev.filter((appt) => appt.uuid !== item.uuid));
+                })
+                .catch((e) => {
+                    console.error(e);
+                })
+        } else {
+            console.error(
+                "Attempted to update appointment state but appointment.uuid is not set!"
+            );
+        }
+
+        if(confirmed) {
+            showAppToast(TOAST_TYPE_SUCCESS, "Confirmed!", "Successfully confirmed customer check in!");
+        }
+        else {
+            showAppToast(TOAST_TYPE_SUCCESS, "Denied!", "Denied Customer Check In");
+        }
+    };
+
+    // Render Each card
+
     const renderItem = ({ item }) => {
         const updated = item?.last_modified
             ? new Date(Number(item.last_modified)).toLocaleString()
             : "—";
 
+        const user = appointmentUserMap[item?.uuid];
+
+        const name = [user?.first_name, user?.last_name].filter(Boolean).join(" ");
+        const email = user?.email ? ` (${user?.email})` : "";
+
         return (
-            <Pressable
-                style={({ pressed }) => [styles.card, pressed && commonUi.auth.cardPressed]}
-                onPress={() => navigation.navigate(NAV_CHECKIN_CONFIRM_ADMIN, item)}
-            >
+            <View style={commonUi.card.pageCard}>
                 <View style={styles.cardTop}>
                     <Text style={styles.cardTitle}>
-                        Appointment #{String(item?.uuid ?? item?.id ?? "—")}
+                        {`${name} ${email}`}
                     </Text>
                     <Text style={styles.cardChevron}>→</Text>
                 </View>
                 <Text style={styles.cardMeta}>Updated {updated}</Text>
-                <Text style={styles.cardHint}>Tap to review confirm / deny</Text>
-            </Pressable>
+                <View style={commonUi.card.actions}>
+                    <Pressable
+                        style={({ pressed }) => [commonUi.card.btnConfirm, pressed && commonUi.card.pressed]}
+                        onPress={() => handleResponse(true, item)}
+                    >
+                        <Text style={commonUi.card.btnConfirmText}>Confirm</Text>
+                    </Pressable>
+                    <Pressable
+                        style={({ pressed }) => [commonUi.card.btnDeny, pressed && commonUi.card.pressed]}
+                        onPress={() => handleResponse(false, item)}
+                    >
+                        <Text style={commonUi.card.btnDenyText}>Deny</Text>
+                    </Pressable>
+                </View>
+            </View>
+
         );
     };
 

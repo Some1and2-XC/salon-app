@@ -433,6 +433,37 @@ export function useCommonUi(scheme) {
                 color: scheme.textMuted,
                 maxWidth: "92%",
             },
+            actions: {
+                flexDirection: "row",
+                gap: 12,
+                marginTop: 8,
+            },
+            btnConfirm: {
+                flex: 1,
+                backgroundColor: scheme.darkSurface,
+                borderRadius: 24,
+                paddingVertical: 16,
+                alignItems: "center",
+            },
+            btnConfirmText: {
+                color: scheme.whiteWarm,
+                fontSize: 15,
+                fontWeight: "800",
+            },
+            btnDeny: {
+                flex: 1,
+                backgroundColor: scheme.panelBackgroundAlt,
+                borderRadius: 24,
+                paddingVertical: 16,
+                alignItems: "center",
+                borderWidth: 1,
+                borderColor: scheme.borderLight,
+            },
+            btnDenyText: {
+                color: scheme.danger,
+                fontSize: 15,
+                fontWeight: "800",
+            },
         },
         modal: {
             overlay: {

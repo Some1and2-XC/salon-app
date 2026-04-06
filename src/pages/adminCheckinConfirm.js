@@ -9,8 +9,7 @@ import {
 } from "react-native";
 
 import {
-    NAV_CHECKIN_CONFIRM_ADMIN_LIST,
-    APPOINTMENT_STATE_ACCEPTED,
+    APPOINTMENT_STATE_CONFIRMED,
     APPOINTMENT_STATE_CANCELLED,
     TOAST_TYPE_SUCCESS
 } from "../consts";
@@ -53,8 +52,12 @@ export function AdminCheckinConfirm({ navigation, route }) {
             .then(assertFetchSuccessful)
             .then((res) => res.json())
             .then((arr) => {
-                if (Array.isArray(arr) && arr[0]) {
-                    setAppointment(arr[0]);
+                if (Array.isArray(arr) && arr.size != 0) {
+                    const filtered = arr.filter(
+                        (appt) => ![APPOINTMENT_STATE_CONFIRMED, APPOINTMENT_STATE_CANCELLED].
+                            includes(appt.appointment_state_id)
+                        );
+                    setAppointment(filtered[0]);
                 } else {
                     setLoadError("No appointments found.");
                 }
@@ -62,7 +65,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
             .catch(() => setLoadError("Could not load appointments."))
             .finally(() => setLoadingAppointment(false))
             ;
-    }, []);
+    }, [appointment]);
 
     // User Fetching Effect
     useEffect(() => {
@@ -91,18 +94,21 @@ export function AdminCheckinConfirm({ navigation, route }) {
     const handleResponse = async (confirmed) => {
         const fetch_body = {
             method: "PATCH",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 appointment_state_id: confirmed
-                    ? APPOINTMENT_STATE_ACCEPTED
+                    ? APPOINTMENT_STATE_CONFIRMED
                     : APPOINTMENT_STATE_CANCELLED,
             }),
         };
 
         if (appointment.uuid) {
-            apiFetch(`/appointments/${appointment.uuid}`, fetch_body)
+            apiFetch(`/appointments/${appointment.uuid.trim()}`, fetch_body)
                 .then(assertFetchSuccessful)
                 .then(res => res.json())
+                .then((data) => {
+                    console.log(data);
+                    setAppointment(null);
+                })
                 .catch((e) => {
                     console.error(e);
                 })
@@ -118,15 +124,12 @@ export function AdminCheckinConfirm({ navigation, route }) {
         else {
             showAppToast(TOAST_TYPE_SUCCESS, "Denied!", "Denied Customer Check In");
         }
-
-        navigation.navigate(NAV_CHECKIN_CONFIRM_ADMIN_LIST);
     };
 
     const customerLine = (() => {
         if (loadingUser) return "Loading customer…";
         if (!user) return "—";
 
-        console.log("user", user);
         const name = [user.first_name, user.last_name].filter(Boolean).join(" ");
         const email = user.email ? ` (${user.email})` : "";
         return `${name || "Customer"}${email}`;
@@ -174,7 +177,7 @@ export function AdminCheckinConfirm({ navigation, route }) {
                         color={colorScheme.textAccent}
                     />
                 </View>
-            ) : (
+            ) : appointment ? (
                 <View style={commonUi.card.pageCard}>
                     <View style={styles.row}>
                         <Text style={styles.label}>Customer</Text>
@@ -185,22 +188,22 @@ export function AdminCheckinConfirm({ navigation, route }) {
                         <Text style={styles.value}>{lastModifiedLabel}</Text>
                     </View>
 
-                    <View style={styles.actions}>
+                    <View style={commonUi.card.actions}>
                         <Pressable
-                            style={({ pressed }) => [styles.btnConfirm, pressed && commonUi.card.pressed]}
+                            style={({ pressed }) => [commonUi.card.btnConfirm, pressed && commonUi.card.pressed]}
                             onPress={() => handleResponse(true)}
                         >
-                            <Text style={styles.btnConfirmText}>Confirm</Text>
+                            <Text style={commonUi.card.btnConfirmText}>Confirm</Text>
                         </Pressable>
                         <Pressable
-                            style={({ pressed }) => [styles.btnDeny, pressed && commonUi.card.pressed]}
+                            style={({ pressed }) => [commonUi.card.btnDeny, pressed && commonUi.card.pressed]}
                             onPress={() => handleResponse(false)}
                         >
-                            <Text style={styles.btnDenyText}>Deny</Text>
+                            <Text style={commonUi.card.btnDenyText}>Deny</Text>
                         </Pressable>
                     </View>
                 </View>
-            )}
+            ) : null}
         </ScrollView>
     );
 }
@@ -233,37 +236,6 @@ function makeStyles(colorScheme) {
         centerPad: {
             paddingVertical: 32,
             alignItems: "center",
-        },
-        actions: {
-            flexDirection: "row",
-            gap: 12,
-            marginTop: 8,
-        },
-        btnConfirm: {
-            flex: 1,
-            backgroundColor: colorScheme.darkSurface,
-            borderRadius: 24,
-            paddingVertical: 16,
-            alignItems: "center",
-        },
-        btnConfirmText: {
-            color: colorScheme.whiteWarm,
-            fontSize: 15,
-            fontWeight: "800",
-        },
-        btnDeny: {
-            flex: 1,
-            backgroundColor: colorScheme.panelBackgroundAlt,
-            borderRadius: 24,
-            paddingVertical: 16,
-            alignItems: "center",
-            borderWidth: 1,
-            borderColor: colorScheme.borderLight,
-        },
-        btnDenyText: {
-            color: colorScheme.danger,
-            fontSize: 15,
-            fontWeight: "800",
         },
     });
 }
