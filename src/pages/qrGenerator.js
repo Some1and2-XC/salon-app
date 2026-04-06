@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+
 import QRCode from 'react-native-qrcode-svg';
 import { useTheme } from "../styles";
 import { apiFetch, assertFetchSuccessful, showAppToast } from "../utils";
@@ -20,27 +22,30 @@ export function QRScreen({ route, navigation }) {
     const qrValue = JSON.stringify({
         appointment
     });
-
-
     const appt_uuid = appointment.uuid;
 
-    useEffect(() => {
+    // Timer requests
+    const interval_ref = useRef(null);
 
-        const interval = setInterval(() => apiFetch(`/appointments/${appt_uuid}`)
-                .then(assertFetchSuccessful)
-                .then((res) => res.json())
-                .then((res) => {
-                    // Redirects if the status has changed.
-                    if (res.appointment_state_id && res.appointment_state_id != APPOINTMENT_STATE_UNCONFIRMED) {
-                        navigation.navigate(NAV_HOME, { toastMessage: `Appointment \`${appt_uuid}\` has been confirmed!`});
-                    }
-                })
-                .catch((err) => showAppToast(TOAST_TYPE_ERROR, "Server Error", err))
-            , REFRESH_INTERVAL
-        );
-        return () => clearInterval(interval);
+    useFocusEffect(useCallback(() => {
 
-    }, []);
+        const check_appointment = () => apiFetch(`/appointments/${appt_uuid}`)
+            .then(assertFetchSuccessful)
+            .then((res) => res.json())
+            .then((res) => {
+                // Redirects if the status has changed.
+                if (res.appointment_state_id && res.appointment_state_id != APPOINTMENT_STATE_UNCONFIRMED) {
+                    navigation.navigate(NAV_HOME, { toastMessage: `Appointment \`${appt_uuid}\` has been confirmed!`});
+                }
+            })
+            .catch((err) => showAppToast(TOAST_TYPE_ERROR, "Server Error", err))
+            ;
+
+        check_appointment();
+        interval_ref.current = setInterval(check_appointment, REFRESH_INTERVAL);
+        return () => clearInterval(interval_ref.current);
+
+    }, []));
 
     return (
 
