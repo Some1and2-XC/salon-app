@@ -158,9 +158,9 @@ export function AdminCheckinConfirm({ navigation, route }) {
             <View style={commonUi.card.accentCard}>
                 <View style={commonUi.card.accentCardBlob} />
                 <Text style={commonUi.card.kicker}>Front desk</Text>
-                <Text style={commonUi.card.cardTitle}>Confirm booking</Text>
+                <Text style={commonUi.card.cardTitle}>Confirm Appointment</Text>
                 <Text style={commonUi.card.cardSubtitle}>
-                    Review the visit below, then accept or decline the check-in.
+                    Review the visit below, then accept or decline the appointment.
                 </Text>
             </View>
 
