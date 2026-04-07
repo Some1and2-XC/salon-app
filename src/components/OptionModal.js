@@ -1,6 +1,7 @@
 import { useTheme } from "../styles";
 import { apiFetch } from "../utils";
 import { colorSchemeDefault, MAP_COLOR_SCHEME } from "../colorScheme";
+import { IconTimes, IconCheck } from "../icons";
 
 import {
     Text,
@@ -39,7 +40,7 @@ export function OptionModal({
                         <Text style={commonUi.modal.title}>{title}</Text>
 
                         <Pressable onPress={onClose} style={commonUi.modal.closeButton}>
-                            <Text style={commonUi.modal.closeText}>✕</Text>
+                            <IconTimes size={16} style={commonUi.modal.closeText} />
                         </Pressable>
                     </View>
 
@@ -92,7 +93,7 @@ export function OptionModal({
                                         </View>
 
                                         {isSelected && (
-                                            <Text style={commonUi.modal.optionCheck}>✓</Text>
+                                            <IconCheck size={14} style={commonUi.modal.optionCheck} />
                                         )}
                                     </Pressable>
                                 );

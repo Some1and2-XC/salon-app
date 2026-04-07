@@ -12,11 +12,16 @@ import {
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { apiFetch, assertFetchSuccessful } from "../utils";
-import { colorSchemeGreens, MAP_COLOR_SCHEME } from "../colorScheme";
+import { colorSchemeGreens, MAP_COLOR_SCHEME, colorSchemeDefault } from "../colorScheme";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { makeStyles as makeBookingStyles } from "../pages/booking";
 import { OptionModal } from "../components/OptionModal";
 import { BackButton } from "../components/BackButton";
+import { IconChevronDown } from "../icons";
+import { IconPlus } from "../icons";
+import { IconMinus } from "../icons";
+import { IconTrashAlt } from "../icons";
+
 
 function showAlert(title, message) {
     if (Platform.OS === "web") {
@@ -387,7 +392,7 @@ export function SetAvailabilityScreen({ navigation }) {
                     >
                         {employeeFieldLabel}
                     </Text>
-                    <Text style={commonUi.auth.inputChevron}>⌄</Text>
+                    <IconChevronDown size={16} color={scheme.textAccentSoft} />
                 </Pressable>
             </View>
 
@@ -443,7 +448,7 @@ export function SetAvailabilityScreen({ navigation }) {
                             >
                                 {selectedDate || "Tap to choose a date"}
                             </Text>
-                            <Text style={styles.dateChevron}>⌄</Text>
+                            <IconChevronDown size={18} color={colorScheme.textAccentSoft} />
                         </Pressable>
                     </View>
 
@@ -457,9 +462,12 @@ export function SetAvailabilityScreen({ navigation }) {
                                 ]}
                                 onPress={() => setMode("add")}
                             >
+                            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+                                <IconPlus size={14} color="#fff" style={{ marginRight: 6 }} />
                                 <Text style={commonUi.auth.inlineCtaButtonText}>
                                     Add availability
                                 </Text>
+                            </View>
                             </Pressable>
 
                             <Pressable
@@ -470,9 +478,12 @@ export function SetAvailabilityScreen({ navigation }) {
                                 ]}
                                 onPress={() => setMode("remove")}
                             >
+                            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+                                <IconMinus size={14} color="#fff" style={{ marginRight: 6 }} />
                                 <Text style={commonUi.auth.inlineCtaButtonText}>
                                     Remove availability
                                 </Text>
+                            </View>
                             </Pressable>
                         </View>
                     </View>
@@ -558,9 +569,12 @@ export function SetAvailabilityScreen({ navigation }) {
                                         handleRemoveAvailability(slot.id)
                                     }
                                 >
+                                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                    <IconTrashAlt size={12} color="#fff" style={{ marginRight: 5 }} />
                                     <Text style={styles.smallDangerText}>
                                         Remove
                                     </Text>
+                                </View>
                                 </Pressable>
                             </View>
                         ))
