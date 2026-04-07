@@ -10,7 +10,7 @@ import {
 
 import {
     APPOINTMENT_STATE_UNCONFIRMED,
-    APPOINTMENT_STATE_CONFIRMED,
+    APPOINTMENT_STATE_ACCEPTED,
     APPOINTMENT_STATE_CANCELLED,
     TOAST_TYPE_SUCCESS
 } from "../consts";
@@ -96,7 +96,7 @@ export function AdminAppointmentConfirm({ navigation, route }) {
             method: "PATCH",
             body: JSON.stringify({
                 appointment_state_id: confirmed
-                    ? APPOINTMENT_STATE_CONFIRMED
+                    ? APPOINTMENT_STATE_ACCEPTED
                     : APPOINTMENT_STATE_CANCELLED,
             }),
         };

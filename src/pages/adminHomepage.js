@@ -22,7 +22,7 @@ import {
     NAV_SET_THEME,
 } from "../consts";
 import { useTheme } from "../styles";
-import { colorSchemeGreens } from "../colorScheme";
+import { MAP_COLOR_SCHEME, colorSchemeDefault } from "../colorScheme";
 import {
     AppIcon,
     IconPalette
@@ -92,8 +92,10 @@ const ADMIN_ACTIONS = [
 ];
 
 export function AdminHomepageScreen({ navigation }) {
+
     const commonUi = useTheme((state) => state.getCommonUi)();
-    const colorScheme = useTheme((state) => state.getScheme)() ?? colorSchemeGreens;
+    const scheme = useTheme((state) => state.scheme);
+    const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeDefault;
 
     const { width } = useWindowDimensions();
 
