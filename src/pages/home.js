@@ -229,7 +229,7 @@ export function HomeScreen({ navigation, route }) {
                         <Text style={commonUi.auth.inlineCtaButtonText}>
                             Set Theme
                         </Text>
-                        <IconPalette size={16} style={{ marginLeft: 6 }} />
+                        <IconPalette size={16} color={ colorScheme.textDefault } style={{ marginLeft: 6 }} />
                     </View>
                 </Pressable>
 
