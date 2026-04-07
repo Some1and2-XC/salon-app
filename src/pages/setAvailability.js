@@ -463,7 +463,7 @@ export function SetAvailabilityScreen({ navigation }) {
                                 onPress={() => setMode("add")}
                             >
                             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
-                                <IconPlus size={14} color="#fff" style={{ marginRight: 6 }} />
+                                <IconPlus size={14} color={ colorScheme.textDefault } style={{ marginRight: 6 }} />
                                 <Text style={commonUi.auth.inlineCtaButtonText}>
                                     Add availability
                                 </Text>
@@ -479,7 +479,7 @@ export function SetAvailabilityScreen({ navigation }) {
                                 onPress={() => setMode("remove")}
                             >
                             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
-                                <IconMinus size={14} color="#fff" style={{ marginRight: 6 }} />
+                                <IconMinus size={14} color={ colorScheme.textDefault } style={{ marginRight: 6 }} />
                                 <Text style={commonUi.auth.inlineCtaButtonText}>
                                     Remove availability
                                 </Text>
@@ -570,7 +570,7 @@ export function SetAvailabilityScreen({ navigation }) {
                                     }
                                 >
                                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                                    <IconTrashAlt size={12} color="#fff" style={{ marginRight: 5 }} />
+                                    <IconTrashAlt size={12} color={ colorScheme.textDefault } style={{ marginRight: 5 }} />
                                     <Text style={styles.smallDangerText}>
                                         Remove
                                     </Text>
