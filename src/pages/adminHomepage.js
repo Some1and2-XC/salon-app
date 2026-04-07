@@ -56,7 +56,7 @@ const ADMIN_ACTIONS = [
     {
         route: NAV_BARCODE_SCANNER,
         pill: "Operations",
-        icon: "barcode",
+        icon: "qrcode",
         title: "Check-In Scanner",
         description: "Open the scanner to check-in a customer.",
     },
@@ -257,7 +257,7 @@ export function AdminHomepageScreen({ navigation }) {
                         <Text style={commonUi.auth.inlineCtaButtonText}>
                             Set Theme
                         </Text>
-                        <IconPalette size={16} color="#fff" style={{ marginLeft: 6 }} />
+                        <IconPalette size={16} color={ colorScheme.textDefault } style={{ marginLeft: 6 }} />
                     </View>
                 </Pressable>
 
