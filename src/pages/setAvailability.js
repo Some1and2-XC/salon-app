@@ -75,7 +75,7 @@ function TimeRangeSelector({ times, onSelect, scheme }) {
     const [startIdx, setStartIdx] = useState(null);
     const [endIdx, setEndIdx] = useState(null);
 
-    const visibleTimes = times.slice(0, 24);
+    const visibleTimes = times.slice(18, 40);
 
     const CELL_WIDTH = 72;
     const CELL_HEIGHT = 52;
@@ -102,7 +102,7 @@ function TimeRangeSelector({ times, onSelect, scheme }) {
             return;
         }
 
-        if (index === endIdx) return; // 🔥 prevents unnecessary re-renders
+        if (index === endIdx) return; //  prevents unnecessary re-renders
 
         setEndIdx(index);
 
