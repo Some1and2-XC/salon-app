@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { apiFetch, assertFetchSuccessful } from "../utils";
-import { colorSchemeGreens, MAP_COLOR_SCHEME } from "../colorScheme";
+import { colorSchemeGreens, MAP_COLOR_SCHEME, colorSchemeDefault } from "../colorScheme";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { makeStyles as makeBookingStyles } from "../pages/booking";
 import { OptionModal } from "../components/OptionModal";
@@ -21,7 +21,7 @@ import { IconChevronDown } from "../icons";
 import { IconPlus } from "../icons";
 import { IconMinus } from "../icons";
 import { IconTrashAlt } from "../icons";
-import { colorSchemeGreens, MAP_COLOR_SCHEME, colorSchemeDefault } from "../colorScheme";
+
 
 function showAlert(title, message) {
     if (Platform.OS === "web") {

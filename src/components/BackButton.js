@@ -3,6 +3,7 @@ import { Pressable, Text, StyleSheet } from "react-native";
 
 import { useTheme } from "../styles";
 import { colorSchemeGreens } from "../colorScheme";
+import { IconArrowLeft } from "../icons";
 
 /**
  * Navigates back to the admin dashboard. Use at the top of admin-only screens.
@@ -19,7 +20,7 @@ export function BackButton({ navigation }) {
             style={({ pressed }) => [styles.bar, pressed && styles.pressed]}
             onPress={() => navigation.goBack()}
         >
-            <Text style={styles.arrow}>←</Text>
+            <IconArrowLeft size={16} color={colorScheme.textAccent} />
             <Text style={styles.label}>Back</Text>
         </Pressable>
     );
@@ -44,11 +45,11 @@ function makeStyles(colorScheme) {
             opacity: 0.9,
             transform: [{ scale: 0.99 }],
         },
-        arrow: {
-            fontSize: 18,
-            color: colorScheme.textAccent,
-            fontWeight: "800",
-        },
+        // arrow: {
+        //     fontSize: 18,
+        //     color: colorScheme.textAccent,
+        //     fontWeight: "800",
+        // },
         label: {
             fontSize: 14,
             fontWeight: "700",

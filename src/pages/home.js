@@ -14,6 +14,10 @@ import { showAppToast } from "../utils";
 import { NAV_BOOKING, NAV_CHECKIN, NAV_LOGIN, NAV_SET_THEME, TOAST_TYPE_SUCCESS } from "../consts";
 import { useTheme } from "../styles";
 import { colorSchemeDefault, MAP_COLOR_SCHEME } from "../colorScheme";
+import {
+    AppIcon,
+    IconPalette
+} from "../icons";
 
 function getGreeting() {
     const hour = new Date().getHours();
@@ -179,7 +183,7 @@ export function HomeScreen({ navigation, route }) {
                     <View style={commonUi.card.cardGlow} />
                     <View style={commonUi.card.cardHeaderRow}>
                         <View style={commonUi.card.iconWrapLarge}>
-                            <Text style={commonUi.card.iconLarge}>✦</Text>
+                            <AppIcon name="calendar-check" size={22} color={colorScheme.textAccent} />
                         </View>
                         <View style={commonUi.card.pillDark}>
                             <Text style={commonUi.card.pillDarkText}>Bookings</Text>
@@ -191,7 +195,7 @@ export function HomeScreen({ navigation, route }) {
                     </Text>
                     <View style={commonUi.card.primaryFooter}>
                         <Text style={commonUi.card.primaryFooterText}>Open Appointments</Text>
-                        <Text style={commonUi.card.primaryArrow}>→</Text>
+                        <AppIcon name="chevron-right" size={14} color={colorScheme.textAccent} />
                     </View>
                 </Pressable>
 
@@ -204,7 +208,7 @@ export function HomeScreen({ navigation, route }) {
                 >
                     <View style={commonUi.card.smallTopRow}>
                         <View style={commonUi.card.iconWrapSmall}>
-                            <Text style={commonUi.card.iconSmall}>◎</Text>
+                            <AppIcon name="calendar-check" size={16} color={colorScheme.textAccent} />
                         </View>
                         <Text style={commonUi.card.cornerText}>Schedule</Text>
                     </View>
@@ -221,7 +225,12 @@ export function HomeScreen({ navigation, route }) {
                     ]}
                     onPress={() => navigation.navigate(NAV_SET_THEME) }
                 >
-                    <Text style={commonUi.auth.inlineCtaButtonText}>Set Theme &#x1F3A8;</Text>
+                    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+                        <Text style={commonUi.auth.inlineCtaButtonText}>
+                            Set Theme
+                        </Text>
+                        <IconPalette size={16} color="#fff" style={{ marginLeft: 6 }} />
+                    </View>
                 </Pressable>
 
                 <Pressable

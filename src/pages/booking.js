@@ -18,6 +18,11 @@ import { APPOINTMENT_STATE_UNCONFIRMED, NAV_HOME, TOAST_TYPE_ERROR } from "../co
 import { useTheme } from "../styles";
 import { colorSchemeDefault, MAP_COLOR_SCHEME } from "../colorScheme";
 import { OptionModal } from "../components/OptionModal";
+import {
+    IconArrowLeft,
+    IconChevronDown,
+    IconLayerGroup
+} from "../icons";
 
 const EMPLOYEE_OPTIONS = {
     ANY: "ANY",
@@ -170,7 +175,7 @@ function InfoSelectCard({
                 >
                     {value}
                 </Text>
-                <Text style={commonUi.form.selectChevron}>⌄</Text>
+                <IconChevronDown size={14} style={commonUi.form.selectChevron} />
             </Pressable>
         </View>
     );
@@ -488,7 +493,7 @@ export function BookingScreen({ navigation }) {
                     ]}
                     onPress={() => navigation.navigate(NAV_HOME)}
                 >
-                    <Text style={commonUi.auth.backButtonArrow}>←</Text>
+                    <IconArrowLeft size={16} style={commonUi.auth.backButtonArrow} />
                     <Text style={commonUi.auth.backButtonText}>Back</Text>
                 </Pressable>
 
@@ -633,7 +638,7 @@ export function BookingScreen({ navigation }) {
                             <Text style={commonUi.form.selectValue}>
                                 {summaryEmployee === "Not selected" ? "Choose an employee" : summaryEmployee}
                             </Text>
-                            <Text style={commonUi.form.selectChevron}>⌄</Text>
+                            <IconChevronDown size={14} style={commonUi.form.selectChevron} />
                         </Pressable>
                     )}
                 </View>
@@ -671,7 +676,7 @@ export function BookingScreen({ navigation }) {
 
                     <View style={commonUi.card.cardHeaderRow}>
                         <View style={commonUi.card.iconWrapLarge}>
-                            <Text style={commonUi.card.iconLarge}>✦</Text>
+                            <IconLayerGroup size={18} style={commonUi.card.iconLarge} />
                         </View>
                         <View style={commonUi.card.pillDark}>
                             <Text style={commonUi.card.pillDarkText}>Booking Summary</Text>
