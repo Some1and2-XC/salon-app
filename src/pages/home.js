@@ -10,8 +10,8 @@ import {
 
 import { signOut } from "firebase/auth";
 import { auth } from "../firebaseConfig";
-import { showAppToast } from "../utils";
-import { NAV_BOOKING, NAV_CHECKIN, NAV_LOGIN, NAV_SET_THEME, TOAST_TYPE_SUCCESS } from "../consts";
+import { apiFetch, showAppToast } from "../utils";
+import { NAV_ADMIN_HOMEPAGE, NAV_BOOKING, NAV_CHECKIN, NAV_LOGIN, NAV_SET_THEME, TOAST_TYPE_SUCCESS } from "../consts";
 import { useTheme } from "../styles";
 import { colorSchemeDefault, MAP_COLOR_SCHEME } from "../colorScheme";
 import {
@@ -40,6 +40,16 @@ export function HomeScreen({ navigation, route }) {
     const commonUi = useTheme((state) => state.getCommonUi)();
     const scheme = useTheme((state) => state.scheme);
     const colorScheme = MAP_COLOR_SCHEME[scheme] ?? colorSchemeDefault;
+
+    // Gets user and redirects if admin
+    useEffect(() => {
+        apiFetch("/users/me")
+            .then((res) => res.json())
+            .then((res) => {
+                if (res.admin) navigation.navigate(NAV_ADMIN_HOMEPAGE);
+            })
+            ;
+    }, []);
 
     const { width, height } = useWindowDimensions();
 

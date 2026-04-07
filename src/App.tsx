@@ -84,8 +84,8 @@ export default function App() {
     // Sets the initial route.
     // Thought should be put into if the default unauthenticated screen should be the login screen
     // or signup (I think login is a sensible default).
-    // const initialRoute: string = user ? NAV_HOME : NAV_LOGIN;
-    const initialRoute: string = NAV_EXAMPLE_HOME; // for debugging and dev purposes
+    const initialRoute: string = user ? NAV_HOME : NAV_LOGIN;
+    // const initialRoute: string = NAV_EXAMPLE_HOME; // for debugging and dev purposes
 
     // Doesn't render until we know if the user is logged in or not.
     // May be replaced with a spinner in the future.
