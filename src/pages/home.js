@@ -183,7 +183,7 @@ export function HomeScreen({ navigation, route }) {
                     <View style={commonUi.card.cardGlow} />
                     <View style={commonUi.card.cardHeaderRow}>
                         <View style={commonUi.card.iconWrapLarge}>
-                            <AppIcon name="calendar-check" size={22} color={colorScheme.textAccent} />
+                            <AppIcon name="calendar-alt" size={22} color={colorScheme.textAccent} />
                         </View>
                         <View style={commonUi.card.pillDark}>
                             <Text style={commonUi.card.pillDarkText}>Bookings</Text>
